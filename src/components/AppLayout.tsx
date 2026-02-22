@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Upload, Pill, User, Calendar, AlertTriangle, Users, LogOut, Eye } from 'lucide-react';
+import { LayoutDashboard, Upload, Pill, User, Calendar, AlertTriangle, Users, LogOut, Eye, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { Button } from '@/components/ui/button';
@@ -27,8 +27,16 @@ const desktopNav = [
 const AppLayout: React.FC = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, loading, logout } = useAuth();
   const { isSeniorMode, toggle } = useSeniorMode();
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   if (!user) {
     navigate('/auth/login');
@@ -61,7 +69,6 @@ const AppLayout: React.FC = () => {
           </nav>
 
           <div className="flex items-center gap-3">
-            {/* Senior Mode Toggle */}
             <div className="flex items-center gap-1.5">
               <Eye className="h-4 w-4 text-muted-foreground" />
               <Switch checked={isSeniorMode} onCheckedChange={toggle} aria-label="시니어 모드" />
@@ -78,12 +85,10 @@ const AppLayout: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="app-content container py-4 md:py-6">
         <Outlet />
       </main>
 
-      {/* Bottom Tab Navigation - Mobile Only */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden">
         <div className="flex items-center justify-around py-1">
           {bottomTabs.map(tab => {
@@ -104,7 +109,6 @@ const AppLayout: React.FC = () => {
         </div>
       </nav>
 
-      {/* Footer disclaimer */}
       <footer className="hidden border-t border-border bg-muted py-4 text-center md:block">
         <p className="text-xs text-muted-foreground">
           ⚕️ 본 서비스는 의료 전문가의 상담을 대체하지 않습니다. 정확한 진단과 치료는 반드시 의사와 상담하세요.
