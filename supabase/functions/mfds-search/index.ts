@@ -39,19 +39,42 @@ serve(async (req) => {
       });
     }
 
-    const url = new URL('https://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList');
-    url.searchParams.set('serviceKey', serviceKey);
-    url.searchParams.set('itemName', itemName);
-    url.searchParams.set('type', 'json');
-    url.searchParams.set('numOfRows', '5');
-    url.searchParams.set('pageNo', '1');
-
-    const response = await fetch(url.toString());
+    // Korean public data API: serviceKey may be pre-encoded or decoded
+    // Try with the key as-is first, then try encoding it
+    const baseUrl = 'http://apis.data.go.kr/1471000/DrbEasyDrugInfoService/getDrbEasyDrugList';
+    const encodedName = encodeURIComponent(itemName);
+    
+    // First try: key as-is (common for keys copied from data.go.kr which are already URL-encoded)
+    let apiUrl = `${baseUrl}?serviceKey=${serviceKey}&itemName=${encodedName}&type=json&numOfRows=5&pageNo=1`;
+    console.log('Calling MFDS API for:', itemName);
+    
+    let response = await fetch(apiUrl);
+    
+    // If 401, try with URL-encoded key (key might have been stored decoded)
+    if (response.status === 401) {
+      console.log('First attempt 401, retrying with encoded key...');
+      await response.text(); // consume body
+      const encodedKey = encodeURIComponent(serviceKey);
+      apiUrl = `${baseUrl}?serviceKey=${encodedKey}&itemName=${encodedName}&type=json&numOfRows=5&pageNo=1`;
+      response = await fetch(apiUrl);
+    }
+    
     if (!response.ok) {
-      throw new Error(`MFDS API error [${response.status}]: ${await response.text()}`);
+      const errText = await response.text();
+      console.error('MFDS API response error:', response.status, errText);
+      throw new Error(`MFDS API error [${response.status}]: ${errText}`);
     }
 
-    const data = await response.json();
+    const rawText = await response.text();
+    console.log('MFDS raw response preview:', rawText.substring(0, 500));
+    
+    let data: any;
+    try {
+      data = JSON.parse(rawText);
+    } catch {
+      console.error('Failed to parse MFDS response:', rawText.substring(0, 500));
+      throw new Error('MFDS API returned non-JSON response');
+    }
     const body = data?.body;
     const items = body?.items ?? [];
 
