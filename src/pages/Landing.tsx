@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { Camera, Pill, Clock, AlertTriangle, Users, CreditCard, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import heroImage from '@/assets/hero-medical.jpg';
 
 const steps = [
@@ -13,6 +14,12 @@ const steps = [
 ];
 
 const Landing = () => {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (!loading && isAuthenticated) {
+    return <Navigate to="/app/dashboard" replace />;
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
