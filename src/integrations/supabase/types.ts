@@ -14,6 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
+      drug_info_chunks: {
+        Row: {
+          chunk_type: string
+          content: string
+          created_at: string
+          id: string
+          medication_id: string
+          user_id: string
+        }
+        Insert: {
+          chunk_type: string
+          content?: string
+          created_at?: string
+          id?: string
+          medication_id: string
+          user_id: string
+        }
+        Update: {
+          chunk_type?: string
+          content?: string
+          created_at?: string
+          id?: string
+          medication_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drug_info_chunks_medication_id_fkey"
+            columns: ["medication_id"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      interaction_matrix: {
+        Row: {
+          contraindication_type: string
+          created_at: string
+          drug_a: string
+          drug_b: string
+          id: string
+          medication_id_a: string | null
+          medication_id_b: string | null
+          recommended_action: string
+          risk_description: string
+          severity: string
+          user_id: string
+        }
+        Insert: {
+          contraindication_type?: string
+          created_at?: string
+          drug_a: string
+          drug_b: string
+          id?: string
+          medication_id_a?: string | null
+          medication_id_b?: string | null
+          recommended_action?: string
+          risk_description?: string
+          severity?: string
+          user_id: string
+        }
+        Update: {
+          contraindication_type?: string
+          created_at?: string
+          drug_a?: string
+          drug_b?: string
+          id?: string
+          medication_id_a?: string | null
+          medication_id_b?: string | null
+          recommended_action?: string
+          risk_description?: string
+          severity?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interaction_matrix_medication_id_a_fkey"
+            columns: ["medication_id_a"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "interaction_matrix_medication_id_b_fkey"
+            columns: ["medication_id_b"]
+            isOneToOne: false
+            referencedRelation: "medications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       interaction_warnings: {
         Row: {
           created_at: string
@@ -21,7 +113,9 @@ export type Database = {
           id: string
           medication_ids: string[]
           severity: string
+          source_snippet: string | null
           title: string
+          type: string | null
           user_id: string
         }
         Insert: {
@@ -30,7 +124,9 @@ export type Database = {
           id?: string
           medication_ids?: string[]
           severity?: string
+          source_snippet?: string | null
           title: string
+          type?: string | null
           user_id: string
         }
         Update: {
@@ -39,7 +135,9 @@ export type Database = {
           id?: string
           medication_ids?: string[]
           severity?: string
+          source_snippet?: string | null
           title?: string
+          type?: string | null
           user_id?: string
         }
         Relationships: []
@@ -47,32 +145,56 @@ export type Database = {
       medications: {
         Row: {
           created_at: string
+          deposit_method: string | null
           dosage: string
           duration_days: number
+          efcy: string | null
+          entp_name: string | null
           frequency_per_day: number
           id: string
+          intrc: string | null
+          item_image: string | null
+          item_seq: string | null
           name: string
           notes: string | null
+          se: string | null
+          use_method: string | null
           user_id: string
         }
         Insert: {
           created_at?: string
+          deposit_method?: string | null
           dosage?: string
           duration_days?: number
+          efcy?: string | null
+          entp_name?: string | null
           frequency_per_day?: number
           id?: string
+          intrc?: string | null
+          item_image?: string | null
+          item_seq?: string | null
           name: string
           notes?: string | null
+          se?: string | null
+          use_method?: string | null
           user_id: string
         }
         Update: {
           created_at?: string
+          deposit_method?: string | null
           dosage?: string
           duration_days?: number
+          efcy?: string | null
+          entp_name?: string | null
           frequency_per_day?: number
           id?: string
+          intrc?: string | null
+          item_image?: string | null
+          item_seq?: string | null
           name?: string
           notes?: string | null
+          se?: string | null
+          use_method?: string | null
           user_id?: string
         }
         Relationships: []
