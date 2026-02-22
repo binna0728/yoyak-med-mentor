@@ -5,17 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Pill } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Login = () => {
-  const [email, setEmail] = useState('demo@yoyak.kr');
-  const [password, setPassword] = useState('demo1234');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
-    navigate('/app/dashboard');
+    setIsLoading(true);
+    try {
+      await login(email, password);
+      navigate('/app/dashboard');
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: '로그인 실패', description: err.message || '이메일 또는 비밀번호를 확인하세요' });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -37,14 +47,13 @@ const Login = () => {
             <Label htmlFor="password">비밀번호</Label>
             <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
           </div>
-          <Button type="submit" className="w-full">로그인</Button>
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? '로그인 중...' : '로그인'}
+          </Button>
           <p className="text-center text-sm text-muted-foreground">
             계정이 없으신가요? <Link to="/auth/signup" className="text-primary hover:underline">회원가입</Link>
           </p>
         </form>
-        <p className="text-center text-xs text-muted-foreground">
-          데모: 아무 이메일/비밀번호로 로그인 가능합니다
-        </p>
       </div>
     </div>
   );

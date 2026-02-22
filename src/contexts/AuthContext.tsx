@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as SupaUser, Session } from '@supabase/supabase-js';
 
 export type UserRole = 'patient' | 'caregiver';
 
@@ -12,6 +14,7 @@ export interface User {
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
+  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
@@ -19,40 +22,81 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+async function buildUser(supaUser: SupaUser): Promise<User> {
+  // Fetch profile
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('name')
+    .eq('user_id', supaUser.id)
+    .single();
+
+  // Fetch role
+  const { data: roleRow } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', supaUser.id)
+    .single();
+
+  return {
+    id: supaUser.id,
+    name: profile?.name || supaUser.user_metadata?.name || '',
+    email: supaUser.email || '',
+    role: (roleRow?.role as UserRole) || 'patient',
+  };
+}
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem('yoyak_user');
-    return stored ? JSON.parse(stored) : null;
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) localStorage.setItem('yoyak_user', JSON.stringify(user));
-    else localStorage.removeItem('yoyak_user');
-  }, [user]);
+    // Listen for auth changes FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const u = await buildUser(session.user);
+        setUser(u);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
 
-  const login = async (email: string, _password: string) => {
-    // Demo: accept any credentials
-    const stored = localStorage.getItem('yoyak_users');
-    const users: User[] = stored ? JSON.parse(stored) : [];
-    const found = users.find(u => u.email === email);
-    if (found) { setUser(found); return; }
-    // Default demo user
-    setUser({ id: 'demo-1', name: '홍길동', email, role: 'patient' });
+    // Then check existing session
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (session?.user) {
+        const u = await buildUser(session.user);
+        setUser(u);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const login = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   };
 
-  const signup = async (name: string, email: string, _password: string, role: UserRole) => {
-    const newUser: User = { id: `user-${Date.now()}`, name, email, role };
-    const stored = localStorage.getItem('yoyak_users');
-    const users: User[] = stored ? JSON.parse(stored) : [];
-    users.push(newUser);
-    localStorage.setItem('yoyak_users', JSON.stringify(users));
-    setUser(newUser);
+  const signup = async (name: string, email: string, password: string, role: UserRole) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { name, role },
+        emailRedirectTo: window.location.origin,
+      },
+    });
+    if (error) throw error;
   };
 
-  const logout = () => setUser(null);
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, loading, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );

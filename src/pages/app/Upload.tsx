@@ -3,6 +3,8 @@ import { Upload as UploadIcon, Image, Plus, Trash2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAddMedications, useGenerateSchedules, useAddWarnings } from '@/hooks/useSupabase';
+import { useToast } from '@/hooks/use-toast';
 
 interface ExtractedMed {
   name: string;
@@ -18,13 +20,24 @@ const sampleExtraction: ExtractedMed[] = [
   { name: '오메프라졸', dosage: '20mg', frequencyPerDay: 1, durationDays: 14, notes: '아침 식전' },
 ];
 
+// Demo interaction rules
+const demoWarningRules = [
+  { drugs: ['아목시실린', '메트포르민'], severity: 'high', title: '아목시실린 + 메트포르민 병용 주의', description: '아목시실린이 메트포르민의 혈당 강하 효과를 증가시킬 수 있습니다.' },
+  { drugs: ['이부프로펜', '오메프라졸'], severity: 'medium', title: '이부프로펜 + 오메프라졸 식사 타이밍 충돌', description: '이부프로펜은 식후, 오메프라졸은 식전에 복용해야 합니다.' },
+  { drugs: ['이부프로펜'], severity: 'low', title: '이부프로펜 위장 보호 권장', description: '이부프로펜 장기 복용 시 위점막 손상 가능성이 있습니다.' },
+];
+
 const UploadPage = () => {
   const [step, setStep] = useState<'upload' | 'review' | 'done'>('upload');
   const [dragOver, setDragOver] = useState(false);
   const [meds, setMeds] = useState<ExtractedMed[]>([]);
+  const [saving, setSaving] = useState(false);
+  const addMedications = useAddMedications();
+  const generateSchedules = useGenerateSchedules();
+  const addWarnings = useAddWarnings();
+  const { toast } = useToast();
 
   const handleUpload = useCallback(() => {
-    // Simulate OCR extraction
     setTimeout(() => {
       setMeds([...sampleExtraction]);
       setStep('review');
@@ -42,10 +55,51 @@ const UploadPage = () => {
   };
 
   const removeMed = (idx: number) => setMeds(prev => prev.filter((_, i) => i !== idx));
-
   const addMed = () => setMeds(prev => [...prev, { name: '', dosage: '', frequencyPerDay: 1, durationDays: 7, notes: '' }]);
 
-  const saveMeds = () => setStep('done');
+  const saveMeds = async () => {
+    setSaving(true);
+    try {
+      const rows = meds.map(m => ({
+        name: m.name,
+        dosage: m.dosage,
+        frequency_per_day: m.frequencyPerDay,
+        duration_days: m.durationDays,
+        notes: m.notes,
+      }));
+      const savedMeds = await addMedications.mutateAsync(rows);
+
+      // Generate schedules
+      if (savedMeds) {
+        await generateSchedules.mutateAsync(
+          savedMeds.map(m => ({ id: m.id, frequency_per_day: m.frequency_per_day }))
+        );
+      }
+
+      // Check interaction warnings (demo rule engine)
+      const medNames = meds.map(m => m.name);
+      const warnings = demoWarningRules.filter(rule =>
+        rule.drugs.every(d => medNames.some(n => n.includes(d)))
+      );
+      if (warnings.length > 0 && savedMeds) {
+        await addWarnings.mutateAsync(
+          warnings.map(w => ({
+            medication_ids: savedMeds.map(m => m.id),
+            severity: w.severity,
+            title: w.title,
+            description: w.description,
+          }))
+        );
+      }
+
+      toast({ title: '저장 완료', description: `${meds.length}개 약물이 등록되었습니다` });
+      setStep('done');
+    } catch (err: any) {
+      toast({ variant: 'destructive', title: '저장 실패', description: err.message });
+    } finally {
+      setSaving(false);
+    }
+  };
 
   if (step === 'done') {
     return (
@@ -109,7 +163,9 @@ const UploadPage = () => {
           ))}
 
           <Button variant="outline" onClick={addMed} className="w-full"><Plus className="mr-2 h-4 w-4" />약물 추가</Button>
-          <Button onClick={saveMeds} className="w-full" disabled={meds.some(m => !m.name)}>💾 저장하기</Button>
+          <Button onClick={saveMeds} className="w-full" disabled={meds.some(m => !m.name) || saving}>
+            {saving ? '저장 중...' : '💾 저장하기'}
+          </Button>
         </div>
       )}
     </div>
