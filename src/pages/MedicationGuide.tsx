@@ -6,6 +6,7 @@ import { ArrowLeft, Volume2, Eye, Download } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import html2canvas from 'html2canvas';
 import { useTranslation } from 'react-i18next';
+import { Badge, FixedBottomCTA, CTAButton } from '@toss/tds-mobile';
 
 const MedicationGuide = () => {
   const { id } = useParams<{ id: string }>();
@@ -107,6 +108,11 @@ const MedicationGuide = () => {
                 } ${sr ? 'text-lg' : 'text-sm'}`}>
                   {sec.title}
                 </h3>
+                {sec.warning && (
+                  <Badge size="xsmall" color="red" variant="fill">
+                    {t('guide.warning')}
+                  </Badge>
+                )}
               </div>
               <p className={`text-foreground leading-relaxed whitespace-pre-line ${sr ? 'text-base' : 'text-sm'}`}>
                 {sec.content}
@@ -121,22 +127,32 @@ const MedicationGuide = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
-        <div className="max-w-lg mx-auto space-y-2">
-          <div className="flex gap-3">
-            <button onClick={() => navigate(`/guide/${id}/silver`)} className={`tds-button-secondary flex-1 flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}>
-              <Eye className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
+      <FixedBottomCTA.Double
+        leftButton={
+          <CTAButton color="dark" variant="weak" onClick={() => navigate(`/guide/${id}/silver`)}>
+            <span className="flex items-center justify-center gap-2">
+              <Eye className={sr ? 'w-5 h-5' : 'w-4 h-4'} />
               {t('guide.silverView')}
-            </button>
-            <button onClick={() => navigate(`/guide/${id}/tts`)} className={`tds-button-secondary flex items-center justify-center gap-2 ${sr ? 'px-6' : 'px-5'}`}>
-              <Volume2 className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
+            </span>
+          </CTAButton>
+        }
+        rightButton={
+          <CTAButton onClick={() => navigate('/ai-chat')}>
+            {t('guide.askAI')}
+          </CTAButton>
+        }
+        topAccessory={
+          <div className="flex justify-center pb-2">
+            <button
+              onClick={() => navigate(`/guide/${id}/tts`)}
+              className="flex items-center gap-2 text-muted-foreground text-sm"
+            >
+              <Volume2 className="w-4 h-4" />
+              TTS
             </button>
           </div>
-          <button onClick={() => navigate('/ai-chat')} className={`tds-button-primary w-full flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}>
-            {t('guide.askAI')}
-          </button>
-        </div>
-      </div>
+        }
+      />
     </div>
   );
 };

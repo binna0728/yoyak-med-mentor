@@ -7,6 +7,7 @@ import AlarmBanner from '@/components/AlarmBanner';
 import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 import { useTranslation } from 'react-i18next';
+import { Badge } from '@toss/tds-mobile';
 
 interface ScheduleItem {
   time: string;
@@ -83,13 +84,20 @@ const MedicationSchedule = () => {
     ? `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월`
     : selectedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
 
+  const takenCount = items.filter(i => i.taken).length;
+
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
       {currentAlarm && <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />}
 
       <header className="tds-header">
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
-          <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
+            <Badge size="small" color={takenCount === items.length ? 'green' : 'blue'} variant="fill">
+              {takenCount}/{items.length}
+            </Badge>
+          </div>
           <button onClick={() => navigate('/setup/time')} className="p-2">
             <Settings className="w-5 h-5 text-muted-foreground" />
           </button>
@@ -152,9 +160,16 @@ const MedicationSchedule = () => {
                             {item.name}
                           </p>
                           <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'}`}>
-                            {item.time} · {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
+                            {item.time}
                           </p>
                         </div>
+                        <Badge
+                          size="xsmall"
+                          color={item.taken ? 'green' : 'elephant'}
+                          variant={item.taken ? 'fill' : 'weak'}
+                        >
+                          {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
+                        </Badge>
                       </div>
                     );
                   })}
