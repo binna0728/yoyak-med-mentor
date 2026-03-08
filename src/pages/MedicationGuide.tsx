@@ -6,7 +6,7 @@ import { ArrowLeft, Volume2, Eye, Download } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import html2canvas from 'html2canvas';
 import { useTranslation } from 'react-i18next';
-import { Badge, FixedBottomCTA, CTAButton } from '@toss/tds-mobile';
+import { Button } from '@/components/ui/button';
 
 const MedicationGuide = () => {
   const { id } = useParams<{ id: string }>();
