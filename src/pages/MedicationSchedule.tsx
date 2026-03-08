@@ -94,9 +94,11 @@ const MedicationSchedule = () => {
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
           <div className="flex items-center gap-2">
             <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
-            <Badge size="small" color={takenCount === items.length ? 'green' : 'blue'} variant="fill">
+            <span className={`inline-flex items-center rounded-full text-xs font-semibold px-2.5 py-0.5 ${
+              takenCount === items.length ? 'bg-primary/10 text-primary' : 'bg-accent text-accent-foreground'
+            }`}>
               {takenCount}/{items.length}
-            </Badge>
+            </span>
           </div>
           <button onClick={() => navigate('/setup/time')} className="p-2">
             <Settings className="w-5 h-5 text-muted-foreground" />
