@@ -2,8 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { isInTossApp, requestTossLogin } from '@/utils/toss';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -14,7 +13,7 @@ const Login = () => {
   const location = useLocation();
   const { toast } = useToast();
 
-  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/dashboard';
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,68 +29,39 @@ const Login = () => {
     }
   };
 
-  const handleTossLogin = async () => {
-    try {
-      await requestTossLogin();
-    } catch {
-      toast({ title: '토스 로그인 불가', description: '토스 앱 내부에서만 사용 가능합니다.', variant: 'destructive' });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-card flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center justify-center h-14 border-b border-border">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">💊</span>
-            <span className="text-lg font-bold text-foreground">요약</span>
-          </div>
-        </div>
-      </header>
-
-      <main className="flex-1 px-5 py-8">
-        <div className="max-w-sm mx-auto lg:max-w-md space-y-8">
-          <div className="text-center space-y-2">
+      <main className="flex-1 flex flex-col justify-center px-6">
+        <div className="max-w-sm mx-auto w-full space-y-8">
+          <div className="text-center space-y-1">
             <h1 className="text-2xl font-bold text-foreground">로그인</h1>
-            <p className="text-muted-foreground text-sm">내 약 정보를 확인하세요</p>
+            <p className="text-muted-foreground text-sm">간편하게 시작하세요</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-muted-foreground">이메일</label>
-              <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input id="email" type="email" placeholder="example@email.com" value={email} onChange={(e) => setEmail(e.target.value)} className="tds-textfield pl-12" required />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-muted-foreground">비밀번호</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} className="tds-textfield pl-12" required />
-              </div>
-            </div>
+            <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} className="tds-textfield" required />
+            <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} className="tds-textfield" required />
 
             <button type="submit" disabled={isLoading} className="tds-button-primary w-full">
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" />로그인 중...</span>
-              ) : '로그인'}
+              {isLoading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" />로그인 중...</span> : '로그인'}
             </button>
           </form>
 
-          {isInTossApp() && (
-            <>
-              <div className="flex items-center gap-4">
-                <div className="flex-1 h-px bg-border" />
-                <span className="text-xs text-muted-foreground">또는</span>
-                <div className="flex-1 h-px bg-border" />
-              </div>
-              <button type="button" onClick={handleTossLogin} className="tds-button-secondary w-full flex items-center justify-center gap-2">
-                토스로 로그인
-              </button>
-            </>
-          )}
+          {/* Social login buttons */}
+          <div className="space-y-3">
+            <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-colors" style={{ backgroundColor: '#FEE500', color: '#191919' }}>
+              <span className="text-xl">💬</span>
+              카카오 로그인
+            </button>
+            <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 border border-border bg-card text-foreground transition-colors hover:bg-muted">
+              <span className="text-xl">G</span>
+              구글 로그인
+            </button>
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground">
+            이 서비스는 약학 정보를 기반으로 안내하며,<br />의사의 진단을 대체하지 않습니다.
+          </p>
 
           <p className="text-center text-sm text-muted-foreground">
             계정이 없으신가요?{' '}
