@@ -122,6 +122,11 @@ const MedicationSchedule = () => {
           </div>
         </div>
 
+        {/* Notification permission prompt */}
+        {!permissionGranted && 'Notification' in window && (
+          <AlarmPermissionPrompt onRequest={requestPermission} />
+        )}
+
         {/* Schedule by period */}
         <div className="space-y-4">
           {periods.map(period => {
