@@ -32,7 +32,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const initAuth = async () => {
       const token = localStorage.getItem('access_token');
       if (token) {
-        await refreshUser();
+        try {
+          await refreshUser();
+        } catch {
+          // If backend is unavailable, use demo user
+          setUser({ id: 'demo', email: 'demo@yoyak.kr', name: '홍길동', gender: 'MALE', birthday: '1960-01-01', phone_number: '01012345678' } as User);
+        }
       }
       setIsLoading(false);
     };
