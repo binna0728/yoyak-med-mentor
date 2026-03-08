@@ -2,50 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
-/* TDS (Toss Design System) Safe Area */
+/* Safe Area */
 :root {
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
   --sar: env(safe-area-inset-right);
-  
-  /* TDS Colors */
-  --tds-blue: #3182F6;
-  --tds-blue-light: #4A93F7;
-  --tds-gray-50: #F9FAFB;
-  --tds-gray-100: #F2F4F6;
-  --tds-gray-200: #E5E8EB;
-  --tds-gray-300: #D1D6DB;
-  --tds-gray-400: #B0B8C1;
-  --tds-gray-500: #8B95A1;
-  --tds-gray-600: #6B7684;
-  --tds-gray-700: #4E5968;
-  --tds-gray-800: #333D4B;
-  --tds-gray-900: #191F28;
+
+  /* Sage Green Palette */
+  --sage-primary: #7C9A7E;
+  --sage-light: #A8C5A0;
+  --sage-dark: #5A7A5C;
+  --sage-bg: #F7FAF7;
+  --sage-text: #1F2D1F;
+  --sage-text-secondary: #6B7F6B;
+  --sage-border: #D4E6D4;
+  --sage-card: #FFFFFF;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 220 13% 15%;
+    --background: 120 18% 97%;
+    --foreground: 120 19% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 13% 15%;
+    --card-foreground: 120 19% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 13% 15%;
+    --popover-foreground: 120 19% 15%;
 
-    --primary: 214 89% 58%;
+    --primary: 123 12% 55%;
     --primary-foreground: 0 0% 100%;
+    --primary-light: 113 23% 70%;
+    --primary-dark: 123 15% 42%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 220 13% 30%;
+    --secondary: 120 18% 95%;
+    --secondary-foreground: 120 19% 25%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 120 14% 94%;
+    --muted-foreground: 120 9% 46%;
 
-    --accent: 214 89% 96%;
-    --accent-foreground: 214 89% 45%;
+    --accent: 120 30% 93%;
+    --accent-foreground: 123 15% 42%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -53,49 +51,51 @@
     --warning: 38 92% 50%;
     --warning-foreground: 38 90% 15%;
 
-    --success: 152 60% 40%;
+    --success: 123 12% 55%;
     --success-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 214 89% 58%;
+    --border: 120 26% 86%;
+    --input: 120 26% 86%;
+    --ring: 123 12% 55%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 214 89% 58%;
+    --sidebar-background: 120 18% 97%;
+    --sidebar-foreground: 120 19% 15%;
+    --sidebar-primary: 123 12% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 214 89% 96%;
-    --sidebar-accent-foreground: 214 89% 45%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 214 89% 58%;
+    --sidebar-accent: 120 30% 93%;
+    --sidebar-accent-foreground: 123 15% 42%;
+    --sidebar-border: 120 26% 86%;
+    --sidebar-ring: 123 12% 55%;
   }
 
   .dark {
-    --background: 220 13% 10%;
+    --background: 120 10% 10%;
     --foreground: 0 0% 95%;
-    --card: 220 13% 14%;
+    --card: 120 10% 14%;
     --card-foreground: 0 0% 95%;
-    --popover: 220 13% 14%;
+    --popover: 120 10% 14%;
     --popover-foreground: 0 0% 95%;
-    --primary: 214 89% 58%;
+    --primary: 123 12% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 13% 20%;
+    --primary-light: 113 23% 70%;
+    --primary-dark: 123 15% 42%;
+    --secondary: 120 10% 20%;
     --secondary-foreground: 0 0% 85%;
-    --muted: 220 13% 18%;
-    --muted-foreground: 220 9% 60%;
-    --accent: 214 89% 22%;
-    --accent-foreground: 214 89% 85%;
+    --muted: 120 10% 18%;
+    --muted-foreground: 120 9% 60%;
+    --accent: 120 15% 22%;
+    --accent-foreground: 120 20% 85%;
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
     --warning: 38 80% 45%;
     --warning-foreground: 38 90% 95%;
-    --success: 152 55% 35%;
+    --success: 123 12% 50%;
     --success-foreground: 0 0% 100%;
-    --border: 220 13% 22%;
-    --input: 220 13% 22%;
-    --ring: 214 89% 58%;
+    --border: 120 10% 22%;
+    --input: 120 10% 22%;
+    --ring: 123 12% 55%;
   }
 }
 
@@ -109,11 +109,25 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
+
+  /* Senior Mode Global */
+  body.senior-mode {
+    font-size: 18px;
+  }
+  body.senior-mode .tds-button-primary,
+  body.senior-mode .tds-button-secondary,
+  body.senior-mode .tds-button-ghost {
+    min-height: 56px;
+    font-size: 1.1rem;
+  }
+  body.senior-mode .tds-textfield {
+    min-height: 56px;
+    font-size: 1.1rem;
+  }
 }
 
 /* TDS Component Styles */
 @layer components {
-  /* Safe Area Padding */
   .safe-area-padding {
     padding-top: var(--sat);
     padding-bottom: var(--sab);
@@ -121,88 +135,106 @@
     padding-right: var(--sar);
   }
 
-  /* TDS Header */
   .tds-header {
-    @apply sticky top-0 z-50 bg-white;
+    @apply sticky top-0 z-50 bg-card;
     padding-top: var(--sat);
   }
 
-  /* TDS TextField */
   .tds-textfield {
-    @apply w-full h-14 px-4 bg-[#F2F4F6] rounded-xl text-base text-[#191F28] placeholder-[#8B95A1];
+    @apply w-full h-14 px-4 rounded-xl text-base placeholder-muted-foreground;
     @apply border-0 outline-none transition-all duration-200;
-    @apply focus:bg-white focus:ring-2 focus:ring-[#3182F6];
+    background-color: hsl(var(--muted));
+    color: hsl(var(--foreground));
+  }
+  .tds-textfield:focus {
+    background-color: hsl(var(--card));
+    box-shadow: 0 0 0 2px hsl(var(--primary));
   }
 
-  /* TDS Button Primary */
   .tds-button-primary {
-    @apply h-14 px-6 rounded-xl font-semibold text-base text-white;
-    @apply bg-[#3182F6] hover:bg-[#1B64DA] active:bg-[#1557B0];
-    @apply disabled:bg-[#E5E8EB] disabled:text-[#B0B8C1] disabled:cursor-not-allowed;
+    @apply h-14 px-6 rounded-xl font-semibold text-base;
     @apply transition-all duration-200;
+    @apply disabled:opacity-40 disabled:cursor-not-allowed;
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+  .tds-button-primary:hover:not(:disabled) {
+    background-color: hsl(var(--primary-dark));
+  }
+  .tds-button-primary:active:not(:disabled) {
+    background-color: hsl(var(--primary-dark));
   }
 
-  /* TDS Button Secondary */
   .tds-button-secondary {
-    @apply h-14 px-6 rounded-xl font-semibold text-base text-[#3182F6];
-    @apply bg-[#E8F3FF] hover:bg-[#D4E8FF] active:bg-[#C0DCFF];
+    @apply h-14 px-6 rounded-xl font-semibold text-base;
     @apply transition-all duration-200;
+    background-color: hsl(var(--accent));
+    color: hsl(var(--primary-dark));
+  }
+  .tds-button-secondary:hover {
+    background-color: hsl(var(--primary-light) / 0.3);
   }
 
-  /* TDS Button Ghost */
   .tds-button-ghost {
-    @apply h-12 px-4 rounded-lg font-medium text-sm text-[#6B7684];
-    @apply bg-transparent hover:bg-[#F2F4F6] active:bg-[#E5E8EB];
-    @apply transition-all duration-200;
+    @apply h-12 px-4 rounded-lg font-medium text-sm;
+    @apply bg-transparent transition-all duration-200;
+    color: hsl(var(--muted-foreground));
+  }
+  .tds-button-ghost:hover {
+    background-color: hsl(var(--muted));
   }
 
-  /* TDS Chip */
   .tds-chip {
-    @apply h-12 px-4 rounded-xl font-medium text-sm text-[#6B7684];
-    @apply bg-[#F2F4F6] border-2 border-transparent;
-    @apply transition-all duration-200;
+    @apply h-12 px-4 rounded-xl font-medium text-sm;
+    @apply border-2 border-transparent transition-all duration-200;
+    background-color: hsl(var(--muted));
+    color: hsl(var(--muted-foreground));
   }
   .tds-chip.active {
-    @apply bg-[#E8F3FF] text-[#3182F6] border-[#3182F6];
+    background-color: hsl(var(--accent));
+    color: hsl(var(--primary-dark));
+    border-color: hsl(var(--primary));
   }
 
-  /* TDS Bottom Navigation */
   .tds-bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E8EB];
+    @apply fixed bottom-0 left-0 right-0 bg-card;
     @apply flex items-center justify-around h-16;
+    border-top: 1px solid hsl(var(--border));
     padding-bottom: var(--sab);
   }
 
-  /* TDS Nav Item */
   .tds-nav-item {
-    @apply flex flex-col items-center justify-center gap-1 py-2 px-4 text-[#8B95A1];
+    @apply flex flex-col items-center justify-center gap-1 py-2 px-4;
     @apply transition-colors duration-200;
+    color: hsl(var(--muted-foreground));
   }
   .tds-nav-item.active {
-    @apply text-[#3182F6];
+    color: hsl(var(--primary));
   }
   .tds-nav-item span {
     @apply text-xs font-medium;
   }
 
-  /* TDS Card */
   .tds-card {
-    @apply bg-white rounded-2xl p-5 shadow-sm;
+    @apply bg-card rounded-2xl p-5 shadow-sm;
+    border: 1px solid hsl(var(--border));
   }
 
-  /* TDS List Item */
   .tds-list-item {
-    @apply flex items-center justify-between py-4 px-5 bg-white;
-    @apply border-b border-[#F2F4F6] last:border-b-0;
+    @apply flex items-center justify-between py-4 px-5 bg-card;
+    border-bottom: 1px solid hsl(var(--muted));
+  }
+  .tds-list-item:last-child {
+    border-bottom: 0;
   }
 }
 
-/* Focus styles for accessibility */
+/* Focus styles */
 *:focus-visible {
   @apply outline-2 outline-offset-2 outline-ring ring-0;
 }
 
-/* Print CSS for emergency card */
+/* Print CSS */
 @media print {
   body * { visibility: hidden; }
   .emergency-card, .emergency-card * { visibility: visible; }
@@ -220,13 +252,18 @@
 .app-content {
   padding-bottom: 5rem;
 }
-@media (min-width: 768px) {
+
+/* Responsive: desktop hides bottom nav, shows top nav */
+@media (min-width: 1024px) {
+  .tds-bottom-nav {
+    display: none;
+  }
   .app-content {
     padding-bottom: 0;
   }
 }
 
-/* WebView specific adjustments */
+/* WebView adjustments */
 @supports (padding-top: env(safe-area-inset-top)) {
   .safe-area-padding {
     padding-top: env(safe-area-inset-top);
