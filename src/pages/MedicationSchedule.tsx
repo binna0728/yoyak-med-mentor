@@ -78,6 +78,11 @@ const MedicationSchedule = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
+      {/* Alarm banner */}
+      {currentAlarm && (
+        <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />
+      )}
+
       <header className="tds-header">
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
           <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>복약 스케줄</h1>
