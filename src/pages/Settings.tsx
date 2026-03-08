@@ -5,6 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ArrowLeft, ChevronRight, Bell, Eye, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
+import { Border } from '@toss/tds-mobile';
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -65,17 +66,19 @@ const Settings = () => {
           <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         </div>
 
-        {/* Settings groups */}
+        {/* Notification & Display */}
         <div>
           <p className={`text-muted-foreground font-medium mb-2 px-1 ${sr ? 'text-base' : 'text-xs'}`}>{t('settings.notifDisplay')}</p>
           <div className="rounded-2xl border border-border overflow-hidden">
-            <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'} border-b border-muted`}>
+            <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
                 <Bell className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 <span className={`text-foreground font-medium ${sr ? 'text-lg' : 'text-base'}`}>{t('settings.medAlarm')}</span>
               </div>
               <Toggle on={notificationOn} onToggle={() => setNotificationOn(v => !v)} />
             </div>
+
+            <Border variant="padding24" />
 
             <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
@@ -108,16 +111,19 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Account */}
         <div>
           <p className={`text-muted-foreground font-medium mb-2 px-1 ${sr ? 'text-base' : 'text-xs'}`}>{t('settings.account')}</p>
           <div className="rounded-2xl border border-border overflow-hidden">
-            <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'} border-b border-muted`}>
+            <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
                 <User className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 <span className={`text-foreground font-medium ${sr ? 'text-lg' : 'text-base'}`}>{t('settings.accountMgmt')}</span>
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
+
+            <Border variant="padding24" />
 
             <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
@@ -128,6 +134,8 @@ const Settings = () => {
             </button>
           </div>
         </div>
+
+        <Border variant="height16" />
 
         <button
           onClick={handleLogout}

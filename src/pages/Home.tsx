@@ -5,6 +5,7 @@ import { Camera, CalendarDays, Bot, BookOpen, Sun } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
+import { Badge } from '@toss/tds-mobile';
 
 const Home = () => {
   const { user } = useAuth();
@@ -29,6 +30,13 @@ const Home = () => {
   ];
 
   const sr = isSeniorMode;
+
+  const scheduleItems = [
+    { time: t('home.morning'), name: '혈압약 (아모잘탄)', taken: true },
+    { time: t('home.afternoon'), name: '비타민D', taken: false },
+    { time: t('home.evening'), name: '혈당약 (메트포르민)', taken: false },
+    { time: t('home.bedtime'), name: '수면보조제', taken: false },
+  ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
@@ -58,9 +66,9 @@ const Home = () => {
             <h2 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-base'}`}>
               {t('home.todayStatus')}
             </h2>
-            <span className={`font-bold text-primary ${sr ? 'text-xl' : 'text-sm'}`}>
+            <Badge size="small" color="green" variant="fill">
               {takenMeds}/{totalMeds}
-            </span>
+            </Badge>
           </div>
           <Progress value={progressValue} className="h-3 bg-muted" />
           <p className={`text-muted-foreground mt-2 ${sr ? 'text-base' : 'text-xs'}`}>
@@ -90,12 +98,7 @@ const Home = () => {
             {t('home.todaySchedule')}
           </h2>
           <div className="space-y-2">
-            {[
-              { time: t('home.morning'), name: '혈압약 (아모잘탄)', taken: true },
-              { time: t('home.afternoon'), name: '비타민D', taken: false },
-              { time: t('home.evening'), name: '혈당약 (메트포르민)', taken: false },
-              { time: t('home.bedtime'), name: '수면보조제', taken: false },
-            ].map((item, idx) => (
+            {scheduleItems.map((item, idx) => (
               <div key={idx} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
                 <div className={`rounded-full flex items-center justify-center flex-shrink-0 ${
                   item.taken ? 'bg-primary' : 'bg-muted'
@@ -110,12 +113,13 @@ const Home = () => {
                     {item.name}
                   </p>
                 </div>
-                <button
-                  onClick={() => navigate('/schedule')}
-                  className={`text-primary font-medium flex-shrink-0 ${sr ? 'text-base' : 'text-xs'}`}
+                <Badge
+                  size="xsmall"
+                  color={item.taken ? 'green' : 'elephant'}
+                  variant={item.taken ? 'fill' : 'weak'}
                 >
                   {item.taken ? t('home.done') : t('home.confirm')}
-                </button>
+                </Badge>
               </div>
             ))}
           </div>

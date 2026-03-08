@@ -1,6 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
+import { FixedBottomCTA, CTAButton } from '@toss/tds-mobile';
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -24,17 +25,19 @@ const Onboarding = () => {
         <div className="w-32 h-32 rounded-3xl bg-accent flex items-center justify-center mb-12">
           <span className="text-6xl">💊</span>
         </div>
-
-        <button onClick={() => navigate('/login')} className="tds-button-primary w-full max-w-xs">
-          {t('app.start')}
-        </button>
       </div>
 
-      <div className="flex items-center justify-center gap-2 pb-8">
+      <div className="flex items-center justify-center gap-2 pb-4">
         <div className="w-2 h-2 rounded-full bg-primary" />
         <div className="w-2 h-2 rounded-full bg-border" />
         <div className="w-2 h-2 rounded-full bg-border" />
       </div>
+
+      <FixedBottomCTA>
+        <CTAButton onClick={() => navigate('/login')}>
+          {t('app.start')}
+        </CTAButton>
+      </FixedBottomCTA>
     </div>
   );
 };
