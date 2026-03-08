@@ -32,9 +32,10 @@ const PrescriptionCamera = () => {
       <input ref={cameraRef} type="file" accept="image/*" capture="environment" onChange={onInput} className="hidden" />
       <input ref={fileRef} type="file" accept="image/*" onChange={onInput} className="hidden" />
 
-      <div className="flex-1 w-full flex flex-col items-center justify-center text-primary-foreground px-6">
-        <div className="w-64 h-40 border-4 border-primary-foreground/50 rounded-2xl mb-6" />
-        <p className="text-center text-lg font-medium">처방전/약봉투를<br />프레임 안에 넣어주세요</p>
+      <div className="flex-1 w-full flex flex-col items-center justify-center text-primary-foreground px-4">
+        <div className="w-[85vw] h-[60vh] border-4 border-dashed border-primary-foreground/60 rounded-3xl mb-4 flex items-center justify-center">
+          <p className="text-center text-lg font-medium opacity-80">처방전/약봉투를<br />프레임 안에 넣어주세요</p>
+        </div>
       </div>
 
       <div className="pb-12 pt-6 flex flex-col items-center gap-4 w-full px-6">
