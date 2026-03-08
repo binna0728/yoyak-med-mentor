@@ -6,6 +6,7 @@ import BottomNav from '@/components/BottomNav';
 import AlarmBanner from '@/components/AlarmBanner';
 import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
+import { useTranslation } from 'react-i18next';
 
 interface ScheduleItem {
   time: string;
@@ -17,14 +18,14 @@ interface ScheduleItem {
 const MedicationSchedule = () => {
   const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
+  const { t, i18n } = useTranslation();
 
-  // Week calendar state
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
 
   const getWeekDays = (base: Date) => {
     const start = new Date(base);
-    start.setDate(start.getDate() - start.getDay() + 1); // Monday
+    start.setDate(start.getDate() - start.getDay() + 1);
     return Array.from({ length: 7 }, (_, i) => {
       const d = new Date(start);
       d.setDate(start.getDate() + i);
@@ -33,7 +34,10 @@ const MedicationSchedule = () => {
   };
 
   const weekDays = getWeekDays(selectedDate);
-  const dayLabels = ['월', '화', '수', '목', '금', '토', '일'];
+  const dayLabels = [
+    t('schedule.dayMon'), t('schedule.dayTue'), t('schedule.dayWed'),
+    t('schedule.dayThu'), t('schedule.dayFri'), t('schedule.daySat'), t('schedule.daySun')
+  ];
 
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
@@ -50,7 +54,6 @@ const MedicationSchedule = () => {
     setItems(prev => prev.map((item, i) => i === idx ? { ...item, taken: !item.taken } : item));
   };
 
-  // Alarm system
   const alarmItems = items
     .filter(i => !i.taken)
     .map((item, idx) => ({
@@ -64,10 +67,10 @@ const MedicationSchedule = () => {
     useMedicationAlarm(alarmItems);
 
   const periods = [
-    { key: 'morning', label: '🌅 아침', color: 'bg-accent' },
-    { key: 'afternoon', label: '☀️ 점심', color: 'bg-accent' },
-    { key: 'evening', label: '🌆 저녁', color: 'bg-accent' },
-    { key: 'bedtime', label: '🌙 취침 전', color: 'bg-accent' },
+    { key: 'morning', label: t('schedule.morning'), color: 'bg-accent' },
+    { key: 'afternoon', label: t('schedule.afternoon'), color: 'bg-accent' },
+    { key: 'evening', label: t('schedule.evening'), color: 'bg-accent' },
+    { key: 'bedtime', label: t('schedule.bedtime'), color: 'bg-accent' },
   ];
 
   const shiftWeek = (dir: number) => {
@@ -76,16 +79,17 @@ const MedicationSchedule = () => {
     setSelectedDate(d);
   };
 
+  const monthLabel = i18n.language === 'ko'
+    ? `${selectedDate.getFullYear()}년 ${selectedDate.getMonth() + 1}월`
+    : selectedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      {/* Alarm banner */}
-      {currentAlarm && (
-        <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />
-      )}
+      {currentAlarm && <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />}
 
       <header className="tds-header">
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
-          <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>복약 스케줄</h1>
+          <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
           <button onClick={() => navigate('/setup/time')} className="p-2">
             <Settings className="w-5 h-5 text-muted-foreground" />
           </button>
@@ -93,13 +97,10 @@ const MedicationSchedule = () => {
       </header>
 
       <main className="flex-1 px-5 py-4 pb-24 overflow-y-auto max-w-3xl mx-auto w-full">
-        {/* Week calendar */}
         <div className="tds-card mb-5 p-3">
           <div className="flex items-center justify-between mb-3">
             <button onClick={() => shiftWeek(-1)} className="p-1"><ChevronLeft className="w-5 h-5 text-muted-foreground" /></button>
-            <span className={`font-semibold text-foreground ${sr ? 'text-lg' : 'text-sm'}`}>
-              {selectedDate.getFullYear()}년 {selectedDate.getMonth() + 1}월
-            </span>
+            <span className={`font-semibold text-foreground ${sr ? 'text-lg' : 'text-sm'}`}>{monthLabel}</span>
             <button onClick={() => shiftWeek(1)} className="p-1"><ChevronRight className="w-5 h-5 text-muted-foreground" /></button>
           </div>
           <div className="grid grid-cols-7 gap-1">
@@ -122,12 +123,10 @@ const MedicationSchedule = () => {
           </div>
         </div>
 
-        {/* Notification permission prompt */}
         {!permissionGranted && 'Notification' in window && (
           <AlarmPermissionPrompt onRequest={requestPermission} />
         )}
 
-        {/* Schedule by period */}
         <div className="space-y-4">
           {periods.map(period => {
             const periodItems = items.filter(i => i.period === period.key);
@@ -139,11 +138,7 @@ const MedicationSchedule = () => {
                   {periodItems.map((item) => {
                     const realIdx = items.indexOf(item);
                     return (
-                      <div
-                        key={realIdx}
-                        className="tds-card flex items-center gap-3"
-                        style={sr ? { padding: '20px' } : undefined}
-                      >
+                      <div key={realIdx} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
                         <button
                           onClick={() => toggleTaken(realIdx)}
                           className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
@@ -157,7 +152,7 @@ const MedicationSchedule = () => {
                             {item.name}
                           </p>
                           <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'}`}>
-                            {item.time} · {item.taken ? '복용 완료 ✅' : '복용 전'}
+                            {item.time} · {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
                           </p>
                         </div>
                       </div>
@@ -170,11 +165,10 @@ const MedicationSchedule = () => {
         </div>
 
         <p className={`text-center text-muted-foreground mt-8 ${sr ? 'text-base' : 'text-xs'}`}>
-          ※ 복약 안내는 참고용이며, 정확한 복용은 의사·약사와 상담하세요.
+          {t('schedule.disclaimer')}
         </p>
       </main>
 
-      {/* FAB add button */}
       <button
         onClick={() => navigate('/capture')}
         className={`fixed z-50 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-90 transition-transform ${

@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,6 +13,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
 
@@ -20,10 +22,10 @@ const Login = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      toast({ title: '로그인 성공', description: '환영합니다!' });
+      toast({ title: t('auth.loginSuccess'), description: t('auth.loginSuccessDesc') });
       navigate(from, { replace: true });
     } catch (error: any) {
-      toast({ title: '로그인 실패', description: error.response?.data?.detail || '이메일 또는 비밀번호를 확인해주세요.', variant: 'destructive' });
+      toast({ title: t('auth.loginFailed'), description: error.response?.data?.detail || t('auth.loginFailedDesc'), variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -34,38 +36,37 @@ const Login = () => {
       <main className="flex-1 flex flex-col justify-center px-6">
         <div className="max-w-sm mx-auto w-full space-y-8">
           <div className="text-center space-y-1">
-            <h1 className="text-2xl font-bold text-foreground">로그인</h1>
-            <p className="text-muted-foreground text-sm">간편하게 시작하세요</p>
+            <h1 className="text-2xl font-bold text-foreground">{t('auth.login')}</h1>
+            <p className="text-muted-foreground text-sm">{t('auth.loginSubtitle')}</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="email" placeholder="이메일" value={email} onChange={(e) => setEmail(e.target.value)} className="tds-textfield" required />
-            <input type="password" placeholder="비밀번호" value={password} onChange={(e) => setPassword(e.target.value)} className="tds-textfield" required />
+            <input type="email" placeholder={t('auth.email')} value={email} onChange={(e) => setEmail(e.target.value)} className="tds-textfield" required />
+            <input type="password" placeholder={t('auth.password')} value={password} onChange={(e) => setPassword(e.target.value)} className="tds-textfield" required />
 
             <button type="submit" disabled={isLoading} className="tds-button-primary w-full">
-              {isLoading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" />로그인 중...</span> : '로그인'}
+              {isLoading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" />{t('auth.loggingIn')}</span> : t('auth.login')}
             </button>
           </form>
 
-          {/* Social login buttons */}
           <div className="space-y-3">
             <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-colors" style={{ backgroundColor: '#FEE500', color: '#191919' }}>
               <span className="text-xl">💬</span>
-              카카오 로그인
+              {t('auth.kakaoLogin')}
             </button>
             <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 border border-border bg-card text-foreground transition-colors hover:bg-muted">
               <span className="text-xl">G</span>
-              구글 로그인
+              {t('auth.googleLogin')}
             </button>
           </div>
 
-          <p className="text-center text-xs text-muted-foreground">
-            이 서비스는 약학 정보를 기반으로 안내하며,<br />의사의 진단을 대체하지 않습니다.
+          <p className="text-center text-xs text-muted-foreground whitespace-pre-line">
+            {t('auth.disclaimer')}
           </p>
 
           <p className="text-center text-sm text-muted-foreground">
-            계정이 없으신가요?{' '}
-            <Link to="/signup" className="text-primary font-medium">회원가입</Link>
+            {t('auth.noAccount')}{' '}
+            <Link to="/signup" className="text-primary font-medium">{t('auth.signup')}</Link>
           </p>
         </div>
       </main>

@@ -4,48 +4,48 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { Camera, CalendarDays, Bot, BookOpen, Sun } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
   const { user } = useAuth();
   const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const today = new Date();
-  const dateStr = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+  const dateStr = i18n.language === 'ko'
+    ? `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`
+    : today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-  // Demo schedule data
   const totalMeds = 4;
   const takenMeds = 1;
   const progressValue = (takenMeds / totalMeds) * 100;
 
   const quickActions = [
-    { icon: Camera, label: '약 촬영 인식', desc: '카메라로 약 확인', to: '/capture', emoji: '📷' },
-    { icon: CalendarDays, label: '복약 스케줄', desc: '오늘 복용 확인', to: '/schedule', emoji: '📋' },
-    { icon: Bot, label: 'AI 상담', desc: '궁금한 점 질문', to: '/ai-chat', emoji: '🤖' },
-    { icon: BookOpen, label: '복약 가이드', desc: '최근 약 정보', to: '/guide/demo-1', emoji: '📖' },
+    { icon: Camera, label: t('home.pillScan'), desc: t('home.pillScanDesc'), to: '/capture', emoji: '📷' },
+    { icon: CalendarDays, label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
+    { icon: Bot, label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
+    { icon: BookOpen, label: t('home.medGuide'), desc: t('home.medGuideDesc'), to: '/guide/demo-1', emoji: '📖' },
   ];
 
   const sr = isSeniorMode;
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      {/* Header */}
       <header className="tds-header">
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div>
             <h1 className={`font-bold text-foreground ${sr ? 'text-2xl' : 'text-lg'}`}>
-              {user?.name || '사용자'}님 안녕하세요 👋
+              {t('home.greeting', { name: user?.name || t('common.user') })}
             </h1>
             <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'} mt-0.5`}>{dateStr}</p>
           </div>
           <button
             onClick={toggleSeniorMode}
             className={`flex items-center justify-center rounded-full transition-all ${
-              sr
-                ? 'w-14 h-14 bg-primary text-primary-foreground'
-                : 'w-10 h-10 bg-accent text-primary'
+              sr ? 'w-14 h-14 bg-primary text-primary-foreground' : 'w-10 h-10 bg-accent text-primary'
             }`}
-            title="시니어모드"
+            title={t('home.seniorMode')}
           >
             <Sun className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
           </button>
@@ -53,11 +53,10 @@ const Home = () => {
       </header>
 
       <main className={`flex-1 px-5 py-5 pb-24 overflow-y-auto max-w-3xl mx-auto w-full ${sr ? 'space-y-6' : 'space-y-5'}`}>
-        {/* Today's medication status card */}
         <div className="tds-card">
           <div className="flex items-center justify-between mb-3">
             <h2 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-base'}`}>
-              오늘 복약 현황
+              {t('home.todayStatus')}
             </h2>
             <span className={`font-bold text-primary ${sr ? 'text-xl' : 'text-sm'}`}>
               {takenMeds}/{totalMeds}
@@ -65,11 +64,10 @@ const Home = () => {
           </div>
           <Progress value={progressValue} className="h-3 bg-muted" />
           <p className={`text-muted-foreground mt-2 ${sr ? 'text-base' : 'text-xs'}`}>
-            총 {totalMeds}개 중 {takenMeds}개 복용 완료
+            {t('home.statusSummary', { total: totalMeds, taken: takenMeds })}
           </p>
         </div>
 
-        {/* Quick action grid 2x2 */}
         <div className="grid grid-cols-2 gap-3">
           {quickActions.map(({ label, desc, to, emoji }) => (
             <button
@@ -87,17 +85,16 @@ const Home = () => {
           ))}
         </div>
 
-        {/* Today's schedule preview */}
         <div>
           <h2 className={`font-bold text-foreground mb-3 ${sr ? 'text-xl' : 'text-base'}`}>
-            오늘 복약 일정
+            {t('home.todaySchedule')}
           </h2>
           <div className="space-y-2">
             {[
-              { time: '오전 9:00', name: '혈압약 (아모잘탄)', taken: true },
-              { time: '오후 1:00', name: '비타민D', taken: false },
-              { time: '저녁 7:00', name: '혈당약 (메트포르민)', taken: false },
-              { time: '취침 전', name: '수면보조제', taken: false },
+              { time: t('home.morning'), name: '혈압약 (아모잘탄)', taken: true },
+              { time: t('home.afternoon'), name: '비타민D', taken: false },
+              { time: t('home.evening'), name: '혈당약 (메트포르민)', taken: false },
+              { time: t('home.bedtime'), name: '수면보조제', taken: false },
             ].map((item, idx) => (
               <div key={idx} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
                 <div className={`rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -117,7 +114,7 @@ const Home = () => {
                   onClick={() => navigate('/schedule')}
                   className={`text-primary font-medium flex-shrink-0 ${sr ? 'text-base' : 'text-xs'}`}
                 >
-                  {item.taken ? '완료' : '확인 →'}
+                  {item.taken ? t('home.done') : t('home.confirm')}
                 </button>
               </div>
             ))}

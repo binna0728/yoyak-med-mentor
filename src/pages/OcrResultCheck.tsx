@@ -4,6 +4,7 @@ import { ArrowLeft, Volume2 } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface OcrItem {
   name: string;
@@ -18,6 +19,7 @@ const OcrResultCheck = () => {
   const { isSeniorMode: sr } = useSeniorMode();
   const [items, setItems] = useState<OcrItem[]>([]);
   const [ttsLoading, setTtsLoading] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const stored = localStorage.getItem('ocr_result');
@@ -25,15 +27,11 @@ const OcrResultCheck = () => {
   }, []);
 
   const handleGuide = (item: OcrItem) => {
-    // Create a demo guide and navigate
     const demoId = `ocr-${Date.now()}`;
     localStorage.setItem(`guide_${demoId}`, JSON.stringify({
-      id: demoId,
-      name: item.name,
-      effect: 'AI가 분석한 효능 정보',
-      dosage: `${item.dosage}, ${item.frequency}`,
-      schedule: item.schedule,
-      warning: 'AI가 분석한 주의사항',
+      id: demoId, name: item.name,
+      effect: 'AI가 분석한 효능 정보', dosage: `${item.dosage}, ${item.frequency}`,
+      schedule: item.schedule, warning: 'AI가 분석한 주의사항',
       side_effect: 'AI가 분석한 부작용 정보',
       patient_explanation: `${item.name}은 ${item.schedule}에 ${item.dosage}씩 드시면 됩니다.`,
       created_at: new Date().toISOString(),
@@ -44,12 +42,10 @@ const OcrResultCheck = () => {
   const handleTTS = async () => {
     if (items.length === 0) return;
     setTtsLoading(true);
-
     const text = items.map(item =>
       `${item.name}. ${item.dosage}, ${item.frequency}, ${item.schedule}에 복용하세요. 기간은 ${item.duration}입니다.`
     ).join(' ');
 
-    // Try API first, fallback to Web Speech
     try {
       const result = await medicineApi.getTTS('ocr-result');
       const audio = new Audio(result.audio_url);
@@ -62,7 +58,7 @@ const OcrResultCheck = () => {
         utter.onend = () => setTtsLoading(false);
         window.speechSynthesis.speak(utter);
       } else {
-        toast.error('음성 재생을 지원하지 않는 환경입니다.');
+        toast.error(t('ttsPlayer.notSupported'));
       }
     } finally {
       setTtsLoading(false);
@@ -84,10 +80,10 @@ const OcrResultCheck = () => {
       <main className="flex-1 px-5 py-6 pb-44 overflow-y-auto">
         <div className="max-w-lg mx-auto">
           <h1 className={`font-bold text-foreground ${sr ? 'text-2xl mb-2' : 'text-lg mb-1'}`}>
-            추출된 복용 정보를
+            {t('ocr.extractedInfo')}
           </h1>
           <p className={`font-bold text-foreground ${sr ? 'text-2xl mb-8' : 'text-lg mb-6'}`}>
-            확인해주세요
+            {t('ocr.pleaseCheck')}
           </p>
 
           <div className="space-y-3">
@@ -99,19 +95,19 @@ const OcrResultCheck = () => {
                 </div>
                 <div className={`grid grid-cols-2 gap-3 ${sr ? 'text-base' : 'text-sm'}`}>
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-muted-foreground text-xs mb-0.5">1회 복용량</p>
+                    <p className="text-muted-foreground text-xs mb-0.5">{t('ocr.singleDose')}</p>
                     <p className="text-foreground font-medium">{item.dosage}</p>
                   </div>
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-muted-foreground text-xs mb-0.5">1일 횟수</p>
+                    <p className="text-muted-foreground text-xs mb-0.5">{t('ocr.dailyFrequency')}</p>
                     <p className="text-foreground font-medium">{item.frequency}</p>
                   </div>
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-muted-foreground text-xs mb-0.5">기간</p>
+                    <p className="text-muted-foreground text-xs mb-0.5">{t('ocr.duration')}</p>
                     <p className="text-foreground font-medium">{item.duration}</p>
                   </div>
                   <div className="bg-muted rounded-xl p-3">
-                    <p className="text-muted-foreground text-xs mb-0.5">복용 시간</p>
+                    <p className="text-muted-foreground text-xs mb-0.5">{t('ocr.dosageTime')}</p>
                     <p className="text-foreground font-medium">{item.schedule}</p>
                   </div>
                 </div>
@@ -121,27 +117,19 @@ const OcrResultCheck = () => {
         </div>
       </main>
 
-      {/* Bottom actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-lg mx-auto space-y-2">
           <div className="flex gap-3">
             <button onClick={() => navigate('/result/edit')} className="tds-button-secondary flex-1">
-              수정
+              {t('ocr.edit')}
             </button>
-            <button
-              onClick={() => items[0] && handleGuide(items[0])}
-              className="tds-button-primary flex-1"
-            >
-              복약 가이드 보기
+            <button onClick={() => items[0] && handleGuide(items[0])} className="tds-button-primary flex-1">
+              {t('ocr.viewGuide')}
             </button>
           </div>
-          <button
-            onClick={handleTTS}
-            disabled={ttsLoading}
-            className="tds-button-secondary w-full flex items-center justify-center gap-2"
-          >
+          <button onClick={handleTTS} disabled={ttsLoading} className="tds-button-secondary w-full flex items-center justify-center gap-2">
             <Volume2 className="w-5 h-5" />
-            {ttsLoading ? 'TTS 준비 중...' : 'TTS로 듣기'}
+            {ttsLoading ? t('ocr.ttsLoading') : t('ocr.listenTTS')}
           </button>
         </div>
       </div>
