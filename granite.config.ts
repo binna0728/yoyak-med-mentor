@@ -1,9 +1,9 @@
 import { defineConfig } from '@apps-in-toss/web-framework/config';
 
 export default defineConfig({
-  appName: 'ai-healthcare',
+  appName: 'yoyak',
   brand: {
-    displayName: 'AI 헬스케어',
+    displayName: '요약',
     primaryColor: '#3182F6',
     icon: '',
   },
