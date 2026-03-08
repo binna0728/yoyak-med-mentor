@@ -37,19 +37,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('access_token');
-      if (token) {
+      if (token && token !== 'demo_token') {
         try {
           await refreshUser();
         } catch {
           // ignore
         }
-        // If refreshUser didn't set a user (backend down), use demo
-        setUser(prev => prev ?? DEMO_USER);
-      } else {
-        // No token at all — set demo user so preview works without backend
-        localStorage.setItem('access_token', 'demo_token');
+      } else if (token === 'demo_token') {
         setUser(DEMO_USER);
       }
+      // 토큰 없으면 비로그인 상태 유지 (온보딩 표시)
       setIsLoading(false);
     };
 
