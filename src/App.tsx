@@ -9,6 +9,8 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
+import Guide from "./pages/Guide";
+import PatientMode from "./pages/PatientMode";
 import MyPage from "./pages/MyPage";
 import NotFound from "./pages/NotFound";
 
@@ -30,6 +32,22 @@ const App = () => (
               element={
                 <PrivateRoute>
                   <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/guide/:id"
+              element={
+                <PrivateRoute>
+                  <Guide />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/guide/:id/patient"
+              element={
+                <PrivateRoute>
+                  <PatientMode />
                 </PrivateRoute>
               }
             />
