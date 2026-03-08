@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Settings, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import AlarmBanner from '@/components/AlarmBanner';
+import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
+import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 
 interface ScheduleItem {
   time: string;
