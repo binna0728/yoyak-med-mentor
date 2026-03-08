@@ -1,7 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { FixedBottomCTA, CTAButton } from '@toss/tds-mobile';
+import { Button } from '@/components/ui/button';
 
 const Onboarding = () => {
   const navigate = useNavigate();
