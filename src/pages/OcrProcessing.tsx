@@ -37,18 +37,18 @@ const OcrProcessing = () => {
         try {
           const result = await medicineApi.recognizePill(state.image);
           localStorage.setItem('ocr_result', JSON.stringify([{
-            name: result.medicine_name, dosage: '1회 1정', frequency: '1일 2회', duration: '7일', schedule: '식후',
+            name: result.medicine_name, dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.twice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal'),
           }]));
         } catch {
           localStorage.setItem('ocr_result', JSON.stringify([
-            { name: '타이레놀 500mg', dosage: '1회 1정', frequency: '1일 3회', duration: '5일', schedule: '식후 30분' },
-            { name: '아목시실린 250mg', dosage: '1회 1캡슐', frequency: '1일 3회', duration: '7일', schedule: '식후' },
+            { name: t('sampleMeds.tylenol'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days5'), schedule: t('sampleMeds.afterMeal30') },
+            { name: t('sampleMeds.amoxicillin'), dosage: t('sampleMeds.dose1capsule'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal') },
           ]));
         }
       } else {
         localStorage.setItem('ocr_result', JSON.stringify([
-          { name: '아모잘탄정 5/50mg', dosage: '1회 1정', frequency: '1일 1회', duration: '30일', schedule: '아침 식후' },
-          { name: '로수바스타틴 10mg', dosage: '1회 1정', frequency: '1일 1회', duration: '30일', schedule: '저녁 식후' },
+          { name: t('sampleMeds.amozaltan'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealMorning') },
+          { name: t('sampleMeds.rosuvastatin'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealEvening') },
         ]));
       }
     };

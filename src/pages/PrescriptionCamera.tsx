@@ -61,8 +61,8 @@ const PrescriptionCamera = () => {
     navigate('/processing');
     setTimeout(() => {
       localStorage.setItem('ocr_result', JSON.stringify([
-        { name: '아모잘탄정', dosage: '1회 1정', frequency: '1일 1회', duration: '30일', schedule: '아침 식후' },
-        { name: '로수바스타틴정', dosage: '1회 1정', frequency: '1일 1회', duration: '30일', schedule: '저녁 식후' },
+        { name: t('sampleMeds.amozaltanFull'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealMorning') },
+        { name: t('sampleMeds.rosuvastatinFull'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealEvening') },
       ]));
       navigate('/result/check', { replace: true });
     }, 2500);

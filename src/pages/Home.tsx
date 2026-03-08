@@ -32,10 +32,10 @@ const Home = () => {
   const sr = isSeniorMode;
 
   const scheduleItems = [
-    { time: t('home.morning'), name: '혈압약 (아모잘탄)', taken: true },
-    { time: t('home.afternoon'), name: '비타민D', taken: false },
-    { time: t('home.evening'), name: '혈당약 (메트포르민)', taken: false },
-    { time: t('home.bedtime'), name: '수면보조제', taken: false },
+    { time: t('home.morning'), name: t('sampleMeds.bloodPressure'), taken: true },
+    { time: t('home.afternoon'), name: t('sampleMeds.vitaminD'), taken: false },
+    { time: t('home.evening'), name: t('sampleMeds.diabetesMed'), taken: false },
+    { time: t('home.bedtime'), name: t('sampleMeds.sleepAid'), taken: false },
   ];
 
   return (
