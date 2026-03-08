@@ -30,10 +30,10 @@ const OcrResultCheck = () => {
     const demoId = `ocr-${Date.now()}`;
     localStorage.setItem(`guide_${demoId}`, JSON.stringify({
       id: demoId, name: item.name,
-      effect: 'AI가 분석한 효능 정보', dosage: `${item.dosage}, ${item.frequency}`,
-      schedule: item.schedule, warning: 'AI가 분석한 주의사항',
-      side_effect: 'AI가 분석한 부작용 정보',
-      patient_explanation: `${item.name}은 ${item.schedule}에 ${item.dosage}씩 드시면 됩니다.`,
+      effect: t('ocr.aiAnalyzedEffect'), dosage: `${item.dosage}, ${item.frequency}`,
+      schedule: item.schedule, warning: t('ocr.aiAnalyzedWarning'),
+      side_effect: t('ocr.aiAnalyzedSideEffect'),
+      patient_explanation: t('ocr.aiPatientExplanation', { name: item.name, schedule: item.schedule, dosage: item.dosage }),
       created_at: new Date().toISOString(),
     }));
     navigate(`/guide/${demoId}`);
