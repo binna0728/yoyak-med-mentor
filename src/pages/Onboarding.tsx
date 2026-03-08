@@ -2,6 +2,7 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import pillCharacter from '@/assets/pill-character.png';
 
 const Onboarding = () => {
   const navigate = useNavigate();
