@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import authApi from '@/api/auth';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -25,10 +26,20 @@ const Login = () => {
       toast({ title: t('auth.loginSuccess'), description: t('auth.loginSuccessDesc') });
       navigate(from, { replace: true });
     } catch (error: any) {
-      toast({ title: t('auth.loginFailed'), description: error.response?.data?.detail || t('auth.loginFailedDesc'), variant: 'destructive' });
+      const errData = error.response?.data;
+      const detail = errData?.error_detail || errData?.detail || t('auth.loginFailedDesc');
+      toast({ title: t('auth.loginFailed'), description: detail, variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleKakaoLogin = () => {
+    window.location.href = authApi.getKakaoLoginUrl();
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.href = authApi.getGoogleLoginUrl();
   };
 
   return (
@@ -50,11 +61,11 @@ const Login = () => {
           </form>
 
           <div className="space-y-3">
-            <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-colors" style={{ backgroundColor: '#FEE500', color: '#191919' }}>
+            <button onClick={handleKakaoLogin} className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-colors" style={{ backgroundColor: '#FEE500', color: '#191919' }}>
               <span className="text-xl">💬</span>
               {t('auth.kakaoLogin')}
             </button>
-            <button className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 border border-border bg-card text-foreground transition-colors hover:bg-muted">
+            <button onClick={handleGoogleLogin} className="w-full h-14 rounded-xl font-semibold text-base flex items-center justify-center gap-2 border border-border bg-card text-foreground transition-colors hover:bg-muted">
               <span className="text-xl">G</span>
               {t('auth.googleLogin')}
             </button>

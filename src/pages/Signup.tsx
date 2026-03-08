@@ -7,7 +7,16 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Signup = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', name: '', gender: '' as Gender | '', birthday: '', phone_number: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    nickname: '',
+    gender: '' as Gender | '',
+    birthday: '',
+    email_token: '',
+    sms_token: '',
+  });
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -22,14 +31,21 @@ const Signup = () => {
     setIsLoading(true);
     try {
       await authApi.signup({
-        email: formData.email, password: formData.password, name: formData.name,
-        gender: (formData.gender || 'MALE') as Gender, birthday: formData.birthday,
-        phone_number: formData.phone_number.replace(/-/g, ''),
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        nickname: formData.nickname,
+        gender: (formData.gender || 'M') as Gender,
+        birthday: formData.birthday,
+        email_token: formData.email_token,
+        sms_token: formData.sms_token,
       });
       toast({ title: t('auth.signupSuccess'), description: t('auth.signupSuccessDesc') });
       navigate('/login');
     } catch (error: any) {
-      toast({ title: t('auth.signupFailed'), description: error.response?.data?.detail || t('auth.signupFailedDesc'), variant: 'destructive' });
+      const errData = error.response?.data;
+      const detail = errData?.error_detail || errData?.detail || t('auth.signupFailedDesc');
+      toast({ title: t('auth.signupFailed'), description: detail, variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -53,8 +69,25 @@ const Signup = () => {
               <input type="text" placeholder={t('auth.name')} value={formData.name} onChange={e => handleChange('name', e.target.value)} className="tds-textfield" required />
             </div>
             <div className="space-y-1.5">
+              <label className="text-sm font-medium text-muted-foreground">{t('auth.nickname', '닉네임')}</label>
+              <input type="text" placeholder={t('auth.nicknamePlaceholder', '2~10자')} value={formData.nickname} onChange={e => handleChange('nickname', e.target.value)} className="tds-textfield" minLength={2} maxLength={10} required />
+            </div>
+            <div className="space-y-1.5">
               <label className="text-sm font-medium text-muted-foreground">{t('auth.birthday')}</label>
               <input type="date" value={formData.birthday} onChange={e => handleChange('birthday', e.target.value)} className="tds-textfield" required />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-muted-foreground">{t('auth.gender', '성별')}</label>
+              <div className="flex gap-3">
+                <button type="button" onClick={() => handleChange('gender', 'M')}
+                  className={`flex-1 h-12 rounded-xl font-medium border transition-colors ${formData.gender === 'M' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground'}`}>
+                  {t('auth.male', '남성')}
+                </button>
+                <button type="button" onClick={() => handleChange('gender', 'F')}
+                  className={`flex-1 h-12 rounded-xl font-medium border transition-colors ${formData.gender === 'F' ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-card text-muted-foreground'}`}>
+                  {t('auth.female', '여성')}
+                </button>
+              </div>
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-muted-foreground">{t('auth.email')}</label>
@@ -62,7 +95,8 @@ const Signup = () => {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-muted-foreground">{t('auth.password')}</label>
-              <input type="password" placeholder={t('auth.passwordMin')} value={formData.password} onChange={e => handleChange('password', e.target.value)} className="tds-textfield" minLength={8} required />
+              <input type="password" placeholder={t('auth.passwordMin')} value={formData.password} onChange={e => handleChange('password', e.target.value)} className="tds-textfield" minLength={8} maxLength={20} required />
+              <p className="text-xs text-muted-foreground">{t('auth.passwordHint', '8~20자, 영문+숫자+특수문자 포함')}</p>
             </div>
 
             <label className="flex items-start gap-3 py-3 cursor-pointer">
