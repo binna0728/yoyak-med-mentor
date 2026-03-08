@@ -112,17 +112,23 @@
 
   /* Senior Mode Global */
   body.senior-mode {
-    font-size: 18px;
+    font-size: 22px;
   }
   body.senior-mode .tds-button-primary,
   body.senior-mode .tds-button-secondary,
   body.senior-mode .tds-button-ghost {
-    min-height: 56px;
-    font-size: 1.1rem;
+    min-height: 72px;
+    font-size: 1.25rem;
   }
   body.senior-mode .tds-textfield {
-    min-height: 56px;
-    font-size: 1.1rem;
+    min-height: 72px;
+    font-size: 1.25rem;
+  }
+  body.senior-mode .tds-card {
+    padding: 24px;
+  }
+  body.senior-mode .tds-nav-item span {
+    font-size: 0.875rem;
   }
 }
 
