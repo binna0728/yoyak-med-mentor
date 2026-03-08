@@ -5,6 +5,7 @@ import { Medicine } from '@/types/medicine';
 import { ArrowLeft, Play, Pause, RotateCcw } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { Progress } from '@/components/ui/progress';
+import { useTranslation } from 'react-i18next';
 
 const TtsPlayer = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,6 +19,7 @@ const TtsPlayer = () => {
   const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const cached = localStorage.getItem(`guide_${id}`);
@@ -26,12 +28,9 @@ const TtsPlayer = () => {
     } else {
       setMedicine({
         id: id || '1', name: '타이레놀 500mg',
-        effect: '열 내리고 통증 줄여주는 약',
-        dosage: '1회 1~2정, 하루 3번',
-        schedule: '식후 30분',
-        warning: '간이 안 좋으신 분 주의, 술과 함께 복용 금지',
-        side_effect: '드물게 발진',
-        patient_explanation: '머리가 아프거나 열이 날 때 드시는 약이에요.',
+        effect: '열 내리고 통증 줄여주는 약', dosage: '1회 1~2정, 하루 3번',
+        schedule: '식후 30분', warning: '간이 안 좋으신 분 주의, 술과 함께 복용 금지',
+        side_effect: '드물게 발진', patient_explanation: '머리가 아프거나 열이 날 때 드시는 약이에요.',
         created_at: new Date().toISOString(),
       });
     }
@@ -44,11 +43,11 @@ const TtsPlayer = () => {
 
   const buildLines = (m: Medicine) => [
     `${m.name}`,
-    `이 약은 ${m.effect}에 먹는 약이에요.`,
-    `${m.dosage}만큼 드시면 됩니다.`,
-    `${m.schedule}에 드세요.`,
-    `주의할 점은 ${m.warning}입니다.`,
-    m.side_effect ? `부작용으로 ${m.side_effect}이 있을 수 있어요.` : '',
+    t('tts.thisIsFor', { effect: m.effect }),
+    t('tts.takeDosage', { dosage: m.dosage }),
+    t('tts.takeAt', { schedule: m.schedule }),
+    t('tts.cautionIs', { warning: m.warning }),
+    m.side_effect ? t('tts.sideEffectMay', { effect: m.side_effect }) : '',
   ].filter(Boolean);
 
   const buildText = (m: Medicine) => buildLines(m).join(' ');
@@ -66,7 +65,6 @@ const TtsPlayer = () => {
     if (isPlaying) { stop(); return; }
     if (!medicine) return;
 
-    // Try API first, fallback to speech synthesis
     try {
       const result = await medicineApi.getTTS(id || '');
       const audio = new Audio(result.audio_url);
@@ -84,7 +82,6 @@ const TtsPlayer = () => {
       await audio.play();
       setIsPlaying(true);
     } catch {
-      // Fallback to Web Speech API
       const text = buildText(medicine);
       const utter = new SpeechSynthesisUtterance(text);
       utter.lang = 'ko-KR';
@@ -117,14 +114,13 @@ const TtsPlayer = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      {/* Header */}
       <header className="tds-header">
         <div className="flex items-center h-14 px-4 border-b border-border">
           <button onClick={() => { stop(); navigate(-1); }} className="p-2 -ml-2">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>🔊 음성 안내</span>
+            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('tts.title')}</span>
           </div>
           <div className="w-10" />
         </div>
@@ -132,74 +128,53 @@ const TtsPlayer = () => {
 
       <main className="flex-1 flex flex-col items-center px-6 pt-8">
         <div className="max-w-sm w-full space-y-6">
-          {/* Medicine name */}
           {medicine && (
             <div className="text-center">
               <p className={`text-primary font-bold ${sr ? 'text-2xl' : 'text-lg'}`}>💊 {medicine.name}</p>
             </div>
           )}
 
-          {/* Large play button */}
           <div className="flex justify-center py-4">
-            <button
-              onClick={togglePlay}
+            <button onClick={togglePlay}
               className={`rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg active:scale-95 transition-transform ${
                 sr ? 'w-28 h-28' : 'w-24 h-24'
-              }`}
-            >
-              {isPlaying ? (
-                <Pause className={sr ? 'w-12 h-12' : 'w-10 h-10'} />
-              ) : (
-                <Play className={sr ? 'w-12 h-12 ml-1' : 'w-10 h-10 ml-1'} />
-              )}
+              }`}>
+              {isPlaying ? <Pause className={sr ? 'w-12 h-12' : 'w-10 h-10'} /> : <Play className={sr ? 'w-12 h-12 ml-1' : 'w-10 h-10 ml-1'} />}
             </button>
           </div>
 
-          {/* Progress bar */}
           <div className="space-y-2">
             <Progress value={progress} className="h-2 bg-muted" />
             <div className="flex justify-between">
               <span className="text-xs text-muted-foreground">{Math.round(progress)}%</span>
               <button onClick={stop} className="flex items-center gap-1 text-xs text-muted-foreground">
                 <RotateCcw className="w-3 h-3" />
-                처음부터
+                {t('tts.fromStart')}
               </button>
             </div>
           </div>
 
-          {/* Speed selector */}
           <div>
-            <p className={`text-center text-muted-foreground mb-3 ${sr ? 'text-base' : 'text-xs'}`}>
-              속도를 조절할 수 있어요
-            </p>
+            <p className={`text-center text-muted-foreground mb-3 ${sr ? 'text-base' : 'text-xs'}`}>{t('tts.speedControl')}</p>
             <div className="flex items-center justify-center gap-3">
               {speeds.map(s => (
-                <button
-                  key={s}
-                  onClick={() => setSpeed(s)}
-                  className={`tds-chip ${sr ? 'h-12 px-6 text-lg' : 'h-10 px-5 text-sm'} ${speed === s ? 'active' : ''}`}
-                >
+                <button key={s} onClick={() => setSpeed(s)}
+                  className={`tds-chip ${sr ? 'h-12 px-6 text-lg' : 'h-10 px-5 text-sm'} ${speed === s ? 'active' : ''}`}>
                   {s}x
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Scrollable text with highlight */}
           {medicine && (
             <div className="tds-card max-h-60 overflow-y-auto">
               <div className="space-y-3">
                 {lines.map((line, idx) => (
-                  <p
-                    key={idx}
+                  <p key={idx}
                     className={`leading-relaxed transition-colors duration-300 ${
-                      idx === currentLine && isPlaying
-                        ? 'text-primary font-semibold'
-                        : idx < currentLine && isPlaying
-                        ? 'text-muted-foreground'
-                        : 'text-foreground'
-                    } ${sr ? 'text-lg' : 'text-sm'}`}
-                  >
+                      idx === currentLine && isPlaying ? 'text-primary font-semibold' :
+                      idx < currentLine && isPlaying ? 'text-muted-foreground' : 'text-foreground'
+                    } ${sr ? 'text-lg' : 'text-sm'}`}>
                     {line}
                   </p>
                 ))}

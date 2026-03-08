@@ -1,33 +1,17 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, FileText, Upload } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import { useTranslation } from 'react-i18next';
 
 const CaptureMethod = () => {
   const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
+  const { t } = useTranslation();
 
   const methods = [
-    {
-      icon: Camera,
-      emoji: '📷',
-      title: '알약 직접 촬영',
-      desc: '카메라로 알약을 촬영하면 AI가 인식해요',
-      to: '/camera/pill',
-    },
-    {
-      icon: FileText,
-      emoji: '📄',
-      title: '처방전 촬영',
-      desc: '처방전이나 약봉투를 촬영해요',
-      to: '/camera/prescription',
-    },
-    {
-      icon: Upload,
-      emoji: '📁',
-      title: '파일 업로드',
-      desc: '갤러리에서 사진을 선택해요',
-      to: '/upload',
-    },
+    { icon: Camera, emoji: '📷', title: t('capture.pillPhoto'), desc: t('capture.pillPhotoDesc'), to: '/camera/pill' },
+    { icon: FileText, emoji: '📄', title: t('capture.prescriptionPhoto'), desc: t('capture.prescriptionPhotoDesc'), to: '/camera/prescription' },
+    { icon: Upload, emoji: '📁', title: t('capture.fileUpload'), desc: t('capture.fileUploadDesc'), to: '/upload' },
   ];
 
   return (
@@ -38,16 +22,14 @@ const CaptureMethod = () => {
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>촬영 방법 선택</span>
+            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('capture.title')}</span>
           </div>
           <div className="w-10" />
         </div>
       </header>
 
       <main className="flex-1 px-5 py-6 max-w-lg mx-auto w-full flex flex-col">
-        <p className={`text-muted-foreground mb-6 ${sr ? 'text-lg' : 'text-sm'}`}>
-          약을 어떻게 등록할까요?
-        </p>
+        <p className={`text-muted-foreground mb-6 ${sr ? 'text-lg' : 'text-sm'}`}>{t('capture.howToRegister')}</p>
 
         <div className="space-y-3 flex-1">
           {methods.map(({ emoji, title, desc, to }) => (
@@ -72,7 +54,7 @@ const CaptureMethod = () => {
         </div>
 
         <p className={`text-center text-muted-foreground py-6 ${sr ? 'text-base' : 'text-xs'}`}>
-          또 한 사람이 처음으로 약을 찾아보셨습니다 ✨
+          {t('capture.footer')}
         </p>
       </main>
     </div>

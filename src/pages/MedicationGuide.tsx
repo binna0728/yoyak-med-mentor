@@ -5,6 +5,7 @@ import { Medicine } from '@/types/medicine';
 import { ArrowLeft, Volume2, Eye, Download } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import html2canvas from 'html2canvas';
+import { useTranslation } from 'react-i18next';
 
 const MedicationGuide = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ const MedicationGuide = () => {
   const [medicine, setMedicine] = useState<Medicine | null>(null);
   const [loading, setLoading] = useState(true);
   const guideRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchGuide = async () => {
@@ -42,7 +44,7 @@ const MedicationGuide = () => {
     try {
       const canvas = await html2canvas(guideRef.current, { backgroundColor: '#ffffff', scale: 2 });
       const link = document.createElement('a');
-      link.download = `복약안내_${medicine?.name || 'guide'}.png`;
+      link.download = `guide_${medicine?.name || 'guide'}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } catch (err) { console.error(err); }
@@ -53,7 +55,7 @@ const MedicationGuide = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-muted-foreground font-medium">약 정보를 불러오고 있어요...</p>
+          <p className="text-muted-foreground font-medium">{t('guide.loading')}</p>
         </div>
       </div>
     );
@@ -62,24 +64,23 @@ const MedicationGuide = () => {
   if (!medicine) return null;
 
   const sections = [
-    { icon: '💊', title: '약 이름', content: medicine.name, highlight: true },
-    { icon: '✨', title: '효능·효과', content: medicine.effect },
-    { icon: '📋', title: '복용 방법', content: `${medicine.dosage}\n복용 시간: ${medicine.schedule}` },
-    { icon: '⚠️', title: '주의사항', content: medicine.warning, warning: true },
-    { icon: '🔬', title: '부작용', content: medicine.side_effect },
-    { icon: '💬', title: '쉬운 설명', content: medicine.patient_explanation, easy: true },
+    { icon: '💊', title: t('guide.medName'), content: medicine.name, highlight: true },
+    { icon: '✨', title: t('guide.efficacy'), content: medicine.effect },
+    { icon: '📋', title: t('guide.dosage'), content: `${medicine.dosage}\n${t('guide.dosageTime', { time: medicine.schedule })}` },
+    { icon: '⚠️', title: t('guide.warning'), content: medicine.warning, warning: true },
+    { icon: '🔬', title: t('guide.sideEffect'), content: medicine.side_effect },
+    { icon: '💬', title: t('guide.easyExplanation'), content: medicine.patient_explanation, easy: true },
   ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      {/* Header */}
       <header className="tds-header">
         <div className="flex items-center h-14 px-4 border-b border-border">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
             <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>복약 방법과 주의사항</span>
+            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('guide.title')}</span>
           </div>
           <button onClick={handleSaveImage} className="p-2 -mr-2">
             <Download className="w-5 h-5 text-muted-foreground" />
@@ -87,7 +88,6 @@ const MedicationGuide = () => {
         </div>
       </header>
 
-      {/* Content */}
       <main className="flex-1 px-5 py-5 pb-48 overflow-y-auto">
         <div ref={guideRef} className="max-w-lg mx-auto space-y-4">
           {sections.map((sec, idx) => (
@@ -114,39 +114,26 @@ const MedicationGuide = () => {
             </div>
           ))}
 
-          {/* Source */}
           <div className="flex items-center gap-2 px-1">
             <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground" />
-            <p className={`text-muted-foreground ${sr ? 'text-sm' : 'text-xs'}`}>
-              식약처/의학정보 기반 · AI 자동생성 안내
-            </p>
+            <p className={`text-muted-foreground ${sr ? 'text-sm' : 'text-xs'}`}>{t('guide.source')}</p>
           </div>
         </div>
       </main>
 
-      {/* Bottom action buttons */}
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-lg mx-auto space-y-2">
           <div className="flex gap-3">
-            <button
-              onClick={() => navigate(`/guide/${id}/silver`)}
-              className={`tds-button-secondary flex-1 flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}
-            >
+            <button onClick={() => navigate(`/guide/${id}/silver`)} className={`tds-button-secondary flex-1 flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}>
               <Eye className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
-              실버모드 보기
+              {t('guide.silverView')}
             </button>
-            <button
-              onClick={() => navigate(`/guide/${id}/tts`)}
-              className={`tds-button-secondary flex items-center justify-center gap-2 ${sr ? 'px-6' : 'px-5'}`}
-            >
+            <button onClick={() => navigate(`/guide/${id}/tts`)} className={`tds-button-secondary flex items-center justify-center gap-2 ${sr ? 'px-6' : 'px-5'}`}>
               <Volume2 className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
             </button>
           </div>
-          <button
-            onClick={() => navigate('/ai-chat')}
-            className={`tds-button-primary w-full flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}
-          >
-            🤖 AI에게 더 물어보기
+          <button onClick={() => navigate('/ai-chat')} className={`tds-button-primary w-full flex items-center justify-center gap-2 ${sr ? 'text-lg' : ''}`}>
+            {t('guide.askAI')}
           </button>
         </div>
       </div>

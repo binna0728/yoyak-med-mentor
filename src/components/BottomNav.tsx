@@ -1,17 +1,19 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, ScanLine, CalendarDays, Bot, Settings } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import { useTranslation } from 'react-i18next';
 
 const BottomNav = () => {
   const { pathname } = useLocation();
   const { isSeniorMode } = useSeniorMode();
+  const { t } = useTranslation();
 
   const items = [
-    { to: '/home', icon: Home, label: '홈' },
-    { to: '/capture', icon: ScanLine, label: '스캔' },
-    { to: '/schedule', icon: CalendarDays, label: '스케줄' },
-    { to: '/ai-chat', icon: Bot, label: 'AI' },
-    { to: '/settings', icon: Settings, label: '설정' },
+    { to: '/home', icon: Home, label: t('nav.home') },
+    { to: '/capture', icon: ScanLine, label: t('nav.scan') },
+    { to: '/schedule', icon: CalendarDays, label: t('nav.schedule') },
+    { to: '/ai-chat', icon: Bot, label: t('nav.ai') },
+    { to: '/settings', icon: Settings, label: t('nav.settings') },
   ];
 
   const isActive = (to: string) => {
