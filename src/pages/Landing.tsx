@@ -1,107 +1,113 @@
 import { Link, Navigate } from 'react-router-dom';
-import { Camera, Pill, Clock, AlertTriangle, Users, CreditCard, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import heroImage from '@/assets/hero-medical.jpg';
-
-const steps = [
-  { icon: Camera, title: '처방전 촬영', desc: '사진으로 간편하게 약물 정보를 입력하세요' },
-  { icon: Pill, title: '약 목록 확인', desc: '추출된 약물 정보를 한눈에 확인하고 수정하세요' },
-  { icon: Clock, title: '골든타임 스케줄', desc: '최적의 복용 시간표를 자동으로 생성합니다' },
-  { icon: AlertTriangle, title: '상호작용 체크', desc: '약물 간 충돌과 식사 타이밍을 검사합니다' },
-  { icon: Users, title: '가족 관리', desc: '보호자가 환자의 복약 상태를 원격으로 확인합니다' },
-  { icon: CreditCard, title: '응급 카드', desc: '인쇄 가능한 응급 의료 정보 카드를 만드세요' },
-];
+import { Heart, Shield, Brain, Activity, ArrowRight } from 'lucide-react';
 
 const Landing = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
-  if (!loading && isAuthenticated) {
-    return <Navigate to="/app/dashboard" replace />;
+  if (!isLoading && isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container flex h-14 items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Pill className="h-6 w-6 text-primary" />
-            <span className="text-lg font-bold text-foreground">요약</span>
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10">
+      {/* Navigation */}
+      <nav className="container mx-auto px-4 py-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <Heart className="w-6 h-6 text-primary" />
           </div>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/auth/login">로그인</Link>
-            </Button>
-            <Button size="sm" asChild>
-              <Link to="/auth/signup">시작하기</Link>
-            </Button>
-          </div>
+          <span className="text-xl font-bold text-foreground">AI HealthCare</span>
         </div>
-      </header>
+        <div className="flex items-center gap-3">
+          <Link to="/login">
+            <Button variant="ghost" size="sm">로그인</Button>
+          </Link>
+          <Link to="/signup">
+            <Button size="sm">회원가입</Button>
+          </Link>
+        </div>
+      </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="container grid items-center gap-8 py-12 md:grid-cols-2 md:py-20">
-          <div className="animate-fade-in space-y-6">
-            <div className="inline-block rounded-full bg-accent px-3 py-1 text-sm font-medium text-accent-foreground">
-              🇰🇷 한국 처방전 최적화
-            </div>
-            <h1 className="text-3xl font-bold leading-tight text-foreground md:text-5xl">
-              AI가 만드는<br />
-              <span className="text-primary">쉬운 복약 가이드</span>
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              처방전 촬영 한 번으로 복용 일정, 약물 상호작용 체크, 
-              가족 관리까지. 어르신도 쉽게 사용할 수 있는 복약 도우미.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button size="lg" asChild>
-                <Link to="/auth/signup">무료로 시작하기 <ChevronRight className="ml-1 h-4 w-4" /></Link>
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+            AI 기반의 스마트한
+            <br />
+            <span className="text-primary">헬스케어 서비스</span>
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            최신 AI 기술을 활용하여 개인 맞춤형 건강 관리 솔루션을 제공합니다.
+            당신의 건강을 더 스마트하게 관리하세요.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link to="/signup">
+              <Button size="lg" className="gap-2 px-8">
+                시작하기
+                <ArrowRight className="w-4 h-4" />
               </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/auth/login">데모 체험</Link>
+            </Link>
+            <Link to="/login">
+              <Button size="lg" variant="outline" className="px-8">
+                로그인
               </Button>
-            </div>
-          </div>
-          <div className="animate-slide-up">
-            <img src={heroImage} alt="요약 앱 미리보기" className="rounded-2xl shadow-lg" />
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Flow Steps */}
-      <section className="border-t border-border bg-card py-12 md:py-16">
-        <div className="container">
-          <h2 className="mb-8 text-center text-2xl font-bold text-foreground md:text-3xl">
-            이렇게 사용해요
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {steps.map((step, i) => (
-              <div key={i} className="group rounded-xl border border-border bg-background p-5 transition-shadow hover:shadow-md">
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
-                  <step.icon className="h-5 w-5 text-primary" />
-                </div>
-                <h3 className="mb-1 font-semibold text-foreground">{step.title}</h3>
-                <p className="text-sm text-muted-foreground">{step.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* Features Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <FeatureCard
+            icon={<Brain className="w-8 h-8" />}
+            title="AI 분석"
+            description="인공지능이 당신의 건강 데이터를 분석하여 맞춤형 인사이트를 제공합니다."
+          />
+          <FeatureCard
+            icon={<Shield className="w-8 h-8" />}
+            title="안전한 데이터 관리"
+            description="최고 수준의 보안으로 당신의 건강 정보를 안전하게 보호합니다."
+          />
+          <FeatureCard
+            icon={<Activity className="w-8 h-8" />}
+            title="실시간 모니터링"
+            description="건강 상태를 실시간으로 모니터링하고 이상 징후를 조기에 발견합니다."
+          />
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-muted py-8">
-        <div className="container text-center">
-          <p className="mb-2 text-sm font-medium text-foreground">요약 (YoYak)</p>
-          <p className="text-xs text-muted-foreground">
-            ⚕️ 본 서비스는 의료 전문가의 상담을 대체하지 않습니다. 정확한 진단과 치료는 반드시 의사와 상담하세요.
-          </p>
-          <p className="mt-2 text-xs text-muted-foreground">© 2026 요약. 데모 버전.</p>
+      <footer className="container mx-auto px-4 py-8 border-t border-border">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-muted-foreground text-sm">
+          <p>© 2024 AI HealthCare. All rights reserved.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-foreground transition-colors">이용약관</a>
+            <a href="#" className="hover:text-foreground transition-colors">개인정보처리방침</a>
+            <a href="#" className="hover:text-foreground transition-colors">문의하기</a>
+          </div>
         </div>
       </footer>
     </div>
   );
 };
+
+interface FeatureCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+const FeatureCard = ({ icon, title, description }: FeatureCardProps) => (
+  <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 space-y-4 hover:shadow-lg transition-shadow">
+    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+      {icon}
+    </div>
+    <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+    <p className="text-muted-foreground">{description}</p>
+  </div>
+);
 
 export default Landing;
