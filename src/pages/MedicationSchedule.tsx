@@ -50,6 +50,19 @@ const MedicationSchedule = () => {
     setItems(prev => prev.map((item, i) => i === idx ? { ...item, taken: !item.taken } : item));
   };
 
+  // Alarm system
+  const alarmItems = items
+    .filter(i => !i.taken)
+    .map((item, idx) => ({
+      id: `${item.period}-${idx}`,
+      name: item.name,
+      time: item.time,
+      period: item.period,
+    }));
+
+  const { currentAlarm, dismissAlarm, permissionGranted, requestPermission } =
+    useMedicationAlarm(alarmItems);
+
   const periods = [
     { key: 'morning', label: '🌅 아침', color: 'bg-accent' },
     { key: 'afternoon', label: '☀️ 점심', color: 'bg-accent' },
