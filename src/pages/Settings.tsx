@@ -78,7 +78,7 @@ const Settings = () => {
               <Toggle on={notificationOn} onToggle={() => setNotificationOn(v => !v)} />
             </div>
 
-            <Border variant="padding24" />
+            <div className="h-px bg-border mx-6" />
 
             <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
