@@ -1,5 +1,4 @@
 import { Link, Navigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Heart, Shield, Brain, Activity, ArrowRight } from 'lucide-react';
 
@@ -11,84 +10,80 @@ const Landing = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-            <Heart className="w-6 h-6 text-primary" />
+    <div className="min-h-screen bg-white flex flex-col safe-area-padding">
+      {/* TDS Style Header */}
+      <header className="tds-header">
+        <div className="flex items-center justify-between h-14 px-5 border-b border-[#E5E8EB]">
+          <div className="flex items-center gap-2">
+            <Heart className="w-6 h-6 text-[#3182F6]" />
+            <span className="text-lg font-bold text-[#191F28]">AI 헬스케어</span>
           </div>
-          <span className="text-xl font-bold text-foreground">AI HealthCare</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link to="/login">
-            <Button variant="ghost" size="sm">로그인</Button>
-          </Link>
-          <Link to="/signup">
-            <Button size="sm">회원가입</Button>
+          <Link to="/login" className="text-sm text-[#3182F6] font-medium">
+            로그인
           </Link>
         </div>
-      </nav>
+      </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
-          <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
+      <main className="flex-1 px-5 py-8">
+        <div className="max-w-lg mx-auto text-center space-y-6">
+          {/* Hero Icon */}
+          <div className="w-20 h-20 mx-auto bg-[#E8F3FF] rounded-3xl flex items-center justify-center">
+            <Heart className="w-10 h-10 text-[#3182F6]" />
+          </div>
+
+          <h1 className="text-2xl font-bold text-[#191F28] leading-tight">
             AI 기반의 스마트한
             <br />
-            <span className="text-primary">헬스케어 서비스</span>
+            <span className="text-[#3182F6]">헬스케어 서비스</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          
+          <p className="text-[#6B7684] text-sm leading-relaxed">
             최신 AI 기술을 활용하여 개인 맞춤형 건강 관리 솔루션을 제공합니다.
             당신의 건강을 더 스마트하게 관리하세요.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/signup">
-              <Button size="lg" className="gap-2 px-8">
+
+          {/* CTA Buttons */}
+          <div className="space-y-3 pt-4">
+            <Link to="/signup" className="block">
+              <button className="tds-button-primary w-full flex items-center justify-center gap-2">
                 시작하기
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+                <ArrowRight className="w-5 h-5" />
+              </button>
             </Link>
-            <Link to="/login">
-              <Button size="lg" variant="outline" className="px-8">
+            <Link to="/login" className="block">
+              <button className="tds-button-secondary w-full">
                 로그인
-              </Button>
+              </button>
             </Link>
           </div>
         </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="container mx-auto px-4 py-20">
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        {/* Features Section */}
+        <div className="mt-12 space-y-3">
           <FeatureCard
-            icon={<Brain className="w-8 h-8" />}
+            icon={<Brain className="w-6 h-6" />}
             title="AI 분석"
-            description="인공지능이 당신의 건강 데이터를 분석하여 맞춤형 인사이트를 제공합니다."
+            description="인공지능이 당신의 건강 데이터를 분석합니다"
           />
           <FeatureCard
-            icon={<Shield className="w-8 h-8" />}
+            icon={<Shield className="w-6 h-6" />}
             title="안전한 데이터 관리"
-            description="최고 수준의 보안으로 당신의 건강 정보를 안전하게 보호합니다."
+            description="최고 수준의 보안으로 건강 정보를 보호합니다"
           />
           <FeatureCard
-            icon={<Activity className="w-8 h-8" />}
+            icon={<Activity className="w-6 h-6" />}
             title="실시간 모니터링"
-            description="건강 상태를 실시간으로 모니터링하고 이상 징후를 조기에 발견합니다."
+            description="건강 상태를 실시간으로 모니터링합니다"
           />
         </div>
-      </section>
+      </main>
 
       {/* Footer */}
-      <footer className="container mx-auto px-4 py-8 border-t border-border">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-muted-foreground text-sm">
-          <p>© 2024 AI HealthCare. All rights reserved.</p>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-foreground transition-colors">이용약관</a>
-            <a href="#" className="hover:text-foreground transition-colors">개인정보처리방침</a>
-            <a href="#" className="hover:text-foreground transition-colors">문의하기</a>
-          </div>
-        </div>
+      <footer className="px-5 py-6 border-t border-[#E5E8EB]">
+        <p className="text-center text-xs text-[#8B95A1]">
+          © 2024 AI HealthCare. All rights reserved.
+        </p>
       </footer>
     </div>
   );
@@ -101,12 +96,14 @@ interface FeatureCardProps {
 }
 
 const FeatureCard = ({ icon, title, description }: FeatureCardProps) => (
-  <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-6 space-y-4 hover:shadow-lg transition-shadow">
-    <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center text-primary">
+  <div className="tds-card flex items-center gap-4">
+    <div className="w-12 h-12 bg-[#E8F3FF] rounded-xl flex items-center justify-center text-[#3182F6] flex-shrink-0">
       {icon}
     </div>
-    <h3 className="text-xl font-semibold text-foreground">{title}</h3>
-    <p className="text-muted-foreground">{description}</p>
+    <div>
+      <h3 className="text-base font-semibold text-[#191F28]">{title}</h3>
+      <p className="text-sm text-[#6B7684]">{description}</p>
+    </div>
   </div>
 );
 

@@ -2,28 +2,50 @@
 @tailwind components;
 @tailwind utilities;
 
+/* TDS (Toss Design System) Safe Area */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+  --sal: env(safe-area-inset-left);
+  --sar: env(safe-area-inset-right);
+  
+  /* TDS Colors */
+  --tds-blue: #3182F6;
+  --tds-blue-light: #4A93F7;
+  --tds-gray-50: #F9FAFB;
+  --tds-gray-100: #F2F4F6;
+  --tds-gray-200: #E5E8EB;
+  --tds-gray-300: #D1D6DB;
+  --tds-gray-400: #B0B8C1;
+  --tds-gray-500: #8B95A1;
+  --tds-gray-600: #6B7684;
+  --tds-gray-700: #4E5968;
+  --tds-gray-800: #333D4B;
+  --tds-gray-900: #191F28;
+}
+
 @layer base {
   :root {
-    --background: 210 25% 97%;
-    --foreground: 215 30% 15%;
+    --background: 0 0% 100%;
+    --foreground: 220 13% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 30% 15%;
+    --card-foreground: 220 13% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 30% 15%;
+    --popover-foreground: 220 13% 15%;
 
-    --primary: 210 65% 45%;
+    --primary: 214 89% 58%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 30% 92%;
-    --secondary-foreground: 210 40% 30%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 13% 30%;
 
-    --muted: 210 20% 94%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
 
-    --accent: 210 50% 88%;
-    --accent-foreground: 210 50% 25%;
+    --accent: 214 89% 96%;
+    --accent-foreground: 214 89% 45%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -34,46 +56,46 @@
     --success: 152 60% 40%;
     --success-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 210 65% 45%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 214 89% 58%;
 
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 210 65% 45%;
+    --sidebar-primary: 214 89% 58%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 50% 95%;
-    --sidebar-accent-foreground: 210 50% 25%;
-    --sidebar-border: 210 20% 90%;
-    --sidebar-ring: 210 65% 45%;
+    --sidebar-accent: 214 89% 96%;
+    --sidebar-accent-foreground: 214 89% 45%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 214 89% 58%;
   }
 
   .dark {
-    --background: 215 30% 10%;
-    --foreground: 210 20% 95%;
-    --card: 215 25% 14%;
-    --card-foreground: 210 20% 95%;
-    --popover: 215 25% 14%;
-    --popover-foreground: 210 20% 95%;
-    --primary: 210 60% 55%;
+    --background: 220 13% 10%;
+    --foreground: 0 0% 95%;
+    --card: 220 13% 14%;
+    --card-foreground: 0 0% 95%;
+    --popover: 220 13% 14%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 214 89% 58%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 25% 20%;
-    --secondary-foreground: 210 20% 85%;
-    --muted: 215 20% 18%;
-    --muted-foreground: 215 15% 60%;
-    --accent: 215 30% 22%;
-    --accent-foreground: 210 40% 85%;
+    --secondary: 220 13% 20%;
+    --secondary-foreground: 0 0% 85%;
+    --muted: 220 13% 18%;
+    --muted-foreground: 220 9% 60%;
+    --accent: 214 89% 22%;
+    --accent-foreground: 214 89% 85%;
     --destructive: 0 62% 40%;
     --destructive-foreground: 0 0% 100%;
     --warning: 38 80% 45%;
     --warning-foreground: 38 90% 95%;
     --success: 152 55% 35%;
     --success-foreground: 0 0% 100%;
-    --border: 215 20% 22%;
-    --input: 215 20% 22%;
-    --ring: 210 60% 55%;
+    --border: 220 13% 22%;
+    --input: 220 13% 22%;
+    --ring: 214 89% 58%;
   }
 }
 
@@ -84,30 +106,95 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Senior Mode */
-.senior-mode {
-  font-size: 1.15em;
-}
-.senior-mode h1 { font-size: 2.2rem !important; }
-.senior-mode h2 { font-size: 1.8rem !important; }
-.senior-mode h3 { font-size: 1.5rem !important; }
-.senior-mode p, .senior-mode span, .senior-mode label, .senior-mode li {
-  font-size: 1.15rem !important;
-  line-height: 1.8 !important;
-}
-.senior-mode button, .senior-mode a {
-  font-size: 1.1rem !important;
-  min-height: 48px;
-}
-.senior-mode .card {
-  border-width: 2px;
-}
-.senior-mode input, .senior-mode select, .senior-mode textarea {
-  font-size: 1.1rem !important;
-  min-height: 48px;
+/* TDS Component Styles */
+@layer components {
+  /* Safe Area Padding */
+  .safe-area-padding {
+    padding-top: var(--sat);
+    padding-bottom: var(--sab);
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+  }
+
+  /* TDS Header */
+  .tds-header {
+    @apply sticky top-0 z-50 bg-white;
+    padding-top: var(--sat);
+  }
+
+  /* TDS TextField */
+  .tds-textfield {
+    @apply w-full h-14 px-4 bg-[#F2F4F6] rounded-xl text-base text-[#191F28] placeholder-[#8B95A1];
+    @apply border-0 outline-none transition-all duration-200;
+    @apply focus:bg-white focus:ring-2 focus:ring-[#3182F6];
+  }
+
+  /* TDS Button Primary */
+  .tds-button-primary {
+    @apply h-14 px-6 rounded-xl font-semibold text-base text-white;
+    @apply bg-[#3182F6] hover:bg-[#1B64DA] active:bg-[#1557B0];
+    @apply disabled:bg-[#E5E8EB] disabled:text-[#B0B8C1] disabled:cursor-not-allowed;
+    @apply transition-all duration-200;
+  }
+
+  /* TDS Button Secondary */
+  .tds-button-secondary {
+    @apply h-14 px-6 rounded-xl font-semibold text-base text-[#3182F6];
+    @apply bg-[#E8F3FF] hover:bg-[#D4E8FF] active:bg-[#C0DCFF];
+    @apply transition-all duration-200;
+  }
+
+  /* TDS Button Ghost */
+  .tds-button-ghost {
+    @apply h-12 px-4 rounded-lg font-medium text-sm text-[#6B7684];
+    @apply bg-transparent hover:bg-[#F2F4F6] active:bg-[#E5E8EB];
+    @apply transition-all duration-200;
+  }
+
+  /* TDS Chip */
+  .tds-chip {
+    @apply h-12 px-4 rounded-xl font-medium text-sm text-[#6B7684];
+    @apply bg-[#F2F4F6] border-2 border-transparent;
+    @apply transition-all duration-200;
+  }
+  .tds-chip.active {
+    @apply bg-[#E8F3FF] text-[#3182F6] border-[#3182F6];
+  }
+
+  /* TDS Bottom Navigation */
+  .tds-bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-[#E5E8EB];
+    @apply flex items-center justify-around h-16;
+    padding-bottom: var(--sab);
+  }
+
+  /* TDS Nav Item */
+  .tds-nav-item {
+    @apply flex flex-col items-center justify-center gap-1 py-2 px-4 text-[#8B95A1];
+    @apply transition-colors duration-200;
+  }
+  .tds-nav-item.active {
+    @apply text-[#3182F6];
+  }
+  .tds-nav-item span {
+    @apply text-xs font-medium;
+  }
+
+  /* TDS Card */
+  .tds-card {
+    @apply bg-white rounded-2xl p-5 shadow-sm;
+  }
+
+  /* TDS List Item */
+  .tds-list-item {
+    @apply flex items-center justify-between py-4 px-5 bg-white;
+    @apply border-b border-[#F2F4F6] last:border-b-0;
+  }
 }
 
 /* Focus styles for accessibility */
@@ -136,5 +223,19 @@
 @media (min-width: 768px) {
   .app-content {
     padding-bottom: 0;
+  }
+}
+
+/* WebView specific adjustments */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .safe-area-padding {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tds-header {
+    padding-top: env(safe-area-inset-top);
+  }
+  .tds-bottom-nav {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
