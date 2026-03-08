@@ -123,7 +123,7 @@ const Settings = () => {
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
 
-            <Border variant="padding24" />
+            <div className="h-px bg-border mx-6" />
 
             <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
