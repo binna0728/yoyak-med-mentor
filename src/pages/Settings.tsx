@@ -135,7 +135,7 @@ const Settings = () => {
           </div>
         </div>
 
-        <Border variant="height16" />
+        <div className="h-4" />
 
         <button
           onClick={handleLogout}

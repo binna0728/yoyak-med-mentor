@@ -165,13 +165,11 @@ const MedicationSchedule = () => {
                             {item.time}
                           </p>
                         </div>
-                        <Badge
-                          size="xsmall"
-                          color={item.taken ? 'green' : 'elephant'}
-                          variant={item.taken ? 'fill' : 'weak'}
-                        >
+                        <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
+                          item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        }`}>
                           {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
-                        </Badge>
+                        </span>
                       </div>
                     );
                   })}

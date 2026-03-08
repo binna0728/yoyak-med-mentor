@@ -113,13 +113,11 @@ const Home = () => {
                     {item.name}
                   </p>
                 </div>
-                <Badge
-                  size="xsmall"
-                  color={item.taken ? 'green' : 'elephant'}
-                  variant={item.taken ? 'fill' : 'weak'}
-                >
+                <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
+                  item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                }`}>
                   {item.taken ? t('home.done') : t('home.confirm')}
-                </Badge>
+                </span>
               </div>
             ))}
           </div>
