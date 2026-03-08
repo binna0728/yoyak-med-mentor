@@ -265,11 +265,8 @@
   padding-bottom: 5rem;
 }
 
-/* Responsive: desktop hides bottom nav, shows top nav */
+/* Responsive: desktop layout */
 @media (min-width: 1024px) {
-  .tds-bottom-nav {
-    display: none;
-  }
   .app-content {
     padding-bottom: 0;
   }
