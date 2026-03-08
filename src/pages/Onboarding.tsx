@@ -24,8 +24,8 @@ const Onboarding = () => {
         <h1 className="text-4xl font-bold text-foreground mb-1">{t('app.name')}</h1>
         <p className="text-muted-foreground text-sm mb-8">{t('app.subtitle')}</p>
 
-        <div className="w-32 h-32 rounded-3xl bg-accent flex items-center justify-center mb-12 overflow-hidden">
-          <img src="/pill-character.png" alt="Pill Character" className="w-full h-full object-cover" />
+        <div className="w-32 h-32 rounded-3xl bg-accent flex items-center justify-center mb-12 overflow-hidden shadow-lg">
+          <img src={pillCharacter} alt="Pill Character" className="w-full h-full object-cover" />
         </div>
       </div>
 
