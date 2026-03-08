@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Settings, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import AlarmBanner from '@/components/AlarmBanner';
+import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
+import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 
 interface ScheduleItem {
   time: string;
@@ -47,6 +50,19 @@ const MedicationSchedule = () => {
     setItems(prev => prev.map((item, i) => i === idx ? { ...item, taken: !item.taken } : item));
   };
 
+  // Alarm system
+  const alarmItems = items
+    .filter(i => !i.taken)
+    .map((item, idx) => ({
+      id: `${item.period}-${idx}`,
+      name: item.name,
+      time: item.time,
+      period: item.period,
+    }));
+
+  const { currentAlarm, dismissAlarm, permissionGranted, requestPermission } =
+    useMedicationAlarm(alarmItems);
+
   const periods = [
     { key: 'morning', label: '🌅 아침', color: 'bg-accent' },
     { key: 'afternoon', label: '☀️ 점심', color: 'bg-accent' },
@@ -62,6 +78,11 @@ const MedicationSchedule = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
+      {/* Alarm banner */}
+      {currentAlarm && (
+        <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />
+      )}
+
       <header className="tds-header">
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
           <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>복약 스케줄</h1>
@@ -100,6 +121,11 @@ const MedicationSchedule = () => {
             })}
           </div>
         </div>
+
+        {/* Notification permission prompt */}
+        {!permissionGranted && 'Notification' in window && (
+          <AlarmPermissionPrompt onRequest={requestPermission} />
+        )}
 
         {/* Schedule by period */}
         <div className="space-y-4">
