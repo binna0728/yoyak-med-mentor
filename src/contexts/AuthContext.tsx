@@ -14,6 +14,13 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const DEMO_USER: User = {
+  id: 0, email: 'demo@yoyak.kr', name: '홍길동', gender: 'MALE',
+  birthday: '1960-01-01', phone_number: '01012345678',
+  is_active: true, is_admin: false, last_login: null,
+  created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -22,9 +29,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userData = await authApi.getMe();
       setUser(userData);
-    } catch (error) {
-      setUser(null);
-      localStorage.removeItem('access_token');
+    } catch {
+      // Backend unavailable — keep current user (don't clear)
     }
   }, []);
 
@@ -35,9 +41,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           await refreshUser();
         } catch {
-          // If backend is unavailable, use demo user
-          setUser({ id: 0, email: 'demo@yoyak.kr', name: '홍길동', gender: 'MALE', birthday: '1960-01-01', phone_number: '01012345678', is_active: true, is_admin: false, last_login: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
+          // ignore
         }
+        // If refreshUser didn't set a user (backend down), use demo
+        setUser(prev => prev ?? DEMO_USER);
+      } else {
+        // No token at all — set demo user so preview works without backend
+        localStorage.setItem('access_token', 'demo_token');
+        setUser(DEMO_USER);
       }
       setIsLoading(false);
     };
