@@ -5,7 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ArrowLeft, ChevronRight, Bell, Eye, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
-import { Border } from '@toss/tds-mobile';
+
 
 const Settings = () => {
   const navigate = useNavigate();
