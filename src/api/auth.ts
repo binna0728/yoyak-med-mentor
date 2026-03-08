@@ -26,6 +26,11 @@ export const authApi = {
     const response = await apiClient.patch<User>('/users/me', data);
     return response.data;
   },
+
+  updateProfile: async (data: Partial<UpdateUserRequest>): Promise<User> => {
+    const response = await apiClient.patch<User>('/users/me', data);
+    return response.data;
+  },
 };
 
 export default authApi;
