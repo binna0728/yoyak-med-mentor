@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import authApi from '@/api/auth';
 import type { Gender, UpdateUserRequest } from '@/types/user';
 import { useToast } from '@/hooks/use-toast';
@@ -8,25 +9,16 @@ import { ArrowLeft, User, Phone, Calendar, Loader2, Save } from 'lucide-react';
 
 const MyPage = () => {
   const { user, refreshUser, logout } = useAuth();
+  const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const [formData, setFormData] = useState({
-    name: '',
-    gender: '' as Gender | '',
-    birthday: '',
-    phone_number: '',
-  });
+  const [formData, setFormData] = useState({ name: '', gender: '' as Gender | '', birthday: '', phone_number: '' });
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
-      setFormData({
-        name: user.name || '',
-        gender: user.gender || '',
-        birthday: user.birthday || '',
-        phone_number: user.phone_number || '',
-      });
+      setFormData({ name: user.name || '', gender: user.gender || '', birthday: user.birthday || '', phone_number: user.phone_number || '' });
     }
   }, [user]);
 
@@ -49,7 +41,6 @@ const MyPage = () => {
         setIsLoading(false);
         return;
       }
-
       await authApi.updateMe(updateData);
       await refreshUser();
       toast({ title: '수정 완료', description: '회원정보가 수정되었습니다.' });
@@ -60,69 +51,72 @@ const MyPage = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  const handleLogout = () => { logout(); navigate('/login'); };
 
-  const guideCount = typeof window !== 'undefined'
-    ? Object.keys(localStorage).filter(k => k.startsWith('guide_')).length
-    : 0;
+  const guideCount = typeof window !== 'undefined' ? Object.keys(localStorage).filter(k => k.startsWith('guide_')).length : 0;
 
   return (
-    <div className="min-h-screen bg-[#F2F4F6] flex flex-col safe-area-padding">
-      {/* Header */}
+    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
       <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-[#E5E8EB]">
+        <div className="flex items-center h-14 px-4 border-b border-border">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-[#191F28]" />
+            <ArrowLeft className="w-6 h-6 text-foreground" />
           </button>
           <div className="flex-1 flex items-center justify-center">
-            <span className="text-lg font-bold text-[#191F28]">마이페이지</span>
+            <span className="text-lg font-bold text-foreground">마이페이지</span>
           </div>
-          <button onClick={handleLogout} className="text-sm text-[#6B7684] font-medium">
-            로그아웃
-          </button>
+          <button onClick={handleLogout} className="text-sm text-muted-foreground font-medium">로그아웃</button>
         </div>
       </header>
 
-      <main className="flex-1 px-5 py-6 pb-24 overflow-y-auto">
-        {/* Profile */}
+      <main className="flex-1 px-5 py-6 pb-24 overflow-y-auto max-w-3xl mx-auto w-full">
         <div className="flex justify-center mb-6">
-          <div className="w-20 h-20 bg-[#E8F3FF] rounded-full flex items-center justify-center">
-            <span className="text-4xl">👨‍⚕️</span>
+          <div className="w-20 h-20 bg-accent rounded-full flex items-center justify-center">
+            <span className="text-4xl">👤</span>
           </div>
         </div>
 
         {/* Stats */}
+        <div className="tds-card mb-4">
+          <div className="flex items-center justify-between">
+            <span className="text-foreground font-medium">총 조회 횟수</span>
+            <span className="text-primary font-bold text-xl">{guideCount}건</span>
+          </div>
+        </div>
+
+        {/* Senior Mode Toggle */}
         <div className="tds-card mb-6">
           <div className="flex items-center justify-between">
-            <span className="text-[#191F28] font-medium">총 복약지도 생성</span>
-            <span className="text-[#3182F6] font-bold text-xl">{guideCount}건</span>
+            <div>
+              <span className="text-foreground font-medium">시니어 모드</span>
+              <p className="text-sm text-muted-foreground mt-0.5">글씨와 버튼을 크게 표시합니다</p>
+            </div>
+            <button
+              onClick={toggleSeniorMode}
+              className={`w-14 h-8 rounded-full transition-colors relative ${isSeniorMode ? 'bg-primary' : 'bg-muted'}`}
+            >
+              <div className={`w-6 h-6 rounded-full bg-card shadow absolute top-1 transition-transform ${isSeniorMode ? 'translate-x-7' : 'translate-x-1'}`} />
+            </button>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email (Read-only) */}
           <div className="tds-card">
-            <label className="text-sm font-medium text-[#6B7684] mb-2 block">이메일</label>
-            <div className="h-14 px-4 bg-[#F2F4F6] rounded-xl flex items-center text-[#8B95A1]">
-              {user?.email || '-'}
-            </div>
+            <label className="text-sm font-medium text-muted-foreground mb-2 block">이메일</label>
+            <div className="h-14 px-4 bg-muted rounded-xl flex items-center text-muted-foreground">{user?.email || '-'}</div>
           </div>
 
-          {/* Editable Fields */}
           <div className="tds-card space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B7684]">이름</label>
+              <label className="text-sm font-medium text-muted-foreground">이름</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input type="text" value={formData.name} onChange={(e) => handleChange('name', e.target.value)} className="tds-textfield pl-12" maxLength={20} />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B7684]">성별</label>
+              <label className="text-sm font-medium text-muted-foreground">성별</label>
               <div className="grid grid-cols-2 gap-3">
                 <button type="button" onClick={() => handleChange('gender', 'MALE')} className={`tds-chip ${formData.gender === 'MALE' ? 'active' : ''}`}>남성</button>
                 <button type="button" onClick={() => handleChange('gender', 'FEMALE')} className={`tds-chip ${formData.gender === 'FEMALE' ? 'active' : ''}`}>여성</button>
@@ -130,17 +124,17 @@ const MyPage = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B7684]">생년월일</label>
+              <label className="text-sm font-medium text-muted-foreground">생년월일</label>
               <div className="relative">
-                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input type="date" value={formData.birthday} onChange={(e) => handleChange('birthday', e.target.value)} className="tds-textfield pl-12" />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-[#6B7684]">전화번호</label>
+              <label className="text-sm font-medium text-muted-foreground">전화번호</label>
               <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <input type="tel" value={formData.phone_number} onChange={(e) => handleChange('phone_number', e.target.value)} className="tds-textfield pl-12" maxLength={11} />
               </div>
             </div>
@@ -156,20 +150,10 @@ const MyPage = () => {
         </form>
       </main>
 
-      {/* Bottom Nav */}
-      <nav className="tds-bottom-nav">
-        <Link to="/dashboard" className="tds-nav-item">
-          <span className="text-xl">🏠</span>
-          <span>홈</span>
-        </Link>
-        <Link to="/dashboard" className="tds-nav-item">
-          <span className="text-xl">📋</span>
-          <span>기록</span>
-        </Link>
-        <Link to="/mypage" className="tds-nav-item active">
-          <span className="text-xl">👤</span>
-          <span>마이</span>
-        </Link>
+      <nav className="tds-bottom-nav lg:hidden">
+        <Link to="/dashboard" className="tds-nav-item"><span className="text-xl">🏠</span><span>홈</span></Link>
+        <Link to="/dashboard" className="tds-nav-item"><span className="text-xl">📋</span><span>기록</span></Link>
+        <Link to="/mypage" className="tds-nav-item active"><span className="text-xl">👤</span><span>마이</span></Link>
       </nav>
     </div>
   );

@@ -4,7 +4,7 @@ export default defineConfig({
   appName: 'yoyak',
   brand: {
     displayName: '요약',
-    primaryColor: '#3182F6',
+    primaryColor: '#7C9A7E',
     icon: '',
   },
   web: {
