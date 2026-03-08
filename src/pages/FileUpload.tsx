@@ -14,7 +14,7 @@ const FileUpload = () => {
     navigate('/processing');
     setTimeout(() => {
       localStorage.setItem('ocr_result', JSON.stringify([
-        { name: '타이레놀 500mg', dosage: '1회 1정', frequency: '1일 3회', duration: '5일', schedule: '식후 30분' },
+        { name: t('sampleMeds.tylenol'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days5'), schedule: t('sampleMeds.afterMeal30') },
       ]));
       navigate('/result/check', { replace: true });
     }, 2500);

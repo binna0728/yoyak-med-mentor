@@ -27,10 +27,13 @@ const TtsPlayer = () => {
       setMedicine(JSON.parse(cached));
     } else {
       setMedicine({
-        id: id || '1', name: '타이레놀 500mg',
-        effect: '열 내리고 통증 줄여주는 약', dosage: '1회 1~2정, 하루 3번',
-        schedule: '식후 30분', warning: '간이 안 좋으신 분 주의, 술과 함께 복용 금지',
-        side_effect: '드물게 발진', patient_explanation: '머리가 아프거나 열이 날 때 드시는 약이에요.',
+        id: id || '1', name: t('sampleMeds.tylenol'),
+        effect: t('sampleMeds.tylenolEffectSimple'),
+        dosage: t('sampleMeds.tylenolDosageTts'),
+        schedule: t('sampleMeds.tylenolSchedule'),
+        warning: t('sampleMeds.tylenolWarnTts'),
+        side_effect: t('sampleMeds.tylenolSideEffectTts'),
+        patient_explanation: t('sampleMeds.tylenolExplanationSimple'),
         created_at: new Date().toISOString(),
       });
     }

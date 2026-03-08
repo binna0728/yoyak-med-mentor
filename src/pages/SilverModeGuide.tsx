@@ -22,11 +22,13 @@ const SilverModeGuide = () => {
         else { const data = await medicineApi.getGuideById(id); setMedicine(data); }
       } catch {
         setMedicine({
-          id: id || '1', name: '타이레놀 500mg',
-          effect: '열 내리고 통증 줄여주는 약', dosage: '1회 1~2정, 하루 3번까지',
-          schedule: '식후 30분', warning: '간이 안 좋으신 분은 주의하세요.\n술과 함께 드시면 안 됩니다.',
-          side_effect: '드물게 발진이 생길 수 있어요.',
-          patient_explanation: '머리가 아프거나 열이 날 때 드시는 약이에요.\n4시간 이상 간격을 두고 드세요.',
+          id: id || '1', name: t('sampleMeds.tylenol'),
+          effect: t('sampleMeds.tylenolEffectSimple'),
+          dosage: t('sampleMeds.tylenolDosageSimple'),
+          schedule: t('sampleMeds.tylenolSchedule'),
+          warning: t('sampleMeds.tylenolWarnSimple'),
+          side_effect: t('sampleMeds.tylenolSideEffectSimple'),
+          patient_explanation: t('sampleMeds.tylenolExplanationSimple'),
           created_at: new Date().toISOString(),
         });
       } finally { setLoading(false); }

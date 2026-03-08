@@ -43,7 +43,7 @@ const OcrResultCheck = () => {
     if (items.length === 0) return;
     setTtsLoading(true);
     const text = items.map(item =>
-      `${item.name}. ${item.dosage}, ${item.frequency}, ${item.schedule}에 복용하세요. 기간은 ${item.duration}입니다.`
+      t('sampleMeds.ttsIntro', { name: item.name, dosage: item.dosage, frequency: item.frequency, schedule: item.schedule, duration: item.duration })
     ).join(' ');
 
     try {

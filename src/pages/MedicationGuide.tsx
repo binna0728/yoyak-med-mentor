@@ -26,13 +26,13 @@ const MedicationGuide = () => {
         else { const data = await medicineApi.getGuideById(id); setMedicine(data); }
       } catch {
         setMedicine({
-          id: id || '1', name: '타이레놀 500mg',
-          effect: '해열, 진통 (두통, 치통, 근육통, 허리통증, 생리통, 관절통)',
-          dosage: '1회 1~2정, 1일 3~4회 (4시간 이상 간격)',
-          schedule: '식후 30분',
-          warning: '간 질환자 주의, 알코올과 함께 복용 금지\n1일 최대 4g 초과 금지',
-          side_effect: '드물게 발진, 두드러기, 간 기능 이상',
-          patient_explanation: '머리가 아프거나 열이 날 때 드시는 약이에요.\n하루 3번까지 드실 수 있고, 4시간 이상 간격을 두세요.',
+          id: id || '1', name: t('sampleMeds.tylenol'),
+          effect: t('sampleMeds.tylenolEffect'),
+          dosage: t('sampleMeds.tylenolDosage'),
+          schedule: t('sampleMeds.tylenolSchedule'),
+          warning: t('sampleMeds.tylenolWarning'),
+          side_effect: t('sampleMeds.tylenolSideEffect'),
+          patient_explanation: t('sampleMeds.tylenolExplanation'),
           created_at: new Date().toISOString(),
         });
       } finally { setLoading(false); }

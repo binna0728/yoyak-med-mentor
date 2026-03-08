@@ -44,11 +44,11 @@ const MedicationSchedule = () => {
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
   const [items, setItems] = useState<ScheduleItem[]>([
-    { time: '오전 8:00', name: '혈압약 (아모잘탄)', taken: false, period: 'morning' },
-    { time: '오전 9:00', name: '비타민D', taken: false, period: 'morning' },
-    { time: '오후 1:00', name: '혈당약 (메트포르민)', taken: false, period: 'afternoon' },
-    { time: '저녁 7:00', name: '오메가3', taken: false, period: 'evening' },
-    { time: '취침 전', name: '수면보조제', taken: false, period: 'bedtime' },
+    { time: t('sampleMeds.time0800'), name: t('sampleMeds.bloodPressure'), taken: false, period: 'morning' },
+    { time: t('sampleMeds.time0900'), name: t('sampleMeds.vitaminD'), taken: false, period: 'morning' },
+    { time: t('sampleMeds.time1300'), name: t('sampleMeds.diabetesMed'), taken: false, period: 'afternoon' },
+    { time: t('sampleMeds.time1900'), name: t('sampleMeds.omega3'), taken: false, period: 'evening' },
+    { time: t('sampleMeds.beforeBed'), name: t('sampleMeds.sleepAid'), taken: false, period: 'bedtime' },
   ]);
 
   const toggleTaken = (idx: number) => {
