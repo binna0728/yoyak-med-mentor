@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory } from '@/types/medicine';
+import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory, MedicineRecognizeResponse, MedicineTTSResponse } from '@/types/medicine';
 
 export const medicineApi = {
   // AI 복약지도 생성
@@ -19,6 +19,22 @@ export const medicineApi = {
   // 특정 복약지도 조회
   getGuideById: async (id: string): Promise<Medicine> => {
     const response = await apiClient.get<Medicine>(`/medicines/guide/${id}`);
+    return response.data;
+  },
+
+  // 알약 이미지 인식
+  recognizePill: async (image: File): Promise<MedicineRecognizeResponse> => {
+    const formData = new FormData();
+    formData.append('image', image);
+    const response = await apiClient.post<MedicineRecognizeResponse>('/medicines/recognize', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  // TTS 음성 생성
+  getTTS: async (guideId: string): Promise<MedicineTTSResponse> => {
+    const response = await apiClient.post<MedicineTTSResponse>('/medicines/tts', { guide_id: guideId });
     return response.data;
   },
 };

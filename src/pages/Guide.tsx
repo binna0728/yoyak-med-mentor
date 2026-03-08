@@ -5,6 +5,7 @@ import { Medicine } from '@/types/medicine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import html2canvas from 'html2canvas';
+import TTSPlayer from '@/components/TTSPlayer';
 
 const Guide = () => {
   const { id } = useParams<{ id: string }>();
@@ -59,12 +60,16 @@ const Guide = () => {
     }
   };
 
+  const buildTTSText = (m: Medicine) =>
+    `${m.name}. 효능: ${m.effect}. 복용 방법: ${m.dosage}. 복용 시간: ${m.schedule}. 주의사항: ${m.warning}. 부작용: ${m.side_effect}. ${m.patient_explanation}`;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-muted-foreground">복약 정보를 불러오는 중...</p>
+          <p className="text-muted-foreground font-medium">약 정보를 분석하고 있어요...</p>
+          <p className="text-sm text-muted-foreground">잠시만 기다려주세요</p>
         </div>
       </div>
     );
@@ -74,9 +79,13 @@ const Guide = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground">복약 정보를 찾을 수 없습니다.</p>
-            <Button onClick={() => navigate('/dashboard')} className="mt-4">대시보드로 돌아가기</Button>
+          <CardContent className="pt-6 text-center space-y-3">
+            <p className="text-4xl">😥</p>
+            <p className="text-foreground font-semibold">약 정보를 찾지 못했어요</p>
+            <p className="text-muted-foreground text-sm">약 이름을 다시 확인해주세요.</p>
+            <Button onClick={() => navigate('/dashboard')} className="mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
+              다시 검색하기
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -84,7 +93,7 @@ const Guide = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background safe-area-padding pb-24">
+    <div className="min-h-screen bg-background safe-area-padding pb-32">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-card border-b border-border">
         <div className="flex items-center justify-between px-4 h-14 max-w-3xl mx-auto">
@@ -141,11 +150,16 @@ const Guide = () => {
         </Card>
       </div>
 
+      {/* TTS Player */}
+      <div className="px-4 mt-4 max-w-3xl mx-auto">
+        <TTSPlayer guideId={id || ''} textContent={buildTTSText(medicine)} />
+      </div>
+
       {/* Bottom Actions */}
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="flex gap-3 max-w-3xl mx-auto">
           <Button onClick={() => navigate(`/guide/${id}/senior`)} className="flex-1 h-12 bg-primary hover:bg-primary/90 text-primary-foreground font-medium rounded-xl">
-            👴 시니어 모드로 보기
+            👴 시니어 모드
           </Button>
           <Button onClick={handleSaveImage} disabled={saving} variant="outline" className="h-12 px-4 rounded-xl">
             {saving ? '저장 중...' : '📸'}

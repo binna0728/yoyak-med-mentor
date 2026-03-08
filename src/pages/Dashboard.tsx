@@ -5,6 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
 import { Medicine } from '@/types/medicine';
 import { Search } from 'lucide-react';
+import PillRecognizer from '@/components/PillRecognizer';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -12,6 +13,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [medicineName, setMedicineName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [generateError, setGenerateError] = useState('');
   const [history, setHistory] = useState<Medicine[]>([]);
   const [historyLoading, setHistoryLoading] = useState(true);
 
@@ -36,6 +38,7 @@ const Dashboard = () => {
   const handleGenerate = async () => {
     if (!medicineName.trim()) return;
     setLoading(true);
+    setGenerateError('');
     try {
       const result = await medicineApi.generateGuide({ medicine_name: medicineName.trim() });
       localStorage.setItem(`guide_${result.id}`, JSON.stringify(result.medicine));
@@ -77,7 +80,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Desktop top nav (lg+) */}
+      {/* Desktop top nav */}
       <nav className="hidden lg:flex items-center justify-center gap-8 h-12 border-b border-border bg-card">
         <Link to="/dashboard" className="text-sm font-semibold text-primary">홈</Link>
         <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary">기록</Link>
@@ -94,14 +97,14 @@ const Dashboard = () => {
         </div>
 
         {/* Search */}
-        <div className="tds-card mb-6">
+        <div className="tds-card mb-4">
           <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
             <Search className="w-5 h-5 text-primary" />
             복약 정보 찾기
           </h2>
           <input
             value={medicineName}
-            onChange={(e) => setMedicineName(e.target.value)}
+            onChange={(e) => { setMedicineName(e.target.value); setGenerateError(''); }}
             placeholder="약 이름을 입력하세요 (예: 타이레놀)"
             className="tds-textfield mb-3"
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
@@ -112,20 +115,32 @@ const Dashboard = () => {
             className="tds-button-primary w-full text-lg"
           >
             {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                검색 중...
+              <div className="flex items-center justify-center gap-3">
+                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+                <span>약 정보를 분석하고 있어요...</span>
               </div>
             ) : '🔍 복약 정보 찾기'}
           </button>
+
+          {generateError && (
+            <div className="mt-3 p-3 rounded-xl bg-destructive/10 border border-destructive/20">
+              <p className="text-sm text-destructive text-center">{generateError}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Pill Image Recognition */}
+        <div className="mb-6">
+          <PillRecognizer onRecognized={(name) => setMedicineName(name)} />
         </div>
 
         {/* History */}
         <h2 className="text-base font-bold text-foreground mb-3">📋 최근 검색</h2>
 
         {historyLoading ? (
-          <div className="flex justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-8 gap-3">
             <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-muted-foreground">기록을 불러오는 중...</p>
           </div>
         ) : history.length === 0 ? (
           <div className="tds-card text-center py-10">
@@ -171,7 +186,7 @@ const Dashboard = () => {
         👴
       </button>
 
-      {/* Bottom Nav (mobile/tablet) */}
+      {/* Bottom Nav */}
       <nav className="tds-bottom-nav lg:hidden">
         <Link to="/dashboard" className="tds-nav-item active">
           <span className="text-xl">🏠</span>

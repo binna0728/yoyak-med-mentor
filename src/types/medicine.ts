@@ -23,3 +23,11 @@ export interface MedicineHistory {
   items: Medicine[];
   total: number;
 }
+
+export interface MedicineRecognizeResponse {
+  medicine_name: string;
+}
+
+export interface MedicineTTSResponse {
+  audio_url: string;
+}

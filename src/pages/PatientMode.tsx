@@ -4,6 +4,7 @@ import { medicineApi } from '@/api/medicine';
 import { Medicine } from '@/types/medicine';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import TTSPlayer from '@/components/TTSPlayer';
 
 const SeniorMode = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +41,9 @@ const SeniorMode = () => {
     fetchGuide();
   }, [id]);
 
+  const buildTTSText = (m: Medicine) =>
+    `${m.name}. 이 약은 ${m.effect}에 먹는 약이에요. ${m.dosage}만큼 드시면 됩니다. ${m.schedule}에 드세요. 주의할 점은 ${m.warning}입니다. ${m.patient_explanation}`;
+
   if (loading) {
     return (
       <div className="min-h-screen bg-card flex items-center justify-center">
@@ -74,7 +78,10 @@ const SeniorMode = () => {
       </div>
 
       {/* Senior-friendly Content */}
-      <div className="p-6 space-y-8 pb-36 max-w-3xl mx-auto" style={{ fontSize: '22px', lineHeight: '1.8' }}>
+      <div className="p-6 space-y-8 pb-44 max-w-3xl mx-auto" style={{ fontSize: '22px', lineHeight: '1.8' }}>
+        {/* TTS Player - prominent in senior mode */}
+        <TTSPlayer guideId={id || ''} textContent={buildTTSText(medicine)} />
+
         {/* 쉬운 설명 */}
         <Card className="border-2 border-primary bg-accent">
           <CardContent className="pt-6">
