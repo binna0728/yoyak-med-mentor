@@ -66,9 +66,9 @@ const Home = () => {
             <h2 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-base'}`}>
               {t('home.todayStatus')}
             </h2>
-            <Badge size="small" color="green" variant="fill">
+            <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5">
               {takenMeds}/{totalMeds}
-            </Badge>
+            </span>
           </div>
           <Progress value={progressValue} className="h-3 bg-muted" />
           <p className={`text-muted-foreground mt-2 ${sr ? 'text-base' : 'text-xs'}`}>
