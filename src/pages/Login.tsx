@@ -71,6 +71,13 @@ const Login = () => {
             </button>
           </div>
 
+          <button
+            onClick={() => navigate('/home')}
+            className="w-full h-12 rounded-xl text-sm font-medium text-muted-foreground border border-border bg-card hover:bg-muted transition-colors"
+          >
+            둘러보기 (로그인 없이)
+          </button>
+
           <p className="text-center text-xs text-muted-foreground whitespace-pre-line">
             {t('auth.disclaimer')}
           </p>
