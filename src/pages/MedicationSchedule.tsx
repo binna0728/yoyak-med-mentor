@@ -7,7 +7,7 @@ import AlarmBanner from '@/components/AlarmBanner';
 import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@toss/tds-mobile';
+
 
 interface ScheduleItem {
   time: string;
@@ -94,9 +94,11 @@ const MedicationSchedule = () => {
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
           <div className="flex items-center gap-2">
             <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
-            <Badge size="small" color={takenCount === items.length ? 'green' : 'blue'} variant="fill">
+            <span className={`inline-flex items-center rounded-full text-xs font-semibold px-2.5 py-0.5 ${
+              takenCount === items.length ? 'bg-primary/10 text-primary' : 'bg-accent text-accent-foreground'
+            }`}>
               {takenCount}/{items.length}
-            </Badge>
+            </span>
           </div>
           <button onClick={() => navigate('/setup/time')} className="p-2">
             <Settings className="w-5 h-5 text-muted-foreground" />
@@ -163,13 +165,11 @@ const MedicationSchedule = () => {
                             {item.time}
                           </p>
                         </div>
-                        <Badge
-                          size="xsmall"
-                          color={item.taken ? 'green' : 'elephant'}
-                          variant={item.taken ? 'fill' : 'weak'}
-                        >
+                        <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
+                          item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                        }`}>
                           {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
-                        </Badge>
+                        </span>
                       </div>
                     );
                   })}

@@ -5,7 +5,7 @@ import { Camera, CalendarDays, Bot, BookOpen, Sun } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@toss/tds-mobile';
+
 
 const Home = () => {
   const { user } = useAuth();
@@ -66,9 +66,9 @@ const Home = () => {
             <h2 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-base'}`}>
               {t('home.todayStatus')}
             </h2>
-            <Badge size="small" color="green" variant="fill">
+            <span className="inline-flex items-center rounded-full bg-primary/10 text-primary text-xs font-semibold px-2.5 py-0.5">
               {takenMeds}/{totalMeds}
-            </Badge>
+            </span>
           </div>
           <Progress value={progressValue} className="h-3 bg-muted" />
           <p className={`text-muted-foreground mt-2 ${sr ? 'text-base' : 'text-xs'}`}>
@@ -113,13 +113,11 @@ const Home = () => {
                     {item.name}
                   </p>
                 </div>
-                <Badge
-                  size="xsmall"
-                  color={item.taken ? 'green' : 'elephant'}
-                  variant={item.taken ? 'fill' : 'weak'}
-                >
+                <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
+                  item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                }`}>
                   {item.taken ? t('home.done') : t('home.confirm')}
-                </Badge>
+                </span>
               </div>
             ))}
           </div>

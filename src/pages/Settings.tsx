@@ -5,7 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ArrowLeft, ChevronRight, Bell, Eye, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
-import { Border } from '@toss/tds-mobile';
+
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -78,7 +78,7 @@ const Settings = () => {
               <Toggle on={notificationOn} onToggle={() => setNotificationOn(v => !v)} />
             </div>
 
-            <Border variant="padding24" />
+            <div className="h-px bg-border mx-6" />
 
             <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
@@ -123,7 +123,7 @@ const Settings = () => {
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
 
-            <Border variant="padding24" />
+            <div className="h-px bg-border mx-6" />
 
             <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ const Settings = () => {
           </div>
         </div>
 
-        <Border variant="height16" />
+        <div className="h-4" />
 
         <button
           onClick={handleLogout}

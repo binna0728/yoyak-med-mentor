@@ -1,7 +1,7 @@
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { FixedBottomCTA, CTAButton } from '@toss/tds-mobile';
+import { Button } from '@/components/ui/button';
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -33,11 +33,11 @@ const Onboarding = () => {
         <div className="w-2 h-2 rounded-full bg-border" />
       </div>
 
-      <FixedBottomCTA>
-        <CTAButton onClick={() => navigate('/login')}>
+      <div className="px-5 pb-8 safe-area-padding">
+        <Button className="w-full h-14 text-lg font-semibold rounded-2xl" onClick={() => navigate('/login')}>
           {t('app.start')}
-        </CTAButton>
-      </FixedBottomCTA>
+        </Button>
+      </div>
     </div>
   );
 };
