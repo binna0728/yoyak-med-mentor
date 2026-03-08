@@ -72,7 +72,10 @@ const Login = () => {
           </div>
 
           <button
-            onClick={() => navigate('/home')}
+            onClick={() => {
+              localStorage.setItem('access_token', 'demo_token');
+              window.location.href = '/home';
+            }}
             className="w-full h-12 rounded-xl text-sm font-medium text-muted-foreground border border-border bg-card hover:bg-muted transition-colors"
           >
             둘러보기 (로그인 없이)
