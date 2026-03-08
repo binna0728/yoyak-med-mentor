@@ -5,7 +5,7 @@ import { Camera, CalendarDays, Bot, BookOpen, Sun } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@toss/tds-mobile';
+
 
 const Home = () => {
   const { user } = useAuth();
