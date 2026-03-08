@@ -36,7 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           await refreshUser();
         } catch {
           // If backend is unavailable, use demo user
-          setUser({ id: 'demo', email: 'demo@yoyak.kr', name: '홍길동', gender: 'MALE', birthday: '1960-01-01', phone_number: '01012345678' } as User);
+          setUser({ id: 0, email: 'demo@yoyak.kr', name: '홍길동', gender: 'MALE', birthday: '1960-01-01', phone_number: '01012345678', is_active: true, is_admin: false, last_login: null, created_at: new Date().toISOString(), updated_at: new Date().toISOString() });
         }
       }
       setIsLoading(false);
