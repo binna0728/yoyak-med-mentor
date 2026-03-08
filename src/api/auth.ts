@@ -1,35 +1,56 @@
 import apiClient from './client';
-import type { SignupRequest, LoginRequest, LoginResponse, User, UpdateUserRequest } from '@/types/user';
+import type {
+  SignupRequest,
+  SignupResponse,
+  LoginRequest,
+  LoginResponse,
+  User,
+  UpdateUserRequest,
+  ApiResponse,
+} from '@/types/user';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
 
 export const authApi = {
-  signup: async (data: SignupRequest): Promise<User> => {
-    const response = await apiClient.post<User>('/auth/signup', data);
+  signup: async (data: SignupRequest): Promise<SignupResponse> => {
+    const response = await apiClient.post<SignupResponse>('/accounts/signup', data);
     return response.data;
   },
 
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>('/auth/login', data);
+    const response = await apiClient.post<LoginResponse>('/accounts/login', data);
     return response.data;
   },
 
   refreshToken: async (): Promise<LoginResponse> => {
-    const response = await apiClient.get<LoginResponse>('/auth/token/refresh');
+    const response = await apiClient.post<LoginResponse>('/accounts/token/refresh');
     return response.data;
   },
 
-  getMe: async (): Promise<User> => {
-    const response = await apiClient.get<User>('/users/me');
+  getMe: async (): Promise<ApiResponse<User>> => {
+    const response = await apiClient.get<ApiResponse<User>>('/users/me');
     return response.data;
   },
 
-  updateMe: async (data: UpdateUserRequest): Promise<User> => {
-    const response = await apiClient.patch<User>('/users/me', data);
+  updateMe: async (data: UpdateUserRequest): Promise<ApiResponse<User>> => {
+    const response = await apiClient.patch<ApiResponse<User>>('/users/me', data);
     return response.data;
   },
 
-  updateProfile: async (data: Partial<UpdateUserRequest>): Promise<User> => {
-    const response = await apiClient.patch<User>('/users/me', data);
+  updateProfile: async (data: Partial<UpdateUserRequest>): Promise<ApiResponse<User>> => {
+    const response = await apiClient.patch<ApiResponse<User>>('/users/me', data);
     return response.data;
+  },
+
+  // Social login helpers - redirect to backend OAuth URLs
+  getGoogleLoginUrl: (redirectUri?: string): string => {
+    const params = redirectUri ? `?redirect_uri=${encodeURIComponent(redirectUri)}` : '';
+    return `${API_BASE_URL}/auth/google/login${params}`;
+  },
+
+  getKakaoLoginUrl: (redirectUri?: string): string => {
+    const params = redirectUri ? `?redirect_uri=${encodeURIComponent(redirectUri)}` : '';
+    return `${API_BASE_URL}/auth/kakao/login${params}`;
   },
 };
 

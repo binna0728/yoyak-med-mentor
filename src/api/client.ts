@@ -57,12 +57,12 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call refresh endpoint - refresh_token is in httpOnly cookie
-        const response = await axios.get(`${API_BASE_URL}/auth/token/refresh`, {
+        // Call refresh endpoint (POST) - refresh_token is in httpOnly cookie
+        const response = await axios.post(`${API_BASE_URL}/accounts/token/refresh`, null, {
           withCredentials: true,
         });
 
-        const { access_token } = response.data;
+        const { access_token } = response.data.data;
         localStorage.setItem('access_token', access_token);
 
         processQueue(null);
