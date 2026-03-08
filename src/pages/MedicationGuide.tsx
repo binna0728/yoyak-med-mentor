@@ -109,9 +109,9 @@ const MedicationGuide = () => {
                   {sec.title}
                 </h3>
                 {sec.warning && (
-                  <Badge size="xsmall" color="red" variant="fill">
+                  <span className="inline-flex items-center rounded-full bg-destructive/10 text-destructive text-xs font-medium px-2 py-0.5">
                     {t('guide.warning')}
-                  </Badge>
+                  </span>
                 )}
               </div>
               <p className={`text-foreground leading-relaxed whitespace-pre-line ${sr ? 'text-base' : 'text-sm'}`}>
