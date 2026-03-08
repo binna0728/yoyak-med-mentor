@@ -216,12 +216,14 @@
   }
 
   .tds-card {
-    @apply bg-card rounded-2xl p-5 shadow-sm;
+    @apply bg-card p-5 shadow-sm;
+    border-radius: 20px;
     border: 1px solid hsl(var(--border));
   }
 
   .tds-list-item {
     @apply flex items-center justify-between py-4 px-5 bg-card;
+    border-radius: 20px;
     border-bottom: 1px solid hsl(var(--muted));
   }
   .tds-list-item:last-child {
