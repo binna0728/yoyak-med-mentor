@@ -3,13 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import authApi from '@/api/auth';
 import type { Gender, UpdateUserRequest } from '@/types/user';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, ArrowLeft, User, Phone, Calendar, Loader2, Save } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Heart, ArrowLeft, User, Phone, Calendar, Loader2, Save } from 'lucide-react';
 
 const MyPage = () => {
   const { user, refreshUser, logout } = useAuth();
@@ -85,129 +80,144 @@ const MyPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/10">
-      {/* Navigation */}
-      <nav className="bg-card/80 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <Button variant="ghost" size="icon">
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-            </Link>
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                <Heart className="w-6 h-6 text-primary" />
-              </div>
-              <span className="text-xl font-bold text-foreground">마이페이지</span>
-            </div>
+    <div className="min-h-screen bg-[#F2F4F6] flex flex-col safe-area-padding">
+      {/* TDS Style Header */}
+      <header className="tds-header">
+        <div className="flex items-center h-14 px-4 border-b border-[#E5E8EB]">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft className="w-6 h-6 text-[#191F28]" />
+          </button>
+          <div className="flex-1 flex items-center justify-center">
+            <span className="text-lg font-bold text-[#191F28]">마이페이지</span>
           </div>
-          <Button variant="outline" size="sm" onClick={handleLogout}>
+          <button onClick={handleLogout} className="text-sm text-[#6B7684] font-medium">
             로그아웃
-          </Button>
+          </button>
         </div>
-      </nav>
+      </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
-        <Card className="bg-card/80 backdrop-blur-sm border-border">
-          <CardHeader>
-            <CardTitle className="text-foreground flex items-center gap-2">
-              <User className="w-5 h-5" />
-              내 정보 수정
-            </CardTitle>
-            <CardDescription>
-              회원 정보를 수정할 수 있습니다.
-            </CardDescription>
-          </CardHeader>
+      <main className="flex-1 px-5 py-6 pb-24 overflow-y-auto">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Image Placeholder */}
+          <div className="flex justify-center mb-6">
+            <div className="w-20 h-20 bg-[#E8F3FF] rounded-full flex items-center justify-center">
+              <User className="w-10 h-10 text-[#3182F6]" />
+            </div>
+          </div>
 
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-6">
-              {/* Read-only fields */}
-              <div className="space-y-2">
-                <Label className="text-muted-foreground">이메일 (변경 불가)</Label>
-                <Input
-                  value={user?.email || ''}
-                  disabled
-                  className="bg-muted/50"
+          {/* Email (Read-only) */}
+          <div className="tds-card">
+            <label className="text-sm font-medium text-[#6B7684] mb-2 block">이메일</label>
+            <div className="h-14 px-4 bg-[#F2F4F6] rounded-xl flex items-center text-[#8B95A1]">
+              {user?.email || '-'}
+            </div>
+          </div>
+
+          {/* Editable Fields */}
+          <div className="tds-card space-y-4">
+            {/* Name */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#6B7684]">이름</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleChange('name', e.target.value)}
+                  className="tds-textfield pl-12"
+                  maxLength={20}
                 />
               </div>
+            </div>
 
-              {/* Editable fields */}
-              <div className="space-y-2">
-                <Label htmlFor="name">이름</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleChange('name', e.target.value)}
-                    className="pl-10"
-                    maxLength={20}
-                  />
-                </div>
+            {/* Gender */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#6B7684]">성별</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'MALE')}
+                  className={`tds-chip ${formData.gender === 'MALE' ? 'active' : ''}`}
+                >
+                  남성
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'FEMALE')}
+                  className={`tds-chip ${formData.gender === 'FEMALE' ? 'active' : ''}`}
+                >
+                  여성
+                </button>
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label>성별</Label>
-                <Select value={formData.gender} onValueChange={(value) => handleChange('gender', value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="성별 선택" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="MALE">남성</SelectItem>
-                    <SelectItem value="FEMALE">여성</SelectItem>
-                  </SelectContent>
-                </Select>
+            {/* Birthday */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#6B7684]">생년월일</label>
+              <div className="relative">
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <input
+                  type="date"
+                  value={formData.birthday}
+                  onChange={(e) => handleChange('birthday', e.target.value)}
+                  className="tds-textfield pl-12"
+                />
               </div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="birthday">생년월일</Label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="birthday"
-                    type="date"
-                    value={formData.birthday}
-                    onChange={(e) => handleChange('birthday', e.target.value)}
-                    className="pl-10"
-                  />
-                </div>
+            {/* Phone */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#6B7684]">전화번호</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#8B95A1]" />
+                <input
+                  type="tel"
+                  value={formData.phone_number}
+                  onChange={(e) => handleChange('phone_number', e.target.value)}
+                  className="tds-textfield pl-12"
+                  maxLength={11}
+                />
               </div>
+            </div>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">전화번호</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone_number}
-                    onChange={(e) => handleChange('phone_number', e.target.value)}
-                    className="pl-10"
-                    maxLength={11}
-                  />
-                </div>
-              </div>
-
-              <Button type="submit" className="w-full gap-2" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    저장 중...
-                  </>
-                ) : (
-                  <>
-                    <Save className="h-4 w-4" />
-                    저장하기
-                  </>
-                )}
-              </Button>
-            </CardContent>
-          </form>
-        </Card>
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="tds-button-primary w-full"
+          >
+            {isLoading ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                저장 중...
+              </span>
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                <Save className="w-5 h-5" />
+                저장하기
+              </span>
+            )}
+          </button>
+        </form>
       </main>
+
+      {/* Bottom Navigation */}
+      <nav className="tds-bottom-nav">
+        <Link to="/dashboard" className="tds-nav-item">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          <span>홈</span>
+        </Link>
+        <Link to="/mypage" className="tds-nav-item active">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+          <span>마이</span>
+        </Link>
+      </nav>
     </div>
   );
 };

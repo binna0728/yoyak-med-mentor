@@ -2,13 +2,8 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import authApi from '@/api/auth';
 import type { Gender } from '@/types/user';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Heart, Mail, Lock, User, Phone, Calendar, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Heart, Mail, Lock, User, Phone, Calendar, Loader2, ArrowLeft } from 'lucide-react';
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -78,152 +73,175 @@ const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-secondary/10 px-4 py-8">
-      <Card className="w-full max-w-md shadow-xl border-0 bg-card/80 backdrop-blur-sm">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <Heart className="w-8 h-8 text-primary" />
+    <div className="min-h-screen bg-white flex flex-col safe-area-padding">
+      {/* TDS Style Header */}
+      <header className="tds-header">
+        <div className="flex items-center h-14 px-4 border-b border-gray-100">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
+            <ArrowLeft className="w-6 h-6 text-gray-900" />
+          </button>
+          <div className="flex-1 flex items-center justify-center">
+            <Heart className="w-6 h-6 text-[#3182F6] mr-2" />
+            <span className="text-lg font-bold text-gray-900">회원가입</span>
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">회원가입</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            AI 헬스케어 서비스에 가입하세요
-          </CardDescription>
-        </CardHeader>
+          <div className="w-10" /> {/* Spacer for centering */}
+        </div>
+      </header>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+      {/* Main Content */}
+      <main className="flex-1 px-5 py-6 overflow-y-auto">
+        <div className="max-w-sm mx-auto space-y-6">
+          <div className="text-center space-y-2">
+            <h1 className="text-2xl font-bold text-gray-900">새 계정 만들기</h1>
+            <p className="text-gray-500 text-sm">AI 헬스케어 서비스에 가입하세요</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
+              <label className="text-sm font-medium text-gray-700">이메일</label>
               <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="email"
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="email"
                   placeholder="example@email.com"
                   value={formData.email}
                   onChange={(e) => handleChange('email', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   required
                 />
               </div>
             </div>
 
+            {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password">비밀번호</Label>
+              <label className="text-sm font-medium text-gray-700">비밀번호</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="password"
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="password"
                   placeholder="8자 이상 입력"
                   value={formData.password}
                   onChange={(e) => handleChange('password', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   minLength={8}
                   required
                 />
               </div>
             </div>
 
+            {/* Confirm Password */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">비밀번호 확인</Label>
+              <label className="text-sm font-medium text-gray-700">비밀번호 확인</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="confirmPassword"
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="password"
                   placeholder="비밀번호 재입력"
                   value={formData.confirmPassword}
                   onChange={(e) => handleChange('confirmPassword', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   required
                 />
               </div>
             </div>
 
+            {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">이름</Label>
+              <label className="text-sm font-medium text-gray-700">이름</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="name"
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="text"
                   placeholder="홍길동"
                   value={formData.name}
                   onChange={(e) => handleChange('name', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   maxLength={20}
                   required
                 />
               </div>
             </div>
 
+            {/* Gender */}
             <div className="space-y-2">
-              <Label>성별</Label>
-              <Select value={formData.gender} onValueChange={(value) => handleChange('gender', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="성별 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="MALE">남성</SelectItem>
-                  <SelectItem value="FEMALE">여성</SelectItem>
-                </SelectContent>
-              </Select>
+              <label className="text-sm font-medium text-gray-700">성별</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'MALE')}
+                  className={`tds-chip ${formData.gender === 'MALE' ? 'active' : ''}`}
+                >
+                  남성
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleChange('gender', 'FEMALE')}
+                  className={`tds-chip ${formData.gender === 'FEMALE' ? 'active' : ''}`}
+                >
+                  여성
+                </button>
+              </div>
             </div>
 
+            {/* Birthday */}
             <div className="space-y-2">
-              <Label htmlFor="birthday">생년월일</Label>
+              <label className="text-sm font-medium text-gray-700">생년월일</label>
               <div className="relative">
-                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="birthday"
+                <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="date"
                   value={formData.birthday}
                   onChange={(e) => handleChange('birthday', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   required
                 />
               </div>
             </div>
 
+            {/* Phone */}
             <div className="space-y-2">
-              <Label htmlFor="phone">전화번호</Label>
+              <label className="text-sm font-medium text-gray-700">전화번호</label>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="phone"
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
                   type="tel"
                   placeholder="01012345678"
                   value={formData.phone_number}
                   onChange={(e) => handleChange('phone_number', e.target.value)}
-                  className="pl-10"
+                  className="tds-textfield pl-12"
                   maxLength={11}
                   required
                 />
               </div>
             </div>
-          </CardContent>
 
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            {/* Submit */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="tds-button-primary w-full mt-6"
+            >
               {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
                   가입 중...
-                </>
+                </span>
               ) : (
                 '회원가입'
               )}
-            </Button>
-            <p className="text-sm text-muted-foreground text-center">
-              이미 계정이 있으신가요?{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                로그인
-              </Link>
-            </p>
-          </CardFooter>
-        </form>
-      </Card>
+            </button>
+          </form>
+
+          {/* Login Link */}
+          <p className="text-center text-sm text-gray-500 pb-4">
+            이미 계정이 있으신가요?{' '}
+            <Link to="/login" className="text-[#3182F6] font-medium">
+              로그인
+            </Link>
+          </p>
+        </div>
+      </main>
     </div>
   );
 };
