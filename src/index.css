@@ -152,11 +152,13 @@
   }
 
   .tds-button-primary {
-    @apply h-14 px-6 rounded-xl font-semibold text-base;
+    @apply h-14 px-6 font-semibold text-base;
+    border-radius: 16px;
     @apply transition-all duration-200;
     @apply disabled:opacity-40 disabled:cursor-not-allowed;
     background-color: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
+    min-height: 56px;
   }
   .tds-button-primary:hover:not(:disabled) {
     background-color: hsl(var(--primary-dark));
