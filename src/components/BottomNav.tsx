@@ -22,7 +22,7 @@ const BottomNav = () => {
   };
 
   return (
-    <nav className="tds-bottom-nav lg:hidden">
+    <nav className="tds-bottom-nav">
       {items.map(({ to, icon: Icon, label }) => (
         <Link
           key={to}
