@@ -168,10 +168,12 @@
   }
 
   .tds-button-secondary {
-    @apply h-14 px-6 rounded-xl font-semibold text-base;
+    @apply h-14 px-6 font-semibold text-base;
+    border-radius: 16px;
     @apply transition-all duration-200;
     background-color: hsl(var(--accent));
     color: hsl(var(--primary-dark));
+    min-height: 56px;
   }
   .tds-button-secondary:hover {
     background-color: hsl(var(--primary-light) / 0.3);
