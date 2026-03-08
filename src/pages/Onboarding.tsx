@@ -8,9 +8,10 @@ const Onboarding = () => {
   const { isAuthenticated, isLoading } = useAuth();
   const { t } = useTranslation();
 
-  if (!isLoading && isAuthenticated) {
-    return <Navigate to="/home" replace />;
-  }
+  // 데모용: 로그인 상태여도 온보딩 표시
+  // if (!isLoading && isAuthenticated) {
+  //   return <Navigate to="/home" replace />;
+  // }
 
   return (
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
