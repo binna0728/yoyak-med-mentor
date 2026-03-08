@@ -7,7 +7,7 @@ import AlarmBanner from '@/components/AlarmBanner';
 import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 import { useTranslation } from 'react-i18next';
-import { Badge } from '@toss/tds-mobile';
+
 
 interface ScheduleItem {
   time: string;
