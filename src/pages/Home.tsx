@@ -26,7 +26,7 @@ const Home = () => {
     { icon: Camera, label: t('home.pillScan'), desc: t('home.pillScanDesc'), to: '/capture', emoji: '📷' },
     { icon: CalendarDays, label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
     { icon: Bot, label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
-    { icon: BookOpen, label: t('home.medGuide'), desc: t('home.medGuideDesc'), to: '/guide/demo-1', emoji: '📖' },
+    { icon: BookOpen, label: '영양제 추가', desc: 'AI로 간편 등록', to: '/add/supplement', emoji: '💊' },
   ];
 
   const sr = isSeniorMode;
