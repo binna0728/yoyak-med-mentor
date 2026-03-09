@@ -158,7 +158,11 @@
     "daySat": "토",
     "daySun": "일",
     "noSchedule": "등록된 복약 스케줄이 없습니다",
-    "addMedication": "약 추가하기"
+    "addMedication": "약 추가하기",
+    "completeDays": "완료",
+    "partialDays": "일부",
+    "missedDays": "미복용",
+    "monthlyRate": "이번 달 복용률"
   },
   "guide": {
     "title": "복약 방법과 주의사항",
