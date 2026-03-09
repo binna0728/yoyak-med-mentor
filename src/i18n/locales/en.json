@@ -158,7 +158,11 @@
     "daySat": "Sat",
     "daySun": "Sun",
     "noSchedule": "No medication schedules registered",
-    "addMedication": "Add Medication"
+    "addMedication": "Add Medication",
+    "completeDays": "Complete",
+    "partialDays": "Partial",
+    "missedDays": "Missed",
+    "monthlyRate": "Monthly completion rate"
   },
   "guide": {
     "title": "Dosage & Precautions",
