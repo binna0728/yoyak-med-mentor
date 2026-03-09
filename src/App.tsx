@@ -26,6 +26,7 @@ import AiChat from "./pages/AiChat";
 import TtsPlayer from "./pages/TtsPlayer";
 import Settings from "./pages/Settings";
 import AddSupplement from "./pages/AddSupplement";
+import Sounds from "./pages/Sounds";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
