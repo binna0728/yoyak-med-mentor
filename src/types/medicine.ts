@@ -28,6 +28,18 @@ export interface MedicineRecognizeResponse {
   medicine_name: string;
 }
 
+export interface PrescriptionOcrItem {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  schedule: string;
+}
+
+export interface PrescriptionOcrResponse {
+  items: PrescriptionOcrItem[];
+}
+
 export interface MedicineTTSResponse {
   audio_url: string;
 }

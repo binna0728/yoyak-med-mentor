@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Volume2 } from 'lucide-react';
+import { ArrowLeft, Volume2, CalendarPlus } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
 import { toast } from 'sonner';
@@ -14,17 +14,84 @@ interface OcrItem {
   schedule: string;
 }
 
+/** OCR 결과에서 시간대(period)와 기본 시간(HH:MM)을 추출 */
+const parseScheduleInfo = (schedule: string, frequency: string) => {
+  const entries: { period: string; time: string }[] = [];
+  const lower = schedule.toLowerCase();
+
+  if (lower.includes('아침') || lower.includes('morning')) {
+    entries.push({ period: 'morning', time: '09:00' });
+  }
+  if (lower.includes('점심') || lower.includes('lunch') || lower.includes('낮')) {
+    entries.push({ period: 'afternoon', time: '12:00' });
+  }
+  if (lower.includes('저녁') || lower.includes('evening') || lower.includes('dinner')) {
+    entries.push({ period: 'evening', time: '18:00' });
+  }
+  if (lower.includes('취침') || lower.includes('bed') || lower.includes('자기')) {
+    entries.push({ period: 'bedtime', time: '22:00' });
+  }
+
+  // frequency 기반 fallback
+  if (entries.length === 0) {
+    const freqNum = parseInt(frequency) || 1;
+    if (freqNum >= 3) {
+      entries.push({ period: 'morning', time: '09:00' }, { period: 'afternoon', time: '12:00' }, { period: 'evening', time: '18:00' });
+    } else if (freqNum === 2) {
+      entries.push({ period: 'morning', time: '09:00' }, { period: 'evening', time: '18:00' });
+    } else {
+      entries.push({ period: 'morning', time: '09:00' });
+    }
+  }
+
+  return entries;
+};
+
 const OcrResultCheck = () => {
   const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
   const [items, setItems] = useState<OcrItem[]>([]);
   const [ttsLoading, setTtsLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     const stored = localStorage.getItem('ocr_result');
     if (stored) setItems(JSON.parse(stored));
   }, []);
+
+  /** OCR 결과를 복약 스케줄로 자동 등록 */
+  const handleAutoRegister = () => {
+    setSaving(true);
+    try {
+      const existingRaw = localStorage.getItem('saved_schedules');
+      const existing = existingRaw ? JSON.parse(existingRaw) : [];
+
+      const newSchedules = items.flatMap(item => {
+        const scheduleEntries = parseScheduleInfo(item.schedule, item.frequency);
+        return scheduleEntries.map(entry => ({
+          id: `ocr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          name: item.name,
+          dosage: item.dosage,
+          frequency: item.frequency,
+          duration: item.duration,
+          schedule: item.schedule,
+          time: entry.time,
+          period: entry.period,
+          taken: false,
+          createdAt: new Date().toISOString(),
+        }));
+      });
+
+      localStorage.setItem('saved_schedules', JSON.stringify([...existing, ...newSchedules]));
+      toast.success(t('ocr.scheduleRegistered', { count: newSchedules.length }) || `${newSchedules.length}개 복약 스케줄이 등록되었습니다`);
+      navigate('/schedule', { replace: true });
+    } catch {
+      toast.error(t('ocr.scheduleFailed') || '스케줄 등록에 실패했습니다');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleGuide = (item: OcrItem) => {
     const demoId = `ocr-${Date.now()}`;
@@ -119,11 +186,16 @@ const OcrResultCheck = () => {
 
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-lg mx-auto space-y-2">
+          <button onClick={handleAutoRegister} disabled={saving || items.length === 0}
+            className="tds-button-primary w-full flex items-center justify-center gap-2">
+            <CalendarPlus className="w-5 h-5" />
+            {saving ? '등록 중...' : (t('ocr.registerSchedule') || '복약 스케줄 등록')}
+          </button>
           <div className="flex gap-3">
             <button onClick={() => navigate('/result/edit')} className="tds-button-secondary flex-1">
               {t('ocr.edit')}
             </button>
-            <button onClick={() => items[0] && handleGuide(items[0])} className="tds-button-primary flex-1">
+            <button onClick={() => items[0] && handleGuide(items[0])} className="tds-button-secondary flex-1">
               {t('ocr.viewGuide')}
             </button>
           </div>

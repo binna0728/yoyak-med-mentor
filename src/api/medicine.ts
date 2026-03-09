@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory, MedicineRecognizeResponse, MedicineTTSResponse } from '@/types/medicine';
+import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory, MedicineRecognizeResponse, MedicineTTSResponse, PrescriptionOcrResponse } from '@/types/medicine';
 
 export const medicineApi = {
   // AI 복약지도 생성
@@ -27,6 +27,16 @@ export const medicineApi = {
     const formData = new FormData();
     formData.append('image', image);
     const response = await apiClient.post<MedicineRecognizeResponse>('/medicines/recognize', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  // 처방전 OCR 인식 (네이버 클로바 OCR)
+  recognizePrescription: async (image: File): Promise<PrescriptionOcrResponse> => {
+    const formData = new FormData();
+    formData.append('image', image);
+    const response = await apiClient.post<PrescriptionOcrResponse>('/medicines/ocr/prescription', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return response.data;

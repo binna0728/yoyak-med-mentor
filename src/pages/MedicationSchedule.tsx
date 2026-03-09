@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
@@ -8,8 +8,8 @@ import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
 import { useTranslation } from 'react-i18next';
 
-
 interface ScheduleItem {
+  id: string;
   time: string;
   name: string;
   taken: boolean;
@@ -23,6 +23,49 @@ const MedicationSchedule = () => {
 
   const today = new Date();
   const [selectedDate, setSelectedDate] = useState(today);
+  const [items, setItems] = useState<ScheduleItem[]>([]);
+
+  // localStorage에서 저장된 스케줄 로드
+  useEffect(() => {
+    const loadSchedules = () => {
+      const raw = localStorage.getItem('saved_schedules');
+      if (raw) {
+        try {
+          const saved = JSON.parse(raw);
+          const mapped: ScheduleItem[] = saved.map((s: {
+            id: string;
+            name: string;
+            time: string;
+            period: string;
+            taken?: boolean;
+          }) => ({
+            id: s.id,
+            name: s.name,
+            time: s.time,
+            period: s.period as ScheduleItem['period'],
+            taken: s.taken || false,
+          }));
+          setItems(mapped);
+        } catch {
+          // 파싱 실패 시 샘플 데이터
+          setItems(getDefaultItems());
+        }
+      } else {
+        // 저장된 데이터 없으면 샘플 데이터
+        setItems(getDefaultItems());
+      }
+    };
+
+    loadSchedules();
+  }, [t]);
+
+  const getDefaultItems = (): ScheduleItem[] => [
+    { id: 'sample-1', time: t('sampleMeds.time0800'), name: t('sampleMeds.bloodPressure'), taken: false, period: 'morning' },
+    { id: 'sample-2', time: t('sampleMeds.time0900'), name: t('sampleMeds.vitaminD'), taken: false, period: 'morning' },
+    { id: 'sample-3', time: t('sampleMeds.time1300'), name: t('sampleMeds.diabetesMed'), taken: false, period: 'afternoon' },
+    { id: 'sample-4', time: t('sampleMeds.time1900'), name: t('sampleMeds.omega3'), taken: false, period: 'evening' },
+    { id: 'sample-5', time: t('sampleMeds.beforeBed'), name: t('sampleMeds.sleepAid'), taken: false, period: 'bedtime' },
+  ];
 
   const getWeekDays = (base: Date) => {
     const start = new Date(base);
@@ -43,22 +86,30 @@ const MedicationSchedule = () => {
   const isSameDay = (a: Date, b: Date) =>
     a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-  const [items, setItems] = useState<ScheduleItem[]>([
-    { time: t('sampleMeds.time0800'), name: t('sampleMeds.bloodPressure'), taken: false, period: 'morning' },
-    { time: t('sampleMeds.time0900'), name: t('sampleMeds.vitaminD'), taken: false, period: 'morning' },
-    { time: t('sampleMeds.time1300'), name: t('sampleMeds.diabetesMed'), taken: false, period: 'afternoon' },
-    { time: t('sampleMeds.time1900'), name: t('sampleMeds.omega3'), taken: false, period: 'evening' },
-    { time: t('sampleMeds.beforeBed'), name: t('sampleMeds.sleepAid'), taken: false, period: 'bedtime' },
-  ]);
-
-  const toggleTaken = (idx: number) => {
-    setItems(prev => prev.map((item, i) => i === idx ? { ...item, taken: !item.taken } : item));
+  const toggleTaken = (id: string) => {
+    setItems(prev => {
+      const updated = prev.map(item => item.id === id ? { ...item, taken: !item.taken } : item);
+      // localStorage에도 반영
+      const raw = localStorage.getItem('saved_schedules');
+      if (raw) {
+        try {
+          const saved = JSON.parse(raw);
+          const updatedSaved = saved.map((s: { id: string; taken?: boolean }) => 
+            s.id === id ? { ...s, taken: !s.taken } : s
+          );
+          localStorage.setItem('saved_schedules', JSON.stringify(updatedSaved));
+        } catch {
+          // ignore
+        }
+      }
+      return updated;
+    });
   };
 
   const alarmItems = items
     .filter(i => !i.taken)
-    .map((item, idx) => ({
-      id: `${item.period}-${idx}`,
+    .map((item) => ({
+      id: item.id,
       name: item.name,
       time: item.time,
       period: item.period,
@@ -137,20 +188,28 @@ const MedicationSchedule = () => {
           <AlarmPermissionPrompt onRequest={requestPermission} />
         )}
 
-        <div className="space-y-4">
-          {periods.map(period => {
-            const periodItems = items.filter(i => i.period === period.key);
-            if (periodItems.length === 0) return null;
-            return (
-              <div key={period.key}>
-                <h3 className={`font-semibold text-foreground mb-2 ${sr ? 'text-lg' : 'text-sm'}`}>{period.label}</h3>
-                <div className="space-y-2">
-                  {periodItems.map((item) => {
-                    const realIdx = items.indexOf(item);
-                    return (
-                      <div key={realIdx} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
+        {items.length === 0 ? (
+          <div className="text-center py-12">
+            <p className={`text-muted-foreground ${sr ? 'text-lg' : 'text-sm'}`}>
+              {t('schedule.noSchedule') || '등록된 복약 스케줄이 없습니다'}
+            </p>
+            <button onClick={() => navigate('/capture')} className="tds-button-primary mt-4">
+              {t('schedule.addMedication') || '약 추가하기'}
+            </button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {periods.map(period => {
+              const periodItems = items.filter(i => i.period === period.key);
+              if (periodItems.length === 0) return null;
+              return (
+                <div key={period.key}>
+                  <h3 className={`font-semibold text-foreground mb-2 ${sr ? 'text-lg' : 'text-sm'}`}>{period.label}</h3>
+                  <div className="space-y-2">
+                    {periodItems.map((item) => (
+                      <div key={item.id} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
                         <button
-                          onClick={() => toggleTaken(realIdx)}
+                          onClick={() => toggleTaken(item.id)}
                           className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
                             item.taken ? 'bg-primary border-primary' : 'border-border hover:border-primary/50'
                           } ${sr ? 'w-8 h-8' : 'w-6 h-6'}`}
@@ -171,13 +230,13 @@ const MedicationSchedule = () => {
                           {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
                         </span>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
 
         <p className={`text-center text-muted-foreground mt-8 ${sr ? 'text-base' : 'text-xs'}`}>
           {t('schedule.disclaimer')}
