@@ -26,6 +26,7 @@ import AiChat from "./pages/AiChat";
 import TtsPlayer from "./pages/TtsPlayer";
 import Settings from "./pages/Settings";
 import AddSupplement from "./pages/AddSupplement";
+import Sounds from "./pages/Sounds";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +59,7 @@ const App = () => (
               <Route path="/guide/:id/tts" element={<PrivateRoute><TtsPlayer /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
               <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
+              <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
