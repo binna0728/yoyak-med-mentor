@@ -57,6 +57,7 @@ const App = () => (
               <Route path="/ai-chat" element={<PrivateRoute><AiChat /></PrivateRoute>} />
               <Route path="/guide/:id/tts" element={<PrivateRoute><TtsPlayer /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+              <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
