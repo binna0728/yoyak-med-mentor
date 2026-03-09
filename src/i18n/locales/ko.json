@@ -40,7 +40,8 @@
     "scan": "스캔",
     "schedule": "스케줄",
     "ai": "AI",
-    "settings": "설정"
+    "settings": "설정",
+    "sounds": "사운드"
   },
   "home": {
     "greeting": "{{name}}님 안녕하세요 👋",
