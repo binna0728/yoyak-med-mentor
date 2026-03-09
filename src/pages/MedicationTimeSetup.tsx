@@ -3,13 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+const defaultTimes = {
+  morning: { hour: 9, minute: 0 },
+  afternoon: { hour: 12, minute: 0 },
+  evening: { hour: 18, minute: 0 },
+};
+
 const MedicationTimeSetup = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'morning' | 'afternoon' | 'evening'>('morning');
-  const [hour, setHour] = useState(9);
-  const [minute, setMinute] = useState(0);
+  const [hour, setHour] = useState(defaultTimes.morning.hour);
+  const [minute, setMinute] = useState(defaultTimes.morning.minute);
   const [timesPerDay, setTimesPerDay] = useState(1);
   const { t } = useTranslation();
+
+  const handleTabChange = (tab: 'morning' | 'afternoon' | 'evening') => {
+    setActiveTab(tab);
+    setHour(defaultTimes[tab].hour);
+    setMinute(defaultTimes[tab].minute);
+  };
 
   const tabs = [
     { key: 'morning' as const, label: t('timeSetup.morning') },
@@ -37,7 +49,7 @@ const MedicationTimeSetup = () => {
         <div className="max-w-sm mx-auto space-y-6">
           <div className="flex gap-2">
             {tabs.map(tab => (
-              <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              <button key={tab.key} onClick={() => handleTabChange(tab.key)}
                 className={`tds-chip flex-1 text-center ${activeTab === tab.key ? 'active' : ''}`}>
                 {tab.label}
               </button>
