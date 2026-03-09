@@ -110,7 +110,10 @@
     "aiAnalyzedEffect": "AI가 분석한 효능 정보",
     "aiAnalyzedWarning": "AI가 분석한 주의사항",
     "aiAnalyzedSideEffect": "AI가 분석한 부작용 정보",
-    "aiPatientExplanation": "{{name}}은 {{schedule}}에 {{dosage}}씩 드시면 됩니다."
+    "aiPatientExplanation": "{{name}}은 {{schedule}}에 {{dosage}}씩 드시면 됩니다.",
+    "registerSchedule": "복약 스케줄 등록",
+    "scheduleRegistered": "{{count}}개 복약 스케줄이 등록되었습니다",
+    "scheduleFailed": "스케줄 등록에 실패했습니다"
   },
   "ocrEdit": {
     "title": "정보 수정",
