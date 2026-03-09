@@ -54,7 +54,6 @@ const MedicationTimeSetup = () => {
                 {tab.label}
               </button>
             ))}
-            ))}
           </div>
 
           <div className="tds-card space-y-4">
