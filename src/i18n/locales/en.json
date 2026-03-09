@@ -40,7 +40,8 @@
     "scan": "Scan",
     "schedule": "Schedule",
     "ai": "AI",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sounds": "Sounds"
   },
   "home": {
     "greeting": "Hello, {{name}} 👋",
