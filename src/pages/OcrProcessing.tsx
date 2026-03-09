@@ -35,11 +35,19 @@ const OcrProcessing = () => {
     const processImage = async () => {
       if (state?.image) {
         try {
-          const result = await medicineApi.recognizePill(state.image);
-          localStorage.setItem('ocr_result', JSON.stringify([{
-            name: result.medicine_name, dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.twice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal'),
-          }]));
+          if (state.type === 'prescription') {
+            // 처방전 OCR (네이버 클로바 OCR)
+            const result = await medicineApi.recognizePrescription(state.image);
+            localStorage.setItem('ocr_result', JSON.stringify(result.items));
+          } else {
+            // 알약 이미지 인식
+            const result = await medicineApi.recognizePill(state.image);
+            localStorage.setItem('ocr_result', JSON.stringify([{
+              name: result.medicine_name, dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.twice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal'),
+            }]));
+          }
         } catch {
+          // 백엔드 미연결 시 샘플 데이터
           localStorage.setItem('ocr_result', JSON.stringify([
             { name: t('sampleMeds.tylenol'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days5'), schedule: t('sampleMeds.afterMeal30') },
             { name: t('sampleMeds.amoxicillin'), dosage: t('sampleMeds.dose1capsule'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal') },
