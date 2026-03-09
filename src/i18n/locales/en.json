@@ -110,7 +110,10 @@
     "aiAnalyzedEffect": "AI-analyzed efficacy information",
     "aiAnalyzedWarning": "AI-analyzed precautions",
     "aiAnalyzedSideEffect": "AI-analyzed side effect information",
-    "aiPatientExplanation": "Take {{name}} at {{schedule}}, {{dosage}} per dose."
+    "aiPatientExplanation": "Take {{name}} at {{schedule}}, {{dosage}} per dose.",
+    "registerSchedule": "Register Schedule",
+    "scheduleRegistered": "{{count}} medication schedules registered",
+    "scheduleFailed": "Failed to register schedule"
   },
   "ocrEdit": {
     "title": "Edit Information",
