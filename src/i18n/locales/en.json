@@ -156,7 +156,9 @@
     "dayThu": "Thu",
     "dayFri": "Fri",
     "daySat": "Sat",
-    "daySun": "Sun"
+    "daySun": "Sun",
+    "noSchedule": "No medication schedules registered",
+    "addMedication": "Add Medication"
   },
   "guide": {
     "title": "Dosage & Precautions",
