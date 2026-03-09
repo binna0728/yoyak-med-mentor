@@ -234,7 +234,8 @@ const MedicationSchedule = () => {
     
     Object.values(monthRecords).forEach(record => {
       const recordDate = new Date(record.date);
-      if (recordDate.getFullYear() === year && recordDate.getMonth() === month && recordDate.date <= today.toISOString().split('T')[0]) {
+      const todayStr = today.toISOString().split('T')[0];
+      if (recordDate.getFullYear() === year && recordDate.getMonth() === month && record.date <= todayStr) {
         totalDays++;
         const rate = record.total > 0 ? record.taken / record.total : 0;
         if (rate >= 1) completeDays++;
