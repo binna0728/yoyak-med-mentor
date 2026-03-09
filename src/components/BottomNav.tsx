@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ScanLine, CalendarDays, Bot, Settings } from 'lucide-react';
+import { Home, ScanLine, CalendarDays, Bot, Music } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 
