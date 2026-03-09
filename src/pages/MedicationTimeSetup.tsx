@@ -49,10 +49,11 @@ const MedicationTimeSetup = () => {
         <div className="max-w-sm mx-auto space-y-6">
           <div className="flex gap-2">
             {tabs.map(tab => (
-              <button key={tab.key} onClick={() => setActiveTab(tab.key)}
+              <button key={tab.key} onClick={() => handleTabChange(tab.key)}
                 className={`tds-chip flex-1 text-center ${activeTab === tab.key ? 'active' : ''}`}>
                 {tab.label}
               </button>
+            ))}
             ))}
           </div>
 
