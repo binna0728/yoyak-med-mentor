@@ -305,5 +305,24 @@
     "time1900": "저녁 7:00",
     "beforeBed": "취침 전",
     "ttsIntro": "{{name}}. {{dosage}}, {{frequency}}, {{schedule}}에 복용하세요. 기간은 {{duration}}입니다."
+  },
+  "sounds": {
+    "title": "웰니스 사운드",
+    "subtitle": "복약 안내를 읽으며 편안한 배경음을 들어보세요",
+    "focus": "집중",
+    "sleep": "수면",
+    "meditation": "명상",
+    "calm": "안정",
+    "deepFocus": "딥 포커스",
+    "studyFlow": "스터디 플로우",
+    "rainFocus": "빗소리 집중",
+    "deepSleep": "깊은 수면",
+    "nightRain": "밤비",
+    "mindfulness": "마음챙김",
+    "breathingCalm": "호흡 안정",
+    "stressRelief": "스트레스 완화",
+    "gentleComfort": "부드러운 위안",
+    "ambient": "앰비언트 사운드",
+    "back": "뒤로"
   }
 }

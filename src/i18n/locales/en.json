@@ -305,5 +305,24 @@
     "time1900": "7:00 PM",
     "beforeBed": "Before bed",
     "ttsIntro": "{{name}}. Take {{dosage}}, {{frequency}}, {{schedule}}. Duration: {{duration}}."
+  },
+  "sounds": {
+    "title": "Wellness Sounds",
+    "subtitle": "Listen to calming sounds while reading your summaries",
+    "focus": "Focus",
+    "sleep": "Sleep",
+    "meditation": "Meditation",
+    "calm": "Calm",
+    "deepFocus": "Deep Focus",
+    "studyFlow": "Study Flow",
+    "rainFocus": "Rain Focus",
+    "deepSleep": "Deep Sleep",
+    "nightRain": "Night Rain",
+    "mindfulness": "Mindfulness",
+    "breathingCalm": "Breathing Calm",
+    "stressRelief": "Stress Relief",
+    "gentleComfort": "Gentle Comfort",
+    "ambient": "Ambient Sound",
+    "back": "Back"
   }
 }
