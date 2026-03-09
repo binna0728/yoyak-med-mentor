@@ -1,5 +1,5 @@
 import apiClient from './client';
-import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory, MedicineRecognizeResponse, MedicineTTSResponse } from '@/types/medicine';
+import { Medicine, MedicineGuideRequest, MedicineGuideResponse, MedicineHistory, MedicineRecognizeResponse, MedicineTTSResponse, PrescriptionOcrResponse } from '@/types/medicine';
 
 export const medicineApi = {
   // AI 복약지도 생성
