@@ -59,6 +59,7 @@ const App = () => (
               <Route path="/guide/:id/tts" element={<PrivateRoute><TtsPlayer /></PrivateRoute>} />
               <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
               <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
+              <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

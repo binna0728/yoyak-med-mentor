@@ -13,7 +13,7 @@ const BottomNav = () => {
     { to: '/capture', icon: ScanLine, label: t('nav.scan') },
     { to: '/schedule', icon: CalendarDays, label: t('nav.schedule') },
     { to: '/ai-chat', icon: Bot, label: t('nav.ai') },
-    { to: '/settings', icon: Settings, label: t('nav.settings') },
+    { to: '/sounds', icon: Music, label: t('nav.sounds') },
   ];
 
   const isActive = (to: string) => {
