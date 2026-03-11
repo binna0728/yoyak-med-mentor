@@ -69,7 +69,7 @@ const TtsPlayer = () => {
     if (!medicine) return;
 
     try {
-      const result = await medicineApi.getTTS(id || '');
+      const result = await medicineApi.getTTS(id || '', buildText(medicine));
       const audio = new Audio(result.audio_url);
       audio.playbackRate = speed;
       audioRef.current = audio;
