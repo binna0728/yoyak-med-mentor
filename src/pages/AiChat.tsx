@@ -49,12 +49,10 @@ const AiChat = () => {
     const { summary, dosage, precautions, tips } = data.sections;
     const parts: string[] = [];
     if (summary) parts.push(summary);
-    if (dosage) parts.push(\`📋 \${dosage}\`);
-    if (precautions) parts.push(\`⚠️ \${precautions}\`);
-    if (tips) parts.push(\`💡 \${tips}\`);
-    return parts.filter(Boolean).join('
-
-') || data.answer || t('aiChat.defaultAnswer');
+    if (dosage) parts.push('📋 ' + dosage);
+    if (precautions) parts.push('⚠️ ' + precautions);
+    if (tips) parts.push('💡 ' + tips);
+    return parts.filter(Boolean).join('\n\n') || data.answer || t('aiChat.defaultAnswer');
   };
 
   const handleSend = async (text?: string) => {
