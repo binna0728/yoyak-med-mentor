@@ -114,7 +114,7 @@ const OcrResultCheck = () => {
     ).join(' ');
 
     try {
-      const result = await medicineApi.getTTS('ocr-result');
+      const result = await medicineApi.getTTS('ocr-result', text);
       const audio = new Audio(result.audio_url);
       await audio.play();
     } catch {
