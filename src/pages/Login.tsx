@@ -34,12 +34,22 @@ const Login = () => {
     }
   };
 
-  const handleKakaoLogin = () => {
-    window.location.href = authApi.getKakaoLoginUrl();
+  const handleKakaoLogin = async () => {
+    try {
+      const res = await import('@/api/client').then(m => m.default.get('/auth/kakao'));
+      window.location.href = res.data.url;
+    } catch {
+      toast({ title: '카카오 로그인 실패', description: '다시 시도해 주세요.', variant: 'destructive' });
+    }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = authApi.getGoogleLoginUrl();
+  const handleGoogleLogin = async () => {
+    try {
+      const res = await import('@/api/client').then(m => m.default.get('/auth/google'));
+      window.location.href = res.data.url;
+    } catch {
+      toast({ title: '구글 로그인 실패', description: '다시 시도해 주세요.', variant: 'destructive' });
+    }
   };
 
   return (
