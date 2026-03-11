@@ -42,9 +42,12 @@ export const medicineApi = {
     return response.data;
   },
 
-  // TTS 음성 생성
-  getTTS: async (guideId: string): Promise<MedicineTTSResponse> => {
-    const response = await apiClient.post<MedicineTTSResponse>('/medicines/tts', { guide_id: guideId });
+  // TTS 음성 생성 - text를 함께 전달해야 서버에서 음성 생성 가능
+  getTTS: async (guideId: string, text: string = ''): Promise<MedicineTTSResponse> => {
+    const response = await apiClient.post<MedicineTTSResponse>('/medicines/tts', {
+      guide_id: guideId,
+      text,
+    });
     return response.data;
   },
 };
