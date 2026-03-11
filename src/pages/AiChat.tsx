@@ -4,10 +4,25 @@ import { ArrowLeft, Send } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
+import apiClient from '@/api/client';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+interface ChatSections {
+  summary: string;
+  dosage: string;
+  precautions: string;
+  tips: string;
+}
+
+interface ChatApiResponse {
+  success: boolean;
+  answer: string;
+  sections: ChatSections;
+  disclaimer: string;
 }
 
 const AiChat = () => {
@@ -29,7 +44,20 @@ const AiChat = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const handleSend = (text?: string) => {
+  const formatResponse = (data: ChatApiResponse): string => {
+    if (!data.sections) return data.answer || t('aiChat.defaultAnswer');
+    const { summary, dosage, precautions, tips } = data.sections;
+    const parts: string[] = [];
+    if (summary) parts.push(summary);
+    if (dosage) parts.push(\`📋 \${dosage}\`);
+    if (precautions) parts.push(\`⚠️ \${precautions}\`);
+    if (tips) parts.push(\`💡 \${tips}\`);
+    return parts.filter(Boolean).join('
+
+') || data.answer || t('aiChat.defaultAnswer');
+  };
+
+  const handleSend = async (text?: string) => {
     const msg = text || input.trim();
     if (!msg || isTyping) return;
 
@@ -37,19 +65,19 @@ const AiChat = () => {
     setInput('');
     setIsTyping(true);
 
-    setTimeout(() => {
-      const responses: Record<string, string> = {
-        [t('aiChat.q1')]: t('aiChat.a1'),
-        [t('aiChat.q2')]: t('aiChat.a2'),
-        [t('aiChat.q3')]: t('aiChat.a3'),
-        [t('aiChat.q4')]: t('aiChat.a4'),
-      };
+    try {
+      const response = await apiClient.post<ChatApiResponse>('/chat', { question: msg });
+      const data = response.data;
+      const content = data.success ? formatResponse(data) : t('aiChat.defaultAnswer');
+      setMessages(prev => [...prev, { role: 'assistant', content }]);
+    } catch {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: responses[msg] || t('aiChat.defaultAnswer')
+        content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
       }]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   return (
