@@ -58,13 +58,9 @@ const AddSupplement = () => {
     setAiLoading(true);
     setAiInfo(null);
     try {
-      const res = await apiClient.post('/chat', {
-        question: `${medName}의 효능, 복용법, 주의사항을 알려줘`,
-      });
-      const { sections } = res.data;
-      if (sections) {
-        setAiInfo({ summary: sections.summary, dosage: sections.dosage, precautions: sections.precautions });
-      }
+      const res = await apiClient.post('/medicines/info', { name: medName });
+      const { summary, dosage, precautions } = res.data;
+      setAiInfo({ summary, dosage, precautions });
     } catch {
       // AI 실패해도 등록 가능
     } finally {
