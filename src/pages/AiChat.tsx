@@ -47,11 +47,12 @@ const AiChat = () => {
   const formatResponse = (data: ChatApiResponse): string => {
     if (!data.sections) return data.answer || t('aiChat.defaultAnswer');
     const { summary, dosage, precautions, tips } = data.sections;
+    const isDefault = (s: string) => !s || s.includes('해당 정보가 제공되지 않았습니다');
     const parts: string[] = [];
-    if (summary) parts.push(summary);
-    if (dosage) parts.push('📋 ' + dosage);
-    if (precautions) parts.push('⚠️ ' + precautions);
-    if (tips) parts.push('💡 ' + tips);
+    if (!isDefault(summary)) parts.push(summary);
+    if (!isDefault(dosage)) parts.push('📋 ' + dosage);
+    if (!isDefault(precautions)) parts.push('⚠️ ' + precautions);
+    if (!isDefault(tips)) parts.push('💡 ' + tips);
     return parts.filter(Boolean).join('\n\n') || data.answer || t('aiChat.defaultAnswer');
   };
 
