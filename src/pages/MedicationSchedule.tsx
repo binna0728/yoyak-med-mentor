@@ -15,6 +15,8 @@ interface ScheduleItem {
   taken: boolean;
   period: 'morning' | 'afternoon' | 'evening' | 'bedtime';
   date?: string; // YYYY-MM-DD format for date-specific tracking
+  startDate?: string; // 복약 시작일
+  endDate?: string;   // 복약 종료일
 }
 
 interface DayRecord {
@@ -50,6 +52,8 @@ const MedicationSchedule = () => {
             period: string;
             taken?: boolean;
             date?: string;
+            startDate?: string;
+            endDate?: string;
           }) => ({
             id: s.id,
             name: s.name,
@@ -57,6 +61,8 @@ const MedicationSchedule = () => {
             period: s.period as ScheduleItem['period'],
             taken: s.taken || false,
             date: s.date,
+            startDate: s.startDate,
+            endDate: s.endDate,
           }));
           setItems(mapped);
         } catch {
@@ -458,7 +464,12 @@ const MedicationSchedule = () => {
         ) : (
           <div className="space-y-4">
             {periods.map(period => {
-              const periodItems = items.filter(i => i.period === period.key);
+              const selectedDateStr = selectedDate.toISOString().split('T')[0];
+              const periodItems = items.filter(i =>
+                i.period === period.key &&
+                (!i.startDate || i.startDate <= selectedDateStr) &&
+                (!i.endDate || i.endDate >= selectedDateStr)
+              );
               if (periodItems.length === 0) return null;
               return (
                 <div key={period.key}>
@@ -515,7 +526,7 @@ const MedicationSchedule = () => {
       </main>
 
       {deleteMode ? (
-        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+        <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 z-40">
           <button
             onClick={handleDelete}
             disabled={selectedForDelete.size === 0}
