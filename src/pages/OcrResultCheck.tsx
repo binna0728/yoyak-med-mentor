@@ -35,7 +35,7 @@ const parseScheduleInfo = (schedule: string, frequency: string) => {
 
   // frequency 기반 fallback
   if (entries.length === 0) {
-    const freqNum = parseInt(frequency) || 1;
+    const freqNum = parseInt(frequency.replace(/[^0-9]/g, '')) || 1;
     if (freqNum >= 3) {
       entries.push({ period: 'morning', time: '09:00' }, { period: 'afternoon', time: '12:00' }, { period: 'evening', time: '18:00' });
     } else if (freqNum === 2) {
