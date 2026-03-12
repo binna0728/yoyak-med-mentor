@@ -11,13 +11,7 @@ const FileUpload = () => {
 
   const handleFile = (file: File) => {
     if (!file.type.startsWith('image/')) { toast.error(t('camera.imageOnly')); return; }
-    navigate('/processing');
-    setTimeout(() => {
-      localStorage.setItem('ocr_result', JSON.stringify([
-        { name: t('sampleMeds.tylenol'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days5'), schedule: t('sampleMeds.afterMeal30') },
-      ]));
-      navigate('/result/check', { replace: true });
-    }, 2500);
+    navigate('/processing', { state: { image: file, type: 'prescription' } });
   };
 
   const onInput = (e: React.ChangeEvent<HTMLInputElement>) => {
