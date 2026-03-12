@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, FileText, Upload } from 'lucide-react';
+import { ArrowLeft, Camera, FileText, Upload, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -12,6 +12,7 @@ const CaptureMethod = () => {
     { icon: Camera, emoji: '📷', title: t('capture.pillPhoto'), desc: t('capture.pillPhotoDesc'), to: '/camera/pill' },
     { icon: FileText, emoji: '📄', title: t('capture.prescriptionPhoto'), desc: t('capture.prescriptionPhotoDesc'), to: '/camera/prescription' },
     { icon: Upload, emoji: '📁', title: t('capture.fileUpload'), desc: t('capture.fileUploadDesc'), to: '/upload' },
+    { icon: PlusCircle, emoji: '💊', title: '약(영양제) 직접 추가', desc: 'AI 검색으로 간편 등록', to: '/add/supplement' },
   ];
 
   return (

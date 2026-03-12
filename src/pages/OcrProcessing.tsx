@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
@@ -14,6 +14,7 @@ const OcrProcessing = () => {
   const location = useLocation();
   const { isSeniorMode: sr } = useSeniorMode();
   const { t } = useTranslation();
+  const hasRun = useRef(false);
   const [steps, setSteps] = useState<ProcessingStep[]>([
     { label: t('ocr.step1'), status: 'active' },
     { label: t('ocr.step2'), status: 'pending' },
@@ -21,6 +22,9 @@ const OcrProcessing = () => {
   ]);
 
   useEffect(() => {
+    if (hasRun.current) return;
+    hasRun.current = true;
+
     const state = location.state as { image?: File; type?: string } | null;
     const timers: ReturnType<typeof setTimeout>[] = [];
 

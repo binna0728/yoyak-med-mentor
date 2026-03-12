@@ -53,14 +53,26 @@ const AddSupplement = () => {
     );
   };
 
+  const extractDosageAmount = (dosageText: string): string => {
+    // "1회 2정", "한 번에 1캡슐", "1포" 등 추출
+    const m = dosageText.match(/1회\s*(\d+(?:\.\d+)?[정캡슐포알정粒])/);
+    if (m) return m[1];
+    const m2 = dosageText.match(/(\d+(?:\.\d+)?[정캡슐포알정粒])/);
+    if (m2) return m2[1];
+    return '';
+  };
+
   const fetchAiInfo = async (medName: string) => {
     if (!medName.trim()) return;
     setAiLoading(true);
     setAiInfo(null);
     try {
       const res = await apiClient.post('/medicines/info', { name: medName });
-      const { summary, dosage, precautions } = res.data;
-      setAiInfo({ summary, dosage, precautions });
+      const { summary, dosage: aiDosage, precautions } = res.data;
+      setAiInfo({ summary, dosage: aiDosage, precautions });
+      // 복용량 자동 반영
+      const extracted = extractDosageAmount(aiDosage || '');
+      if (extracted) setDosage(extracted);
     } catch {
       // AI 실패해도 등록 가능
     } finally {
@@ -77,25 +89,36 @@ const AddSupplement = () => {
       const existingRaw = localStorage.getItem('saved_schedules');
       const existing = existingRaw ? JSON.parse(existingRaw) : [];
 
-      const newSchedules = selectedPeriods.map(periodKey => {
-        const period = periodOptions.find(p => p.key === periodKey)!;
-        return {
-          id: `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          name: name.trim(),
-          dosage,
-          frequency: `1일 ${selectedPeriods.length}회`,
-          duration: endDate ? `${Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000) + 1}일` : '매일',
-          schedule: period.label,
-          time: period.time,
-          period: periodKey,
-          taken: false,
-          startDate,
-          endDate: endDate || undefined,
-          createdAt: new Date().toISOString(),
-        };
-      });
+      const existingKeys = new Set(
+        existing.map((e: { name: string; period: string }) => `${e.name}__${e.period}`)
+      );
+
+      const newSchedules = selectedPeriods
+        .filter(periodKey => !existingKeys.has(`${name.trim()}__${periodKey}`))
+        .map(periodKey => {
+          const period = periodOptions.find(p => p.key === periodKey)!;
+          return {
+            id: `manual-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: name.trim(),
+            dosage,
+            frequency: `1일 ${selectedPeriods.length}회`,
+            duration: endDate ? `${Math.round((new Date(endDate).getTime() - new Date(startDate).getTime()) / 86400000) + 1}일` : '매일',
+            schedule: period.label,
+            time: period.time,
+            period: periodKey,
+            taken: false,
+            startDate,
+            endDate: endDate || undefined,
+            createdAt: new Date().toISOString(),
+          };
+        });
 
       localStorage.setItem('saved_schedules', JSON.stringify([...existing, ...newSchedules]));
+      if (newSchedules.length === 0) {
+        toast.info('이미 등록된 약입니다');
+        navigate('/schedule', { replace: true });
+        return;
+      }
       toast.success(`${name} 등록 완료!`);
       navigate('/schedule', { replace: true });
     } catch {
@@ -173,9 +196,11 @@ const AddSupplement = () => {
           )}
           {aiInfo && (
             <div className="tds-card space-y-3 border-primary/30">
-              <div className="flex items-center gap-2 mb-1">
-                <Sparkles className="w-5 h-5 text-primary" />
-                <span className={`font-bold text-primary ${sr ? 'text-lg' : 'text-sm'}`}>AI 분석 결과</span>
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                  <span className={`font-bold text-primary ${sr ? 'text-lg' : 'text-sm'}`}>AI 분석 — {name}</span>
+                </div>
               </div>
               <div className="space-y-2">
                 {[

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSeniorMode } from '@/contexts/SeniorModeContext';
 
 interface OcrItem {
   name: string;
@@ -27,6 +28,7 @@ const OcrResultEdit = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<OcrItem[]>([]);
   const { t } = useTranslation();
+  const { isSeniorMode: sr } = useSeniorMode();
   const todayStr = toDateStr(new Date());
 
   useEffect(() => {
@@ -68,41 +70,41 @@ const OcrResultEdit = () => {
     <div className="min-h-screen bg-background flex flex-col safe-area-padding">
       <header className="tds-header">
         <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2"><ArrowLeft className="w-6 h-6 text-foreground" /></button>
-          <div className="flex-1 text-center"><span className="text-lg font-bold text-foreground">{t('ocrEdit.title')}</span></div>
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2"><ArrowLeft className={`text-foreground ${sr ? 'w-7 h-7' : 'w-6 h-6'}`} /></button>
+          <div className="flex-1 text-center"><span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('ocrEdit.title')}</span></div>
           <div className="w-10" />
         </div>
       </header>
 
       <main className="flex-1 px-5 py-6 pb-28 overflow-y-auto">
         <div className="max-w-sm mx-auto">
-          <h1 className="text-lg font-bold text-foreground mb-6">{t('ocrEdit.editInfo')}</h1>
+          <h1 className={`font-bold text-foreground mb-6 ${sr ? 'text-2xl' : 'text-lg'}`}>{t('ocrEdit.editInfo')}</h1>
 
           {items.map((item, idx) => (
             <div key={idx} className="tds-card space-y-3 mb-4">
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-medium">{t('ocrEdit.medName')}</label>
-                <input value={item.name} onChange={e => updateItem(idx, 'name', e.target.value)} className="tds-textfield" />
+                <label className={`text-muted-foreground font-medium ${sr ? 'text-sm' : 'text-xs'}`}>{t('ocrEdit.medName')}</label>
+                <input value={item.name} onChange={e => updateItem(idx, 'name', e.target.value)} className={`tds-textfield ${sr ? 'text-base h-12' : ''}`} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-medium">{t('ocrEdit.singleDose')}</label>
-                <input value={item.dosage} onChange={e => updateItem(idx, 'dosage', e.target.value)} className="tds-textfield" />
+                <label className={`text-muted-foreground font-medium ${sr ? 'text-sm' : 'text-xs'}`}>{t('ocrEdit.singleDose')}</label>
+                <input value={item.dosage} onChange={e => updateItem(idx, 'dosage', e.target.value)} className={`tds-textfield ${sr ? 'text-base h-12' : ''}`} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-medium">{t('ocrEdit.dailyFrequency')}</label>
-                <input value={item.frequency} onChange={e => updateItem(idx, 'frequency', e.target.value)} className="tds-textfield" />
+                <label className={`text-muted-foreground font-medium ${sr ? 'text-sm' : 'text-xs'}`}>{t('ocrEdit.dailyFrequency')}</label>
+                <input value={item.frequency} onChange={e => updateItem(idx, 'frequency', e.target.value)} className={`tds-textfield ${sr ? 'text-base h-12' : ''}`} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-medium">{t('ocrEdit.duration')}</label>
-                <input value={item.duration} onChange={e => updateItem(idx, 'duration', e.target.value)} className="tds-textfield" />
+                <label className={`text-muted-foreground font-medium ${sr ? 'text-sm' : 'text-xs'}`}>{t('ocrEdit.duration')}</label>
+                <input value={item.duration} onChange={e => updateItem(idx, 'duration', e.target.value)} className={`tds-textfield ${sr ? 'text-base h-12' : ''}`} />
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground font-medium">{t('ocrEdit.dosageTime')}</label>
-                <input value={item.schedule} onChange={e => updateItem(idx, 'schedule', e.target.value)} className="tds-textfield" />
+                <label className={`text-muted-foreground font-medium ${sr ? 'text-sm' : 'text-xs'}`}>{t('ocrEdit.dosageTime')}</label>
+                <input value={item.schedule} onChange={e => updateItem(idx, 'schedule', e.target.value)} className={`tds-textfield ${sr ? 'text-base h-12' : ''}`} />
                 <div className="flex gap-2 flex-wrap">
                   {schedulePresets.map(p => (
                     <button key={p} type="button" onClick={() => updateItem(idx, 'schedule', p)}
-                      className={`tds-chip text-xs h-9 px-3 ${item.schedule === p ? 'active' : ''}`}>{p}</button>
+                      className={`tds-chip px-3 ${sr ? 'text-sm h-11' : 'text-xs h-9'} ${item.schedule === p ? 'active' : ''}`}>{p}</button>
                   ))}
                 </div>
               </div>
@@ -143,7 +145,7 @@ const OcrResultEdit = () => {
 
       <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-sm mx-auto">
-          <button onClick={handleSave} className="tds-button-primary w-full">{t('ocrEdit.saveConfirm')}</button>
+          <button onClick={handleSave} className={`tds-button-primary w-full ${sr ? 'h-14 text-lg' : ''}`}>{t('ocrEdit.saveConfirm')}</button>
         </div>
       </div>
     </div>

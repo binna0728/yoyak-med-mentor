@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Volume2, CalendarPlus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Volume2, CalendarPlus, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
 import apiClient from '@/api/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+
+interface GuideInfo {
+  summary: string;
+  dosage: string;
+  precautions: string;
+}
 
 interface OcrItem {
   name: string;
@@ -35,16 +41,17 @@ const parseScheduleInfo = (schedule: string, frequency: string) => {
     entries.push({ period: 'bedtime', time: '22:00' });
   }
 
-  // frequency 기반 fallback
-  if (entries.length === 0) {
-    const freqNum = parseInt(frequency.replace(/[^0-9]/g, '')) || 1;
-    if (freqNum >= 3) {
-      entries.push({ period: 'morning', time: '09:00' }, { period: 'afternoon', time: '12:00' }, { period: 'evening', time: '18:00' });
-    } else if (freqNum === 2) {
-      entries.push({ period: 'morning', time: '09:00' }, { period: 'evening', time: '18:00' });
-    } else {
-      entries.push({ period: 'morning', time: '09:00' });
-    }
+  const freqNum = parseInt(frequency.replace(/[^0-9]/g, '')) || 1;
+  const allPeriods = [
+    { period: 'morning', time: '09:00' },
+    { period: 'afternoon', time: '12:00' },
+    { period: 'evening', time: '18:00' },
+    { period: 'bedtime', time: '22:00' },
+  ];
+
+  // 키워드 매칭이 없거나 frequency보다 적으면 frequency 기준으로 채움
+  if (entries.length === 0 || entries.length < freqNum) {
+    return allPeriods.slice(0, Math.max(freqNum, entries.length));
   }
 
   return entries;
@@ -56,12 +63,39 @@ const OcrResultCheck = () => {
   const [items, setItems] = useState<OcrItem[]>([]);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [guideLoadingIdx, setGuideLoadingIdx] = useState<number | null>(null);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const [guideCache, setGuideCache] = useState<Record<number, GuideInfo>>({});
+  const [guideLoading, setGuideLoading] = useState(false);
   const { t } = useTranslation();
 
   useEffect(() => {
     const stored = localStorage.getItem('ocr_result');
-    if (stored) setItems(JSON.parse(stored));
+    if (!stored) return;
+    const parsed: OcrItem[] = JSON.parse(stored);
+    setItems(parsed);
+
+    // 페이지 로드 시 모든 약 가이드를 병렬로 미리 로딩
+    const fetchAll = async () => {
+      setGuideLoading(true);
+      const results = await Promise.allSettled(
+        parsed.map(item => apiClient.post('/medicines/info', { name: item.name }))
+      );
+      const cache: Record<number, GuideInfo> = {};
+      results.forEach((res, idx) => {
+        if (res.status === 'fulfilled') {
+          cache[idx] = res.value.data;
+        } else {
+          cache[idx] = {
+            summary: '정보를 불러오지 못했습니다.',
+            dosage: `${parsed[idx].dosage}, ${parsed[idx].frequency}`,
+            precautions: '',
+          };
+        }
+      });
+      setGuideCache(cache);
+      setGuideLoading(false);
+    };
+    fetchAll();
   }, []);
 
   /** OCR 결과를 복약 스케줄로 자동 등록 */
@@ -71,26 +105,43 @@ const OcrResultCheck = () => {
       const existingRaw = localStorage.getItem('saved_schedules');
       const existing = existingRaw ? JSON.parse(existingRaw) : [];
 
+      // 이미 등록된 약+시간대 조합은 중복 추가 방지 (기존 + 이번 배치 내 중복 모두 방지)
+      const existingKeys = new Set(
+        existing.map((e: { name: string; period: string }) => `${e.name}__${e.period}`)
+      );
+      const addedKeys = new Set<string>();
+
       const newSchedules = items.flatMap(item => {
         const scheduleEntries = parseScheduleInfo(item.schedule, item.frequency);
-        return scheduleEntries.map(entry => ({
-          id: `ocr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-          name: item.name,
-          dosage: item.dosage,
-          frequency: item.frequency,
-          duration: item.duration,
-          schedule: item.schedule,
-          time: entry.time,
-          period: entry.period,
-          taken: false,
-          startDate: item.startDate || new Date().toISOString().split('T')[0],
-          endDate: item.endDate,
-          createdAt: new Date().toISOString(),
-        }));
+        return scheduleEntries
+          .filter(entry => {
+            const key = `${item.name}__${entry.period}`;
+            if (existingKeys.has(key) || addedKeys.has(key)) return false;
+            addedKeys.add(key);
+            return true;
+          })
+          .map(entry => ({
+            id: `ocr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            name: item.name,
+            dosage: item.dosage,
+            frequency: item.frequency,
+            duration: item.duration,
+            schedule: item.schedule,
+            time: entry.time,
+            period: entry.period,
+            taken: false,
+            startDate: item.startDate || new Date().toISOString().split('T')[0],
+            endDate: item.endDate,
+            createdAt: new Date().toISOString(),
+          }));
       });
 
       localStorage.setItem('saved_schedules', JSON.stringify([...existing, ...newSchedules]));
-      toast.success(t('ocr.scheduleRegistered', { count: newSchedules.length }) || `${newSchedules.length}개 복약 스케줄이 등록되었습니다`);
+      if (newSchedules.length === 0) {
+        toast.info('이미 등록된 스케줄입니다');
+      } else {
+        toast.success(`${newSchedules.length}개 복약 스케줄이 등록되었습니다`);
+      }
       navigate('/schedule', { replace: true });
     } catch {
       toast.error(t('ocr.scheduleFailed') || '스케줄 등록에 실패했습니다');
@@ -99,42 +150,8 @@ const OcrResultCheck = () => {
     }
   };
 
-  const handleGuide = async (item: OcrItem, idx: number) => {
-    const demoId = `ocr-${Date.now()}`;
-    setGuideLoadingIdx(idx);
-    try {
-      const res = await apiClient.post('/chat', {
-        question: `${item.name}의 효능, 복용법, 주의사항, 부작용을 알려줘`,
-      });
-      const { sections, answer } = res.data;
-      localStorage.setItem(`guide_${demoId}`, JSON.stringify({
-        id: demoId,
-        name: item.name,
-        effect: sections?.summary || '',
-        dosage: `${item.dosage}, ${item.frequency}`,
-        schedule: item.schedule,
-        warning: sections?.precautions || '',
-        side_effect: sections?.tips || '',
-        patient_explanation: answer || '',
-        created_at: new Date().toISOString(),
-      }));
-    } catch {
-      // API 실패 시 기본 안내 텍스트
-      localStorage.setItem(`guide_${demoId}`, JSON.stringify({
-        id: demoId,
-        name: item.name,
-        effect: t('ocr.aiAnalyzedEffect'),
-        dosage: `${item.dosage}, ${item.frequency}`,
-        schedule: item.schedule,
-        warning: t('ocr.aiAnalyzedWarning'),
-        side_effect: t('ocr.aiAnalyzedSideEffect'),
-        patient_explanation: t('ocr.aiPatientExplanation', { name: item.name, schedule: item.schedule, dosage: item.dosage }),
-        created_at: new Date().toISOString(),
-      }));
-    } finally {
-      setGuideLoadingIdx(null);
-    }
-    navigate(`/guide/${demoId}`);
+  const toggleGuide = (idx: number) => {
+    setExpandedIdx(prev => (prev === idx ? null : idx));
   };
 
   const handleTTS = async () => {
@@ -210,14 +227,34 @@ const OcrResultCheck = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => handleGuide(item, idx)}
-                  disabled={guideLoadingIdx === idx}
+                  onClick={() => toggleGuide(idx)}
                   className={`mt-3 w-full tds-button-secondary flex items-center justify-center gap-2 ${sr ? 'text-base py-3' : 'text-sm'}`}
                 >
-                  {guideLoadingIdx === idx
-                    ? <><Loader2 className="w-4 h-4 animate-spin" /> 분석 중...</>
-                    : t('ocr.viewGuide')}
+                  {expandedIdx === idx
+                    ? <><ChevronUp className="w-4 h-4" /> 복약 가이드 닫기</>
+                    : <><ChevronDown className="w-4 h-4" /> 복약 가이드 보기{guideLoading ? ' (로딩 중...)' : ''}</>}
                 </button>
+                {expandedIdx === idx && (
+                  <div className="mt-2 space-y-2 border-t border-border pt-3">
+                    {guideCache[idx] ? (
+                      [
+                        { label: '✅ 효능·효과', value: guideCache[idx].summary },
+                        { label: '💊 복용법', value: guideCache[idx].dosage },
+                        { label: '⚠️ 주의사항', value: guideCache[idx].precautions },
+                      ].filter(r => r.value).map(row => (
+                        <div key={row.label} className="bg-muted rounded-xl p-3">
+                          <p className="text-xs text-muted-foreground mb-0.5">{row.label}</p>
+                          <p className={`text-foreground font-medium ${sr ? 'text-base' : 'text-sm'}`}>{row.value}</p>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center justify-center gap-2 py-4">
+                        <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">불러오는 중...</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
