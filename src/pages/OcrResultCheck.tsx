@@ -13,6 +13,8 @@ interface OcrItem {
   frequency: string;
   duration: string;
   schedule: string;
+  startDate?: string;
+  endDate?: string;
 }
 
 /** OCR 결과에서 시간대(period)와 기본 시간(HH:MM)을 추출 */
@@ -81,6 +83,8 @@ const OcrResultCheck = () => {
           time: entry.time,
           period: entry.period,
           taken: false,
+          startDate: item.startDate || new Date().toISOString().split('T')[0],
+          endDate: item.endDate,
           createdAt: new Date().toISOString(),
         }));
       });
