@@ -481,7 +481,7 @@ const MedicationSchedule = () => {
                           <button
                             onClick={() => toggleSelectForDelete(item.id)}
                             className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                              selectedForDelete.has(item.id) ? 'bg-destructive border-destructive' : 'border-border hover:border-destructive/50'
+                              selectedForDelete.has(item.id) ? 'bg-primary border-primary' : 'border-border hover:border-primary/50'
                             } ${sr ? 'w-8 h-8' : 'w-6 h-6'}`}
                           >
                             {selectedForDelete.has(item.id) && <span className="text-white text-xs font-bold">✓</span>}
@@ -532,7 +532,7 @@ const MedicationSchedule = () => {
             disabled={selectedForDelete.size === 0}
             className={`w-full flex items-center justify-center gap-2 rounded-2xl font-semibold py-3 transition-colors ${
               selectedForDelete.size > 0
-                ? 'bg-destructive text-white active:opacity-80'
+                ? 'bg-primary text-primary-foreground active:opacity-80'
                 : 'bg-muted text-muted-foreground cursor-not-allowed'
             } ${sr ? 'text-lg' : 'text-base'}`}
           >
