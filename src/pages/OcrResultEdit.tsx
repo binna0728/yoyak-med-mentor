@@ -59,7 +59,7 @@ const OcrResultEdit = () => {
 
   const handleSave = () => {
     localStorage.setItem('ocr_result', JSON.stringify(items));
-    navigate(-1);
+    navigate('/result/check', { replace: true });
   };
 
   const schedulePresets = [t('ocrEdit.beforeMeal'), t('ocrEdit.afterMeal'), t('ocrEdit.beforeBed'), t('ocrEdit.emptyStomach')];
