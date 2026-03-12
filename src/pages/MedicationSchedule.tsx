@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Plus, ChevronLeft, ChevronRight, Calendar, List } from 'lucide-react';
+import { Settings, Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2 } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import AlarmBanner from '@/components/AlarmBanner';
@@ -33,6 +33,8 @@ const MedicationSchedule = () => {
   const [viewMode, setViewMode] = useState<'week' | 'month'>('week');
   const [items, setItems] = useState<ScheduleItem[]>([]);
   const [monthRecords, setMonthRecords] = useState<Record<string, DayRecord>>({});
+  const [deleteMode, setDeleteMode] = useState(false);
+  const [selectedForDelete, setSelectedForDelete] = useState<Set<string>>(new Set());
 
   // localStorage에서 저장된 스케줄 로드
   useEffect(() => {
@@ -118,21 +120,21 @@ const MedicationSchedule = () => {
     const month = base.getMonth();
     const firstDay = new Date(year, month, 1);
     const lastDay = new Date(year, month + 1, 0);
-    
+
     // 월요일 시작으로 맞추기
     const startOffset = (firstDay.getDay() + 6) % 7;
     const days: (Date | null)[] = [];
-    
+
     // 이전 달 빈 칸
     for (let i = 0; i < startOffset; i++) {
       days.push(null);
     }
-    
+
     // 현재 달 날짜
     for (let d = 1; d <= lastDay.getDate(); d++) {
       days.push(new Date(year, month, d));
     }
-    
+
     return days;
   };
 
@@ -153,7 +155,7 @@ const MedicationSchedule = () => {
       if (raw) {
         try {
           const saved = JSON.parse(raw);
-          const updatedSaved = saved.map((s: { id: string; taken?: boolean }) => 
+          const updatedSaved = saved.map((s: { id: string; taken?: boolean }) =>
             s.id === id ? { ...s, taken: !s.taken } : s
           );
           localStorage.setItem('saved_schedules', JSON.stringify(updatedSaved));
@@ -161,7 +163,7 @@ const MedicationSchedule = () => {
           // ignore
         }
       }
-      
+
       // 오늘 기록 업데이트
       const todayStr = today.toISOString().split('T')[0];
       const takenCount = updated.filter(i => i.taken).length;
@@ -173,9 +175,36 @@ const MedicationSchedule = () => {
         localStorage.setItem('medication_records', JSON.stringify(newRecords));
         return newRecords;
       });
-      
+
       return updated;
     });
+  };
+
+  const toggleSelectForDelete = (id: string) => {
+    setSelectedForDelete(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const handleDelete = () => {
+    if (selectedForDelete.size === 0) return;
+    const updated = items.filter(item => !selectedForDelete.has(item.id));
+    setItems(updated);
+    const raw = localStorage.getItem('saved_schedules');
+    if (raw) {
+      try {
+        const saved = JSON.parse(raw);
+        const updatedSaved = saved.filter((s: { id: string }) => !selectedForDelete.has(s.id));
+        localStorage.setItem('saved_schedules', JSON.stringify(updatedSaved));
+      } catch {
+        // ignore
+      }
+    }
+    setSelectedForDelete(new Set());
+    setDeleteMode(false);
   };
 
   const alarmItems = items
@@ -231,7 +260,7 @@ const MedicationSchedule = () => {
     let completeDays = 0;
     let partialDays = 0;
     let missedDays = 0;
-    
+
     Object.values(monthRecords).forEach(record => {
       const recordDate = new Date(record.date);
       const todayStr = today.toISOString().split('T')[0];
@@ -243,7 +272,7 @@ const MedicationSchedule = () => {
         else missedDays++;
       }
     });
-    
+
     return { totalDays, completeDays, partialDays, missedDays };
   };
 
@@ -257,22 +286,38 @@ const MedicationSchedule = () => {
         <div className="flex items-center justify-between h-14 px-5 border-b border-border">
           <div className="flex items-center gap-2">
             <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
-            <span className={`inline-flex items-center rounded-full text-xs font-semibold px-2.5 py-0.5 ${
-              takenCount === items.length ? 'bg-primary/10 text-primary' : 'bg-accent text-accent-foreground'
-            }`}>
-              {takenCount}/{items.length}
-            </span>
+            {!deleteMode && (
+              <span className={`inline-flex items-center rounded-full text-xs font-semibold px-2.5 py-0.5 ${
+                takenCount === items.length ? 'bg-primary/10 text-primary' : 'bg-accent text-accent-foreground'
+              }`}>
+                {takenCount}/{items.length}
+              </span>
+            )}
           </div>
           <div className="flex items-center gap-1">
-            <button 
-              onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')} 
-              className={`p-2 rounded-lg transition-colors ${viewMode === 'month' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
-            >
-              {viewMode === 'week' ? <Calendar className="w-5 h-5" /> : <List className="w-5 h-5" />}
-            </button>
-            <button onClick={() => navigate('/setup/time')} className="p-2">
-              <Settings className="w-5 h-5 text-muted-foreground" />
-            </button>
+            {deleteMode ? (
+              <button
+                onClick={() => { setDeleteMode(false); setSelectedForDelete(new Set()); }}
+                className={`text-muted-foreground font-medium ${sr ? 'text-base' : 'text-sm'} px-3 py-1`}
+              >
+                취소
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
+                  className={`p-2 rounded-lg transition-colors ${viewMode === 'month' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
+                >
+                  {viewMode === 'week' ? <Calendar className="w-5 h-5" /> : <List className="w-5 h-5" />}
+                </button>
+                <button onClick={() => setDeleteMode(true)} className="p-2">
+                  <Trash2 className="w-5 h-5 text-muted-foreground" />
+                </button>
+                <button onClick={() => navigate('/setup/time')} className="p-2">
+                  <Settings className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -294,7 +339,7 @@ const MedicationSchedule = () => {
                 const isSelected = isSameDay(day, selectedDate);
                 const dateStr = day.toISOString().split('T')[0];
                 const record = monthRecords[dateStr];
-                
+
                 return (
                   <button
                     key={idx}
@@ -331,16 +376,16 @@ const MedicationSchedule = () => {
                   const record = monthRecords[dateStr];
                   const isPast = day < today && !isToday;
                   const isFuture = day > today;
-                  
+
                   return (
                     <button
                       key={dateStr}
                       onClick={() => setSelectedDate(day)}
                       className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-colors relative ${
-                        isSelected 
-                          ? 'bg-primary text-primary-foreground' 
-                          : isToday 
-                            ? 'bg-accent text-primary ring-2 ring-primary' 
+                        isSelected
+                          ? 'bg-primary text-primary-foreground'
+                          : isToday
+                            ? 'bg-accent text-primary ring-2 ring-primary'
                             : isFuture
                               ? 'text-muted-foreground/50'
                               : 'text-foreground hover:bg-accent'
@@ -385,7 +430,7 @@ const MedicationSchedule = () => {
                       </span>
                     </div>
                     <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-primary rounded-full transition-all"
                         style={{ width: `${(stats.completeDays / stats.totalDays) * 100}%` }}
                       />
@@ -421,27 +466,40 @@ const MedicationSchedule = () => {
                   <div className="space-y-2">
                     {periodItems.map((item) => (
                       <div key={item.id} className="tds-card flex items-center gap-3" style={sr ? { padding: '20px' } : undefined}>
-                        <button
-                          onClick={() => toggleTaken(item.id)}
-                          className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
-                            item.taken ? 'bg-primary border-primary' : 'border-border hover:border-primary/50'
-                          } ${sr ? 'w-8 h-8' : 'w-6 h-6'}`}
-                        >
-                          {item.taken && <span className="text-primary-foreground text-xs font-bold">✓</span>}
-                        </button>
+                        {deleteMode ? (
+                          <button
+                            onClick={() => toggleSelectForDelete(item.id)}
+                            className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                              selectedForDelete.has(item.id) ? 'bg-destructive border-destructive' : 'border-border hover:border-destructive/50'
+                            } ${sr ? 'w-8 h-8' : 'w-6 h-6'}`}
+                          >
+                            {selectedForDelete.has(item.id) && <span className="text-white text-xs font-bold">✓</span>}
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => toggleTaken(item.id)}
+                            className={`rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                              item.taken ? 'bg-primary border-primary' : 'border-border hover:border-primary/50'
+                            } ${sr ? 'w-8 h-8' : 'w-6 h-6'}`}
+                          >
+                            {item.taken && <span className="text-primary-foreground text-xs font-bold">✓</span>}
+                          </button>
+                        )}
                         <div className="flex-1 min-w-0">
-                          <p className={`font-medium ${item.taken ? 'text-muted-foreground line-through' : 'text-foreground'} ${sr ? 'text-lg' : 'text-sm'}`}>
+                          <p className={`font-medium ${!deleteMode && item.taken ? 'text-muted-foreground line-through' : 'text-foreground'} ${sr ? 'text-lg' : 'text-sm'}`}>
                             {item.name}
                           </p>
                           <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'}`}>
                             {item.time}
                           </p>
                         </div>
-                        <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
-                          item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
-                        }`}>
-                          {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
-                        </span>
+                        {!deleteMode && (
+                          <span className={`inline-flex items-center rounded-full text-xs font-medium px-2 py-0.5 ${
+                            item.taken ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                          }`}>
+                            {item.taken ? t('schedule.taken') : t('schedule.notTaken')}
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -456,14 +514,31 @@ const MedicationSchedule = () => {
         </p>
       </main>
 
-      <button
-        onClick={() => navigate('/capture')}
-        className={`fixed z-50 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-90 transition-transform ${
-          sr ? 'w-16 h-16 right-5 bottom-24' : 'w-14 h-14 right-5 bottom-20'
-        }`}
-      >
-        <Plus className={sr ? 'w-8 h-8' : 'w-6 h-6'} />
-      </button>
+      {deleteMode ? (
+        <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+          <button
+            onClick={handleDelete}
+            disabled={selectedForDelete.size === 0}
+            className={`w-full flex items-center justify-center gap-2 rounded-2xl font-semibold py-3 transition-colors ${
+              selectedForDelete.size > 0
+                ? 'bg-destructive text-white active:opacity-80'
+                : 'bg-muted text-muted-foreground cursor-not-allowed'
+            } ${sr ? 'text-lg' : 'text-base'}`}
+          >
+            <Trash2 className="w-5 h-5" />
+            {selectedForDelete.size > 0 ? `${selectedForDelete.size}개 삭제` : '삭제할 항목을 선택하세요'}
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => navigate('/capture')}
+          className={`fixed z-50 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center active:scale-90 transition-transform ${
+            sr ? 'w-16 h-16 right-5 bottom-24' : 'w-14 h-14 right-5 bottom-20'
+          }`}
+        >
+          <Plus className={sr ? 'w-8 h-8' : 'w-6 h-6'} />
+        </button>
+      )}
 
       <BottomNav />
     </div>
