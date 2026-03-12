@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Volume2, CalendarPlus } from 'lucide-react';
+import { ArrowLeft, Volume2, CalendarPlus, Loader2 } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
+import apiClient from '@/api/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -53,6 +54,7 @@ const OcrResultCheck = () => {
   const [items, setItems] = useState<OcrItem[]>([]);
   const [ttsLoading, setTtsLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [guideLoadingIdx, setGuideLoadingIdx] = useState<number | null>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -93,16 +95,41 @@ const OcrResultCheck = () => {
     }
   };
 
-  const handleGuide = (item: OcrItem) => {
+  const handleGuide = async (item: OcrItem, idx: number) => {
     const demoId = `ocr-${Date.now()}`;
-    localStorage.setItem(`guide_${demoId}`, JSON.stringify({
-      id: demoId, name: item.name,
-      effect: t('ocr.aiAnalyzedEffect'), dosage: `${item.dosage}, ${item.frequency}`,
-      schedule: item.schedule, warning: t('ocr.aiAnalyzedWarning'),
-      side_effect: t('ocr.aiAnalyzedSideEffect'),
-      patient_explanation: t('ocr.aiPatientExplanation', { name: item.name, schedule: item.schedule, dosage: item.dosage }),
-      created_at: new Date().toISOString(),
-    }));
+    setGuideLoadingIdx(idx);
+    try {
+      const res = await apiClient.post('/chat', {
+        question: `${item.name}의 효능, 복용법, 주의사항, 부작용을 알려줘`,
+      });
+      const { sections, answer } = res.data;
+      localStorage.setItem(`guide_${demoId}`, JSON.stringify({
+        id: demoId,
+        name: item.name,
+        effect: sections?.summary || '',
+        dosage: `${item.dosage}, ${item.frequency}`,
+        schedule: item.schedule,
+        warning: sections?.precautions || '',
+        side_effect: sections?.tips || '',
+        patient_explanation: answer || '',
+        created_at: new Date().toISOString(),
+      }));
+    } catch {
+      // API 실패 시 기본 안내 텍스트
+      localStorage.setItem(`guide_${demoId}`, JSON.stringify({
+        id: demoId,
+        name: item.name,
+        effect: t('ocr.aiAnalyzedEffect'),
+        dosage: `${item.dosage}, ${item.frequency}`,
+        schedule: item.schedule,
+        warning: t('ocr.aiAnalyzedWarning'),
+        side_effect: t('ocr.aiAnalyzedSideEffect'),
+        patient_explanation: t('ocr.aiPatientExplanation', { name: item.name, schedule: item.schedule, dosage: item.dosage }),
+        created_at: new Date().toISOString(),
+      }));
+    } finally {
+      setGuideLoadingIdx(null);
+    }
     navigate(`/guide/${demoId}`);
   };
 
@@ -178,6 +205,15 @@ const OcrResultCheck = () => {
                     <p className="text-foreground font-medium">{item.schedule}</p>
                   </div>
                 </div>
+                <button
+                  onClick={() => handleGuide(item, idx)}
+                  disabled={guideLoadingIdx === idx}
+                  className={`mt-3 w-full tds-button-secondary flex items-center justify-center gap-2 ${sr ? 'text-base py-3' : 'text-sm'}`}
+                >
+                  {guideLoadingIdx === idx
+                    ? <><Loader2 className="w-4 h-4 animate-spin" /> 분석 중...</>
+                    : t('ocr.viewGuide')}
+                </button>
               </div>
             ))}
           </div>
@@ -195,14 +231,11 @@ const OcrResultCheck = () => {
             <button onClick={() => navigate('/result/edit')} className="tds-button-secondary flex-1">
               {t('ocr.edit')}
             </button>
-            <button onClick={() => items[0] && handleGuide(items[0])} className="tds-button-secondary flex-1">
-              {t('ocr.viewGuide')}
+            <button onClick={handleTTS} disabled={ttsLoading} className="tds-button-secondary flex-1 flex items-center justify-center gap-2">
+              <Volume2 className="w-5 h-5" />
+              {ttsLoading ? t('ocr.ttsLoading') : t('ocr.listenTTS')}
             </button>
           </div>
-          <button onClick={handleTTS} disabled={ttsLoading} className="tds-button-secondary w-full flex items-center justify-center gap-2">
-            <Volume2 className="w-5 h-5" />
-            {ttsLoading ? t('ocr.ttsLoading') : t('ocr.listenTTS')}
-          </button>
         </div>
       </div>
     </div>
