@@ -9,25 +9,57 @@ interface OcrItem {
   frequency: string;
   duration: string;
   schedule: string;
+  startDate?: string;
+  endDate?: string;
 }
+
+const toDateStr = (d: Date) => d.toISOString().split('T')[0];
+
+const calcEndDate = (startDate: string, duration: string): string => {
+  const days = parseInt(duration.replace(/[^0-9]/g, '')) || 0;
+  if (!days) return startDate;
+  const d = new Date(startDate);
+  d.setDate(d.getDate() + days - 1);
+  return toDateStr(d);
+};
 
 const OcrResultEdit = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<OcrItem[]>([]);
   const { t } = useTranslation();
+  const todayStr = toDateStr(new Date());
 
   useEffect(() => {
     const stored = localStorage.getItem('ocr_result');
-    if (stored) setItems(JSON.parse(stored));
+    if (stored) {
+      const parsed: OcrItem[] = JSON.parse(stored);
+      setItems(parsed.map(item => ({
+        ...item,
+        startDate: item.startDate || todayStr,
+        endDate: item.endDate || calcEndDate(item.startDate || todayStr, item.duration),
+      })));
+    }
   }, []);
 
   const updateItem = (idx: number, field: keyof OcrItem, value: string) => {
-    setItems(prev => prev.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+    setItems(prev => prev.map((item, i) => {
+      if (i !== idx) return item;
+      const updated = { ...item, [field]: value };
+      // 시작일 변경 시 종료일 자동 재계산
+      if (field === 'startDate') {
+        updated.endDate = calcEndDate(value, item.duration);
+      }
+      // 복용 기간 변경 시 종료일 자동 재계산
+      if (field === 'duration') {
+        updated.endDate = calcEndDate(item.startDate || todayStr, value);
+      }
+      return updated;
+    }));
   };
 
   const handleSave = () => {
     localStorage.setItem('ocr_result', JSON.stringify(items));
-    navigate('/setup/time');
+    navigate(-1);
   };
 
   const schedulePresets = [t('ocrEdit.beforeMeal'), t('ocrEdit.afterMeal'), t('ocrEdit.beforeBed'), t('ocrEdit.emptyStomach')];
@@ -73,6 +105,36 @@ const OcrResultEdit = () => {
                       className={`tds-chip text-xs h-9 px-3 ${item.schedule === p ? 'active' : ''}`}>{p}</button>
                   ))}
                 </div>
+              </div>
+              {/* 복약 기간 달력 */}
+              <div className="border-t border-border pt-3 space-y-3">
+                <p className="text-xs font-semibold text-foreground">복약 기간 설정</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-muted-foreground font-medium">시작일</label>
+                    <input
+                      type="date"
+                      value={item.startDate || todayStr}
+                      onChange={e => updateItem(idx, 'startDate', e.target.value)}
+                      className="tds-textfield text-sm"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-muted-foreground font-medium">종료일</label>
+                    <input
+                      type="date"
+                      value={item.endDate || ''}
+                      min={item.startDate || todayStr}
+                      onChange={e => updateItem(idx, 'endDate', e.target.value)}
+                      className="tds-textfield text-sm"
+                    />
+                  </div>
+                </div>
+                {item.startDate && item.endDate && (
+                  <p className="text-xs text-primary font-medium text-center">
+                    {item.startDate} ~ {item.endDate}
+                  </p>
+                )}
               </div>
             </div>
           ))}
