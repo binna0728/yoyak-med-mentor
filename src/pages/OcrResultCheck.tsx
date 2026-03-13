@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Volume2, CalendarPlus, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Volume2, VolumeX, CalendarPlus, Loader2, ChevronDown, ChevronUp, Camera, Plus } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { medicineApi } from '@/api/medicine';
 import apiClient from '@/api/client';
@@ -62,6 +62,8 @@ const OcrResultCheck = () => {
   const { isSeniorMode: sr } = useSeniorMode();
   const [items, setItems] = useState<OcrItem[]>([]);
   const [ttsLoading, setTtsLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const [saving, setSaving] = useState(false);
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [guideCache, setGuideCache] = useState<Record<number, GuideInfo>>({});
@@ -154,7 +156,28 @@ const OcrResultCheck = () => {
     setExpandedIdx(prev => (prev === idx ? null : idx));
   };
 
+  const stopTTS = () => {
+    window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+    setTtsLoading(false);
+  };
+
+  // 페이지 떠날 때 TTS 정지
+  useEffect(() => {
+    return () => { window.speechSynthesis.cancel(); };
+  }, []);
+
   const handleTTS = async () => {
+    // 재생 중이면 정지
+    if (isSpeaking) {
+      stopTTS();
+      return;
+    }
+
     if (items.length === 0) return;
     setTtsLoading(true);
     const text = items.map(item =>
@@ -164,14 +187,20 @@ const OcrResultCheck = () => {
     try {
       const result = await medicineApi.getTTS('ocr-result', text);
       const audio = new Audio(result.audio_url);
+      audioRef.current = audio;
+      audio.onended = () => { setIsSpeaking(false); audioRef.current = null; };
+      audio.onerror = () => { setIsSpeaking(false); audioRef.current = null; };
       await audio.play();
+      setIsSpeaking(true);
     } catch {
       if ('speechSynthesis' in window) {
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = 'ko-KR';
         utter.rate = 0.9;
-        utter.onend = () => setTtsLoading(false);
+        utter.onend = () => setIsSpeaking(false);
+        utter.onerror = () => setIsSpeaking(false);
         window.speechSynthesis.speak(utter);
+        setIsSpeaking(true);
       } else {
         toast.error(t('ttsPlayer.notSupported'));
       }
@@ -268,13 +297,28 @@ const OcrResultCheck = () => {
             <CalendarPlus className="w-5 h-5" />
             {saving ? '등록 중...' : (t('ocr.registerSchedule') || '복약 스케줄 등록')}
           </button>
-          <div className="flex gap-3">
-            <button onClick={() => navigate('/result/edit')} className="tds-button-secondary flex-1">
-              {t('ocr.edit')}
+          <div className="grid grid-cols-4 gap-2">
+            <button onClick={() => navigate('/capture')}
+              className="tds-button-secondary flex flex-col items-center justify-center gap-1 py-2">
+              <Camera className="w-4 h-4" />
+              <span className="text-xs">다시 촬영</span>
             </button>
-            <button onClick={handleTTS} disabled={ttsLoading} className="tds-button-secondary flex-1 flex items-center justify-center gap-2">
-              <Volume2 className="w-5 h-5" />
-              {ttsLoading ? t('ocr.ttsLoading') : t('ocr.listenTTS')}
+            <button onClick={() => navigate('/result/edit')}
+              className="tds-button-secondary flex flex-col items-center justify-center gap-1 py-2">
+              <ChevronDown className="w-4 h-4" />
+              <span className="text-xs">{t('ocr.edit')}</span>
+            </button>
+            <button onClick={() => navigate('/add/supplement')}
+              className="tds-button-secondary flex flex-col items-center justify-center gap-1 py-2">
+              <Plus className="w-4 h-4" />
+              <span className="text-xs">약 추가</span>
+            </button>
+            <button onClick={handleTTS} disabled={ttsLoading && !isSpeaking}
+              className={`flex flex-col items-center justify-center gap-1 py-2 ${
+                isSpeaking ? 'tds-button-primary' : 'tds-button-secondary'
+              }`}>
+              {isSpeaking ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              <span className="text-xs">{isSpeaking ? '정지' : 'TTS'}</span>
             </button>
           </div>
         </div>

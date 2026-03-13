@@ -443,7 +443,26 @@ const MedicationSchedule = () => {
           )}
         </div>
 
-        {!permissionGranted && 'Notification' in window && <AlarmPermissionPrompt onRequest={requestPermission} />}
+        {'Notification' in window && (
+          <AlarmPermissionPrompt
+            granted={permissionGranted}
+            onRequest={requestPermission}
+            onRevoke={() => {
+              // 브라우저 알림은 JS로 revoke 불가하므로 앱 내부 플래그로 관리
+              localStorage.setItem('alarm_disabled', 'true');
+              window.location.reload();
+            }}
+          />
+        )}
+
+        {!isAnyMode && items.length > 0 && takenCount < items.length && (
+          <div className={`flex items-center gap-2 rounded-2xl bg-primary/10 border border-primary/20 mb-4 ${sr ? 'px-5 py-4' : 'px-4 py-3'}`}>
+            <span className={sr ? 'text-2xl' : 'text-lg'}>👇</span>
+            <p className={`text-primary font-medium ${sr ? 'text-base' : 'text-sm'}`}>
+              복용한 약은 왼쪽 동그라미를 눌러 체크해주세요
+            </p>
+          </div>
+        )}
 
         {editMode && !editingId && (
           <p className={`text-center text-primary font-medium mb-4 ${sr ? 'text-base' : 'text-sm'}`}>

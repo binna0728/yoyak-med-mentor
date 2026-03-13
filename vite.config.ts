@@ -11,6 +11,13 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    proxy: {
+      '/kakao-api': {
+        target: 'https://dapi.kakao.com',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/kakao-api/, ''),
+      },
+    },
   },
   plugins: [
     react(),
