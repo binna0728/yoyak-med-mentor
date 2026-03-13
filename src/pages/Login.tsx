@@ -34,22 +34,14 @@ const Login = () => {
     }
   };
 
-  const handleKakaoLogin = async () => {
-    try {
-      const res = await import('@/api/client').then(m => m.default.get('/auth/kakao'));
-      window.location.href = res.data.url;
-    } catch {
-      toast({ title: '카카오 로그인 실패', description: '다시 시도해 주세요.', variant: 'destructive' });
-    }
+  const handleKakaoLogin = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
+    window.location.href = `${apiUrl}/auth/kakao/login`;
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const res = await import('@/api/client').then(m => m.default.get('/auth/google'));
-      window.location.href = res.data.url;
-    } catch {
-      toast({ title: '구글 로그인 실패', description: '다시 시도해 주세요.', variant: 'destructive' });
-    }
+  const handleGoogleLogin = () => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
+    window.location.href = `${apiUrl}/auth/google/login`;
   };
 
   return (
