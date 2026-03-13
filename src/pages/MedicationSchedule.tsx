@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2, Pencil, Check, X } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2, Pencil, Check, X, Volume2, VolumeX } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import AlarmBanner from '@/components/AlarmBanner';
@@ -51,6 +51,12 @@ const MedicationSchedule = () => {
   const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editDraft, setEditDraft] = useState<EditDraft>({ name: '', time: '', schedule: '식후' });
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const utterRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  useEffect(() => {
+    return () => { window.speechSynthesis.cancel(); };
+  }, []);
 
   useEffect(() => {
     // 더미/샘플 기록 1회 정리
@@ -130,6 +136,49 @@ const MedicationSchedule = () => {
     localStorage.setItem('medication_records', JSON.stringify(records));
     setMonthRecords({ ...records });
   }, [items]);
+
+  const handleTTS = () => {
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    const todayItems = items.filter(i => {
+      const sel = toDateStr(selectedDate);
+      return (!i.startDate || i.startDate <= sel) && (!i.endDate || i.endDate >= sel);
+    });
+    if (todayItems.length === 0) {
+      const utter = new SpeechSynthesisUtterance('오늘 등록된 복약 스케줄이 없습니다.');
+      utter.lang = 'ko-KR';
+      window.speechSynthesis.speak(utter);
+      return;
+    }
+    const total = todayItems.length;
+    const taken = todayItems.filter(i => i.taken).length;
+    const remaining = todayItems.filter(i => !i.taken);
+    const periodMap: Record<string, string> = { morning: '아침', afternoon: '점심', evening: '저녁', bedtime: '취침 전' };
+    let text = `오늘의 복약 스케줄입니다. 총 ${total}가지 중 ${taken}가지를 복용하셨습니다. `;
+    if (remaining.length === 0) {
+      text += '오늘 모든 약을 복용하셨습니다. 수고하셨습니다!';
+    } else {
+      const byPeriod: Record<string, string[]> = {};
+      remaining.forEach(i => {
+        if (!byPeriod[i.period]) byPeriod[i.period] = [];
+        byPeriod[i.period].push(i.name);
+      });
+      ['morning', 'afternoon', 'evening', 'bedtime'].forEach(p => {
+        if (byPeriod[p]?.length) text += `${periodMap[p]}에 ${byPeriod[p].join(', ')}. `;
+      });
+    }
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'ko-KR';
+    utter.rate = 0.9;
+    utterRef.current = utter;
+    utter.onend = () => setIsSpeaking(false);
+    utter.onerror = () => setIsSpeaking(false);
+    window.speechSynthesis.speak(utter);
+    setIsSpeaking(true);
+  };
 
   const toggleTaken = (id: string) => {
     const raw = localStorage.getItem('saved_schedules');
@@ -275,6 +324,13 @@ const MedicationSchedule = () => {
               </button>
             ) : (
               <>
+                <button
+                  onClick={handleTTS}
+                  className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'text-primary' : 'text-muted-foreground'}`}
+                  title="오늘 복약 읽어주기"
+                >
+                  {isSpeaking ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+                </button>
                 <button
                   onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
                   className={`p-2 rounded-lg transition-colors ${viewMode === 'month' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}

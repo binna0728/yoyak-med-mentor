@@ -47,7 +47,7 @@ const AiChat = () => {
   const formatResponse = (data: ChatApiResponse): string => {
     if (!data.sections) return data.answer || t('aiChat.defaultAnswer');
     const { summary, dosage, precautions, tips } = data.sections;
-    const isDefault = (s: string) => !s || s.includes('해당 정보가 제공되지 않았습니다');
+    const isDefault = (s: string) => !s || s.includes('해당 정보가 제공되지 않았습니다') || s.includes('죄송합니다. 제공된 의약품 정보 내에서');
     const parts: string[] = [];
     if (!isDefault(summary)) parts.push(summary);
     if (!isDefault(dosage)) parts.push('📋 ' + dosage);
