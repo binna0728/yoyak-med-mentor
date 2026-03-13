@@ -26,12 +26,14 @@ export function useMedicationAlarm(
   // Check notification permission on mount
   useEffect(() => {
     if ('Notification' in window) {
-      setPermissionGranted(Notification.permission === 'granted');
+      const disabled = localStorage.getItem('alarm_disabled') === 'true';
+      setPermissionGranted(Notification.permission === 'granted' && !disabled);
     }
   }, []);
 
   const requestPermission = useCallback(async () => {
     if (!('Notification' in window)) return false;
+    localStorage.removeItem('alarm_disabled');
     const result = await Notification.requestPermission();
     const granted = result === 'granted';
     setPermissionGranted(granted);
@@ -50,7 +52,7 @@ export function useMedicationAlarm(
     const match = timeStr.match(/(오전|오후|저녁|새벽)\s*(\d{1,2}):(\d{2})/);
     if (!match) return null;
 
-    let [, period, h, m] = match;
+    const [, period, h, m] = match;
     let hours = parseInt(h);
     const minutes = parseInt(m);
 
