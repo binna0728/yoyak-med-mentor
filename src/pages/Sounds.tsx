@@ -322,12 +322,22 @@ const Sounds = () => {
     const TrackIcon = activeTrack.icon;
     return (
       <div className="tds-page bg-background">
+        {/* 고정 헤더 — 뒤로가기 */}
+        <header className="sticky top-0 z-20 bg-background border-b border-border">
+          <div className="flex items-center h-14 px-4">
+            <button onClick={() => { stopSound(); setActiveTrack(null); }}
+              className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors">
+              <ChevronLeft className="w-6 h-6" />
+              <span className={sr ? 'text-lg' : 'text-sm'}>목록</span>
+            </button>
+            <div className="flex-1 text-center">
+              <span className={cn('font-semibold text-foreground', sr ? 'text-lg' : 'text-base')}>{activeTrack.name}</span>
+            </div>
+            <div className="w-14" />
+          </div>
+        </header>
+
         <div className="tds-content px-5 pt-6 pb-28 flex flex-col items-center">
-          <button onClick={() => { stopSound(); setActiveTrack(null); }}
-            className="self-start flex items-center gap-1 text-muted-foreground mb-6 hover:text-foreground transition-colors">
-            <ChevronLeft className="w-5 h-5" />
-            <span className={sr ? 'text-lg' : 'text-sm'}>{t('sounds.back')}</span>
-          </button>
 
           {/* 앨범 아트 */}
           <div className={cn('w-32 h-32 rounded-full flex items-center justify-center mb-8 border-2 shadow-lg', catInfo.color, isPlaying && 'animate-pulse')}>
