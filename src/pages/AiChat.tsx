@@ -44,16 +44,31 @@ const AiChat = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  const cleanMarkdown = (s: string): string =>
+    s.replace(/\*{1,2}(summary|dosage|precautions|tips|요약|복용|주의|팁|보관)\*{1,2}[:\s]*/gi, '')
+     .replace(/\*{1,2}/g, '')
+     .trim();
+
   const formatResponse = (data: ChatApiResponse): string => {
-    if (!data.sections) return data.answer || t('aiChat.defaultAnswer');
+    const answer = data.answer || '';
+    // 섹션이 없거나 일반 대화 응답이면 raw answer 정리해서 반환
+    if (!data.sections) return cleanMarkdown(answer) || t('aiChat.defaultAnswer');
+
     const { summary, dosage, precautions, tips } = data.sections;
-    const isDefault = (s: string) => !s || s.includes('해당 정보가 제공되지 않았습니다') || s.includes('죄송합니다. 제공된 의약품 정보 내에서');
+    const isDefault = (s: string) =>
+      !s || s.includes('해당 정보가 제공되지 않았습니다') || s.includes('죄송합니다. 제공된 의약품 정보 내에서');
+
+    // 모든 섹션이 기본값이면 → 일반 대화 응답
+    if (isDefault(summary) && isDefault(dosage) && isDefault(precautions) && isDefault(tips)) {
+      return cleanMarkdown(answer) || t('aiChat.defaultAnswer');
+    }
+
     const parts: string[] = [];
-    if (!isDefault(summary)) parts.push(summary);
-    if (!isDefault(dosage)) parts.push('📋 ' + dosage);
-    if (!isDefault(precautions)) parts.push('⚠️ ' + precautions);
-    if (!isDefault(tips)) parts.push('💡 ' + tips);
-    return parts.filter(Boolean).join('\n\n') || data.answer || t('aiChat.defaultAnswer');
+    if (!isDefault(summary)) parts.push(cleanMarkdown(summary));
+    if (!isDefault(dosage)) parts.push('📋 ' + cleanMarkdown(dosage));
+    if (!isDefault(precautions)) parts.push('⚠️ ' + cleanMarkdown(precautions));
+    if (!isDefault(tips)) parts.push('💡 ' + cleanMarkdown(tips));
+    return parts.join('\n\n') || cleanMarkdown(answer) || t('aiChat.defaultAnswer');
   };
 
   const handleSend = async (text?: string) => {

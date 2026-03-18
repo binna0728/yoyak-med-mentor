@@ -204,17 +204,13 @@
   "aiChat": {
     "title": "🤖 AI Consultation",
     "greeting": "Hello! 😊\nAsk me anything about your medication.\nI can help with dosage, side effects, precautions, and more.",
-    "faq": "Frequently Asked Questions",
-    "q1": "Are there side effects?",
-    "q2": "Does it contain caffeine?",
-    "q3": "Can I take it before meals?",
-    "q4": "Can I take it with other drugs?",
+    "faq": "Try asking these",
+    "q1": "What are Tylenol's side effects?",
+    "q2": "Can I take cold and headache medicine together?",
+    "q3": "Can I drink alcohol while taking medication?",
+    "q4": "Should I take blood pressure medicine every day?",
     "placeholder": "Type your question",
-    "a1": "Most medications can have side effects. Common ones include stomach upset, headaches, and dizziness.\n\nIf severe symptoms occur, stop taking the medication immediately and consult your doctor.",
-    "a2": "Some pain relievers and cold medicines may contain caffeine.\n\nCheck the ingredient list on the packaging or ask your pharmacist.",
-    "a3": "Timing varies by medication.\n\n• Before meals: Better absorbed on an empty stomach\n• After meals: To reduce stomach irritation\n\nFollow the instructions on your prescription or medicine bag.",
-    "a4": "Drug interactions can occur.\n\nIf you're taking other medications, be sure to inform your doctor or pharmacist. Special caution is needed with blood pressure, diabetes, and blood-thinning medications.",
-    "defaultAnswer": "I'm looking up information about this medication.\n\nPlease consult your doctor or pharmacist for accurate dosage information. Generally, this medication is best taken after meals. If side effects occur, stop taking it and consult a professional."
+    "defaultAnswer": "Please try again later."
   },
   "settings": {
     "title": "Settings",
