@@ -13,17 +13,17 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
 
 export const authApi = {
   signup: async (data: SignupRequest): Promise<SignupResponse> => {
-    const response = await apiClient.post<SignupResponse>('/accounts/signup', data);
+    const response = await apiClient.post<SignupResponse>('/auth/signup', data);
     return response.data;
   },
 
   login: async (data: LoginRequest): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>('/accounts/login', data);
+    const response = await apiClient.post<LoginResponse>('/auth/login', data);
     return response.data;
   },
 
   refreshToken: async (): Promise<LoginResponse> => {
-    const response = await apiClient.post<LoginResponse>('/accounts/token/refresh');
+    const response = await apiClient.get<LoginResponse>('/auth/token/refresh');
     return response.data;
   },
 
