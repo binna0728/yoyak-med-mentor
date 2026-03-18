@@ -5,9 +5,9 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import NearbyPharmacy from '@/components/NearbyPharmacy';
 import {
-  Brain, Moon, Heart, Flower2, Play, Pause, Repeat, Timer,
-  Volume2, VolumeX, ChevronLeft, CloudRain, Wind, Waves, Music,
-  Sparkles, Leaf, MapPin, Newspaper, BookImage
+  Brain, Moon, Flower2, Play, Pause, Repeat, Timer, SkipForward, SkipBack,
+  Volume2, VolumeX, ChevronLeft, CloudRain, Wind, Music, Coffee,
+  Leaf, MapPin, Newspaper, BookImage
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
@@ -23,67 +23,42 @@ const mainTabs: { id: MainTab; label: string; icon: React.ElementType; emoji: st
   { id: 'webtoon', label: '상식 웹툰', icon: BookImage, emoji: '📚' },
 ];
 
-/* ─── 사운드 관련 타입/데이터 (기존 유지) ─── */
-type Category = 'focus' | 'sleep' | 'meditation' | 'calm';
+/* ─── 사운드 카테고리 & 트랙 ─── */
+type Category = 'focus' | 'sleep' | 'meditation';
 
 interface Track {
   id: string;
-  nameKey: string;
+  name: string;
   icon: React.ElementType;
   category: Category;
-  type: 'brown' | 'pink' | 'white' | 'sine-low' | 'sine-mid' | 'rain' | 'gentle';
+  src: string; // MP3 경로
 }
 
-const categories: { id: Category; labelKey: string; icon: React.ElementType; color: string }[] = [
-  { id: 'focus', labelKey: 'sounds.focus', icon: Brain, color: 'bg-blue-50 text-blue-600 border-blue-200' },
-  { id: 'sleep', labelKey: 'sounds.sleep', icon: Moon, color: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
-  { id: 'meditation', labelKey: 'sounds.meditation', icon: Flower2, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
-  { id: 'calm', labelKey: 'sounds.calm', icon: Heart, color: 'bg-rose-50 text-rose-600 border-rose-200' },
+const categories: { id: Category; label: string; icon: React.ElementType; color: string }[] = [
+  { id: 'focus', label: '집중', icon: Brain, color: 'bg-blue-50 text-blue-600 border-blue-200' },
+  { id: 'sleep', label: '수면', icon: Moon, color: 'bg-indigo-50 text-indigo-600 border-indigo-200' },
+  { id: 'meditation', label: '명상', icon: Flower2, color: 'bg-emerald-50 text-emerald-600 border-emerald-200' },
 ];
 
 const tracks: Track[] = [
-  { id: 'deep-focus', nameKey: 'sounds.deepFocus', icon: Brain, category: 'focus', type: 'brown' },
-  { id: 'study-flow', nameKey: 'sounds.studyFlow', icon: Wind, category: 'focus', type: 'pink' },
-  { id: 'rain-focus', nameKey: 'sounds.rainFocus', icon: CloudRain, category: 'focus', type: 'rain' },
-  { id: 'deep-sleep', nameKey: 'sounds.deepSleep', icon: Moon, category: 'sleep', type: 'sine-low' },
-  { id: 'night-rain', nameKey: 'sounds.nightRain', icon: CloudRain, category: 'sleep', type: 'rain' },
-  { id: 'mindfulness', nameKey: 'sounds.mindfulness', icon: Leaf, category: 'meditation', type: 'sine-mid' },
-  { id: 'breathing-calm', nameKey: 'sounds.breathingCalm', icon: Waves, category: 'meditation', type: 'gentle' },
-  { id: 'stress-relief', nameKey: 'sounds.stressRelief', icon: Sparkles, category: 'calm', type: 'pink' },
-  { id: 'gentle-comfort', nameKey: 'sounds.gentleComfort', icon: Music, category: 'calm', type: 'gentle' },
+  // ── 집중 (10곡)
+  { id: 'calm-desk', name: 'Calm Desk at 4AM', icon: Coffee, category: 'focus', src: '/sounds/deep-focus/Calm Desk at 4AM.mp3' },
+  { id: 'neon-city', name: 'Neon City Focus', icon: Brain, category: 'focus', src: '/sounds/deep-focus/Neon City Focus.mp3' },
+  { id: 'alley-lofi', name: '골목 끝 잔향로파이', icon: Music, category: 'focus', src: '/sounds/deep-focus/골목 끝 잔향로파이.mp3' },
+  { id: 'milk-tea', name: '따뜻한 밀크티', icon: Coffee, category: 'focus', src: '/sounds/deep-focus/따뜻한 밀크티.mp3' },
+  { id: 'midnight-latte', name: '미드나잇 라떼', icon: Moon, category: 'focus', src: '/sounds/deep-focus/미드나잇 라떼.mp3' },
+  { id: 'night-air', name: '밤공기 chillhop', icon: Wind, category: 'focus', src: '/sounds/deep-focus/밤공기 chillhop.mp3' },
+  { id: 'night-walk', name: '밤산책 로파이', icon: Leaf, category: 'focus', src: '/sounds/deep-focus/밤산책 로파이.mp3' },
+  { id: 'calm-forever', name: '잔잔하게, 오래도록', icon: Music, category: 'focus', src: '/sounds/deep-focus/잔잔하게, 오래도록.mp3' },
+  { id: 'study-note', name: '포근한 스터디 노트', icon: Brain, category: 'focus', src: '/sounds/deep-focus/포근한 스터디 노트.mp3' },
+  { id: 'plum-ride', name: '플럼 미드나잇 라이드', icon: Music, category: 'focus', src: '/sounds/deep-focus/플럼 미드나잇 라이드.mp3' },
+  // ── 수면 (준비 중)
+  { id: 'deep-sleep', name: '깊은 수면', icon: Moon, category: 'sleep', src: '/sounds/deep-sleep.mp3' },
+  { id: 'night-rain', name: '밤비', icon: CloudRain, category: 'sleep', src: '/sounds/night-rain.mp3' },
+  // ── 명상 (준비 중)
+  { id: 'mindfulness', name: '마음챙김', icon: Leaf, category: 'meditation', src: '/sounds/mindfulness.mp3' },
+  { id: 'breathing-calm', name: '호흡 안정', icon: Flower2, category: 'meditation', src: '/sounds/breathing-calm.mp3' },
 ];
-
-function createNoiseSource(ctx: AudioContext, type: Track['type'], gainNode: GainNode) {
-  if (type === 'brown' || type === 'pink' || type === 'white' || type === 'rain') {
-    const bufferSize = 2 * ctx.sampleRate;
-    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    let lastOut = 0;
-    for (let i = 0; i < bufferSize; i++) {
-      const white = Math.random() * 2 - 1;
-      if (type === 'brown') { lastOut = (lastOut + 0.02 * white) / 1.02; data[i] = lastOut * 3.5; }
-      else if (type === 'pink' || type === 'rain') { lastOut = 0.99886 * lastOut + white * 0.0555179; data[i] = lastOut * 0.5; }
-      else { data[i] = white * 0.3; }
-    }
-    const source = ctx.createBufferSource();
-    source.buffer = buffer;
-    source.loop = true;
-    if (type === 'rain') {
-      const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 800;
-      source.connect(filter); filter.connect(gainNode);
-    } else { source.connect(gainNode); }
-    gainNode.connect(ctx.destination);
-    return source;
-  }
-  const osc = ctx.createOscillator();
-  osc.type = 'sine';
-  if (type === 'sine-low') osc.frequency.value = 60;
-  else if (type === 'sine-mid') osc.frequency.value = 174;
-  else osc.frequency.value = 120;
-  const filter = ctx.createBiquadFilter(); filter.type = 'lowpass'; filter.frequency.value = 300;
-  osc.connect(filter); filter.connect(gainNode); gainNode.connect(ctx.destination);
-  return osc;
-}
 
 const TIMER_OPTIONS = [
   { label: '15m', value: 15 },
@@ -101,10 +76,10 @@ const Sounds = () => {
   const stateTab = (location.state as { tab?: MainTab } | null)?.tab;
   const [mainTab, setMainTab] = useState<MainTab>(stateTab || 'sounds');
 
-  // 사이드메뉴에서 탭 전환 시 반영
   useEffect(() => {
     if (stateTab) setMainTab(stateTab);
   }, [stateTab]);
+
   const [selectedCategory, setSelectedCategory] = useState<Category>('focus');
   const [activeTrack, setActiveTrack] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -113,54 +88,127 @@ const Sounds = () => {
   const [sleepTimer, setSleepTimer] = useState<number | null>(null);
   const [remainingTime, setRemainingTime] = useState<number | null>(null);
   const [elapsed, setElapsed] = useState(0);
+  const [duration, setDuration] = useState(0);
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | OscillatorNode | null>(null);
-  const gainRef = useRef<GainNode | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const stopSound = useCallback(() => {
-    try { sourceRef.current?.stop(); } catch { /* */ }
-    sourceRef.current = null;
-    if (timerRef.current) clearInterval(timerRef.current);
-    if (elapsedRef.current) clearInterval(elapsedRef.current);
-    setIsPlaying(false); setElapsed(0);
-  }, []);
+  // Audio 초기화
+  useEffect(() => {
+    const audio = new Audio();
+    audio.preload = 'metadata';
+    audioRef.current = audio;
 
-  const playSound = useCallback((track: Track) => {
-    stopSound();
-    const ctx = audioCtxRef.current || new AudioContext();
-    audioCtxRef.current = ctx;
-    if (ctx.state === 'suspended') ctx.resume();
-    const gain = ctx.createGain(); gain.gain.value = volume / 100; gainRef.current = gain;
-    const source = createNoiseSource(ctx, track.type, gain);
-    sourceRef.current = source; source.start(); setIsPlaying(true); setElapsed(0);
-    elapsedRef.current = setInterval(() => { setElapsed(prev => prev + 1); }, 1000);
-  }, [volume, stopSound]);
+    audio.addEventListener('loadedmetadata', () => {
+      setDuration(audio.duration);
+    });
+    audio.addEventListener('timeupdate', () => {
+      setElapsed(Math.floor(audio.currentTime));
+    });
+    audio.addEventListener('ended', () => {
+      if (loop) {
+        audio.currentTime = 0;
+        audio.play();
+      } else {
+        setIsPlaying(false);
+      }
+    });
 
-  useEffect(() => { if (gainRef.current) gainRef.current.gain.value = volume / 100; }, [volume]);
+    return () => {
+      audio.pause();
+      audio.src = '';
+    };
+  }, [loop]);
 
+  // 볼륨 반영
+  useEffect(() => {
+    if (audioRef.current) audioRef.current.volume = volume / 100;
+  }, [volume]);
+
+  // 수면 타이머
   useEffect(() => {
     if (sleepTimer && isPlaying) {
       setRemainingTime(sleepTimer * 60);
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = setInterval(() => {
         setRemainingTime(prev => {
-          if (prev && prev <= 1) { stopSound(); setSleepTimer(null); return null; }
+          if (prev && prev <= 1) {
+            audioRef.current?.pause();
+            setIsPlaying(false);
+            setSleepTimer(null);
+            return null;
+          }
           return prev ? prev - 1 : null;
         });
       }, 1000);
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [sleepTimer, isPlaying, stopSound]);
+  }, [sleepTimer, isPlaying]);
 
-  useEffect(() => () => stopSound(), [stopSound]);
+  const stopSound = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsPlaying(false);
+    setElapsed(0);
+  }, []);
 
-  const handleTrackSelect = (track: Track) => { setActiveTrack(track); playSound(track); };
-  const togglePlay = () => { if (!activeTrack) return; if (isPlaying) { stopSound(); } else { playSound(activeTrack); } };
-  const formatTime = (s: number) => { const m = Math.floor(s / 60); return `${m}:${(s % 60).toString().padStart(2, '0')}`; };
+  const playTrack = useCallback((track: Track) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    stopSound();
+    audio.src = track.src;
+    audio.volume = volume / 100;
+    audio.play().then(() => {
+      setIsPlaying(true);
+    }).catch(() => {
+      // 파일이 없거나 로드 실패 시 조용히 무시
+      setIsPlaying(false);
+    });
+  }, [volume, stopSound]);
+
+  const handleTrackSelect = (track: Track) => {
+    setActiveTrack(track);
+    playTrack(track);
+  };
+
+  const togglePlay = () => {
+    if (!activeTrack || !audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const playNext = () => {
+    if (!activeTrack) return;
+    const catTracks = tracks.filter(t => t.category === activeTrack.category);
+    const idx = catTracks.findIndex(t => t.id === activeTrack.id);
+    const next = catTracks[(idx + 1) % catTracks.length];
+    setActiveTrack(next);
+    playTrack(next);
+  };
+
+  const playPrev = () => {
+    if (!activeTrack) return;
+    const catTracks = tracks.filter(t => t.category === activeTrack.category);
+    const idx = catTracks.findIndex(t => t.id === activeTrack.id);
+    const prev = catTracks[(idx - 1 + catTracks.length) % catTracks.length];
+    setActiveTrack(prev);
+    playTrack(prev);
+  };
+
+  const formatTime = (s: number) => {
+    const m = Math.floor(s / 60);
+    return `${m}:${Math.floor(s % 60).toString().padStart(2, '0')}`;
+  };
+
   const filteredTracks = tracks.filter(t => t.category === selectedCategory);
+  const progress = duration > 0 ? (elapsed / duration) * 100 : 0;
 
   /* ─── 사운드 플레이어 뷰 ─── */
   if (activeTrack) {
@@ -174,21 +222,48 @@ const Sounds = () => {
             <ChevronLeft className="w-5 h-5" />
             <span className={sr ? 'text-lg' : 'text-sm'}>{t('sounds.back')}</span>
           </button>
+
+          {/* 앨범 아트 */}
           <div className={cn('w-32 h-32 rounded-full flex items-center justify-center mb-8 border-2 shadow-lg', catInfo.color, isPlaying && 'animate-pulse')}>
             <TrackIcon className="w-14 h-14" />
           </div>
-          <h2 className={cn('font-semibold text-foreground mb-1', sr ? 'text-2xl' : 'text-xl')}>{t(activeTrack.nameKey)}</h2>
-          <p className="text-muted-foreground text-sm mb-8">{t(catInfo.labelKey)}</p>
-          <p className="text-muted-foreground text-xs mb-2 tabular-nums">{formatTime(elapsed)}</p>
-          <div className="w-full max-w-xs h-1.5 bg-muted rounded-full mb-8 overflow-hidden">
-            <div className="h-full bg-primary/60 rounded-full transition-all" style={{ width: `${Math.min((elapsed % 60) / 60 * 100, 100)}%` }} />
+
+          {/* 트랙 정보 */}
+          <h2 className={cn('font-semibold text-foreground mb-1', sr ? 'text-2xl' : 'text-xl')}>{activeTrack.name}</h2>
+          <p className="text-muted-foreground text-sm mb-6">{catInfo.label}</p>
+
+          {/* 프로그레스 바 */}
+          <div className="w-full max-w-xs mb-2">
+            <div
+              className="w-full h-1.5 bg-muted rounded-full overflow-hidden cursor-pointer"
+              onClick={(e) => {
+                if (!audioRef.current || !duration) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const ratio = (e.clientX - rect.left) / rect.width;
+                audioRef.current.currentTime = ratio * duration;
+              }}
+            >
+              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${progress}%` }} />
+            </div>
+            <div className="flex justify-between mt-1">
+              <span className="text-[10px] text-muted-foreground tabular-nums">{formatTime(elapsed)}</span>
+              <span className="text-[10px] text-muted-foreground tabular-nums">{formatTime(duration)}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-6 mb-8">
+
+          {/* 컨트롤 */}
+          <div className="flex items-center gap-5 mb-8">
             <button onClick={() => setLoop(!loop)} className={cn('p-2 rounded-full transition-colors', loop ? 'text-primary bg-accent' : 'text-muted-foreground')}>
               <Repeat className="w-5 h-5" />
             </button>
+            <button onClick={playPrev} className="p-2 text-foreground hover:text-primary transition-colors">
+              <SkipBack className="w-6 h-6" />
+            </button>
             <button onClick={togglePlay} className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:opacity-90 transition-opacity">
               {isPlaying ? <Pause className="w-7 h-7" /> : <Play className="w-7 h-7 ml-1" />}
+            </button>
+            <button onClick={playNext} className="p-2 text-foreground hover:text-primary transition-colors">
+              <SkipForward className="w-6 h-6" />
             </button>
             <div className="relative">
               <button onClick={() => { if (sleepTimer) { setSleepTimer(null); setRemainingTime(null); } }}
@@ -198,12 +273,16 @@ const Sounds = () => {
               {remainingTime && <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] text-primary tabular-nums">{formatTime(remainingTime)}</span>}
             </div>
           </div>
+
+          {/* 타이머 옵션 */}
           <div className="flex gap-2 mb-8">
             {TIMER_OPTIONS.map(opt => (
               <Button key={opt.value} variant={sleepTimer === opt.value ? 'default' : 'outline'} size="sm" className="text-xs rounded-full px-4"
                 onClick={() => setSleepTimer(sleepTimer === opt.value ? null : opt.value)}>{opt.label}</Button>
             ))}
           </div>
+
+          {/* 볼륨 */}
           <div className="w-full max-w-xs flex items-center gap-3">
             {volume === 0 ? <VolumeX className="w-4 h-4 text-muted-foreground shrink-0" /> : <Volume2 className="w-4 h-4 text-muted-foreground shrink-0" />}
             <Slider value={[volume]} onValueChange={([v]) => setVolume(v)} max={100} step={1} className="flex-1" />
@@ -252,7 +331,7 @@ const Sounds = () => {
         {/* 탭 콘텐츠 */}
         {mainTab === 'sounds' && (
           <>
-            <div className="grid grid-cols-4 gap-2 mb-6">
+            <div className="grid grid-cols-3 gap-2 mb-6">
               {categories.map(cat => {
                 const CatIcon = cat.icon;
                 const isActive = selectedCategory === cat.id;
@@ -261,13 +340,13 @@ const Sounds = () => {
                     className={cn('flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all',
                       isActive ? cat.color + ' border-current shadow-sm' : 'bg-card border-border text-muted-foreground hover:bg-muted')}>
                     <CatIcon className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
-                    <span className={cn('font-medium', sr ? 'text-sm' : 'text-xs')}>{t(cat.labelKey)}</span>
+                    <span className={cn('font-medium', sr ? 'text-sm' : 'text-xs')}>{cat.label}</span>
                   </button>
                 );
               })}
             </div>
             <div className="space-y-2">
-              {filteredTracks.map(track => {
+              {filteredTracks.map((track, i) => {
                 const Icon = track.icon;
                 return (
                   <button key={track.id} onClick={() => handleTrackSelect(track)}
@@ -276,8 +355,8 @@ const Sounds = () => {
                       <Icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className={cn('font-medium text-foreground', sr ? 'text-lg' : 'text-sm')}>{t(track.nameKey)}</p>
-                      <p className="text-xs text-muted-foreground">{t('sounds.ambient')}</p>
+                      <p className={cn('font-medium text-foreground', sr ? 'text-lg' : 'text-sm')}>{track.name}</p>
+                      <p className="text-xs text-muted-foreground">{categories.find(c => c.id === track.category)?.label} · {i + 1}번 트랙</p>
                     </div>
                     <Play className="w-4 h-4 text-muted-foreground shrink-0" />
                   </button>
