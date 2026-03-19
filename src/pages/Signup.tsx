@@ -44,8 +44,14 @@ const Signup = () => {
       navigate('/login');
     } catch (error: any) {
       const errData = error.response?.data;
-      const detail = errData?.error_detail || errData?.detail || t('auth.signupFailedDesc');
-      toast({ title: t('auth.signupFailed'), description: detail, variant: 'destructive' });
+      const fieldErrors = errData?.field_errors as Record<string, string> | undefined;
+      if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+        const messages = Object.values(fieldErrors).join('\n');
+        toast({ title: t('auth.signupFailed'), description: messages, variant: 'destructive' });
+      } else {
+        const detail = errData?.error_detail || errData?.detail || t('auth.signupFailedDesc');
+        toast({ title: t('auth.signupFailed'), description: detail, variant: 'destructive' });
+      }
     } finally {
       setIsLoading(false);
     }

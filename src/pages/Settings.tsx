@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ArrowLeft, ChevronRight, Bell, Eye, User, LogOut, Info, Shield, Globe } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 
@@ -58,10 +58,16 @@ const Settings = () => {
           <div className="flex-1 min-w-0">
             <p className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-base'}`}>
               {user?.name || t('common.user')}
+              {user?.nickname && <span className={`text-muted-foreground font-normal ${sr ? 'text-base' : 'text-sm'}`}> ({user.nickname})</span>}
             </p>
             <p className={`text-muted-foreground truncate ${sr ? 'text-base' : 'text-sm'}`}>
               {user?.email || 'user@example.com'}
             </p>
+            {user?.birthday && (
+              <p className={`text-muted-foreground ${sr ? 'text-sm' : 'text-xs'}`}>
+                {user.birthday} · {user.gender === 'M' ? t('auth.male', '남성') : t('auth.female', '여성')}
+              </p>
+            )}
           </div>
           <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
         </div>
@@ -82,7 +88,7 @@ const Settings = () => {
 
             <div className={`flex items-center justify-between bg-card ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
-                <Eye className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
+                <ZoomIn className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 <div>
                   <span className={`text-foreground font-medium ${sr ? 'text-lg' : 'text-base'}`}>{t('settings.silverMode')}</span>
                   <p className={`text-muted-foreground ${sr ? 'text-sm' : 'text-xs'}`}>{t('settings.silverModeDesc')}</p>

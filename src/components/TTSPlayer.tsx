@@ -4,6 +4,26 @@ import { Progress } from '@/components/ui/progress';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 
+/** 숫자+단위를 자연스러운 한국어 읽기로 변환 (Web Speech API fallback용) */
+const NATIVE_KO: Record<number, string> = {
+  1: '한', 2: '두', 3: '세', 4: '네', 5: '다섯',
+  6: '여섯', 7: '일곱', 8: '여덟', 9: '아홉', 10: '열',
+};
+const nativeNum = (n: number) => (n >= 1 && n <= 10 ? NATIVE_KO[n] : String(n));
+const preprocessTTS = (text: string): string => {
+  // "1일 3회" → "하루 세 번"
+  text = text.replace(/1일\s*(\d{1,2})\s*회/g, (_, n) => `하루 ${nativeNum(+n)} 번`);
+  // 숫자+단위 → 고유어
+  const unitMap: Record<string, string> = { '정': '정', '알': '알', '캡슐': '캡슐', '포': '포', '회': '번', '번': '번', '개': '개', '잔': '잔', '시': '시' };
+  const units = Object.keys(unitMap).join('|');
+  text = text.replace(new RegExp(`(\\d{1,2})\\s*(${units})`, 'g'), (_, n, u) => {
+    const num = +n;
+    return num >= 1 && num <= 10 ? `${nativeNum(num)} ${unitMap[u]}` : `${n} ${unitMap[u]}`;
+  });
+  text = text.replace(/mg/g, '밀리그램').replace(/ml/g, '밀리리터');
+  return text;
+};
+
 interface TTSPlayerProps {
   guideId: string;
   textContent: string;
@@ -33,10 +53,16 @@ const TTSPlayer = ({ guideId, textContent }: TTSPlayerProps) => {
 
   const playWithSpeechAPI = () => {
     setUsingSpeechAPI(true);
-    const utterance = new SpeechSynthesisUtterance(textContent);
+    const processedText = preprocessTTS(textContent);
+    const utterance = new SpeechSynthesisUtterance(processedText);
     utterance.lang = 'ko-KR';
     utterance.rate = 0.9;
-    utterance.pitch = 1;
+    utterance.pitch = 1.1;
+    // 여성 목소리 선택
+    const voices = window.speechSynthesis.getVoices();
+    const femaleVoice = voices.find(v => v.lang.startsWith('ko') && /female|여/i.test(v.name))
+      || voices.find(v => v.lang.startsWith('ko'));
+    if (femaleVoice) utterance.voice = femaleVoice;
     utteranceRef.current = utterance;
 
     const estimatedDuration = textContent.length * 80;
