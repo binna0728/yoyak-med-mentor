@@ -180,24 +180,33 @@ const AiChat = () => {
 
       <main ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto pb-44">
         <div className="max-w-lg mx-auto space-y-4">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              {msg.role === 'assistant' && (
-                <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mr-2 mt-1">
-                  <span className="text-primary-foreground text-xs">AI</span>
-                </div>
-              )}
-              <div className={`max-w-[78%] px-4 py-3 leading-relaxed whitespace-pre-line ${
-                msg.role === 'user'
-                  ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md'
-                  : 'bg-card border border-border text-foreground rounded-2xl rounded-bl-md'
-              } ${sr ? 'text-base' : 'text-sm'}`}>
-                {msg.content}
-              </div>
-            </div>
-          ))}
+          {messages.map((msg, idx) => {
+            // 스트리밍 중 빈 메시지는 숨기고 타이핑 인디케이터로 대체
+            const isStreamingEmpty = isTyping && msg.role === 'assistant' && idx === messages.length - 1 && !msg.content;
+            if (isStreamingEmpty) return null;
 
-          {isTyping && (
+            return (
+              <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                {msg.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mr-2 mt-1">
+                    <span className="text-primary-foreground text-xs">AI</span>
+                  </div>
+                )}
+                <div className={`max-w-[78%] px-4 py-3 leading-relaxed whitespace-pre-line ${
+                  msg.role === 'user'
+                    ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md'
+                    : 'bg-card border border-border text-foreground rounded-2xl rounded-bl-md'
+                } ${sr ? 'text-base' : 'text-sm'}`}>
+                  {msg.content}
+                  {isTyping && msg.role === 'assistant' && idx === messages.length - 1 && msg.content && (
+                    <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse align-text-bottom" />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
+          {isTyping && messages[messages.length - 1]?.content === '' && (
             <div className="flex justify-start">
               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                 <span className="text-primary-foreground text-xs">AI</span>
