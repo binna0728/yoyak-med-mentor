@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import NearbyPharmacy from '@/components/NearbyPharmacy';
+import HealthBlog from '@/components/HealthBlog';
 import {
   Brain, Moon, Flower2, Play, Pause, Repeat, Repeat1, Timer, SkipForward, SkipBack,
   Volume2, VolumeX, ChevronLeft, CloudRain, Wind, Music, Coffee, Shuffle,
@@ -533,14 +534,7 @@ const Sounds = () => {
 
         {mainTab === 'pharmacy' && <NearbyPharmacy />}
 
-        {mainTab === 'blog' && (
-          <div className="text-center py-16">
-            <span className="text-5xl mb-4 block">📰</span>
-            <p className={`font-semibold text-foreground mb-2 ${sr ? 'text-xl' : 'text-lg'}`}>건강 블로그</p>
-            <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-sm'}`}>곧 자동 연재 건강 블로그가 시작됩니다!</p>
-            <p className="text-xs text-muted-foreground mt-2">준비 중...</p>
-          </div>
-        )}
+        {mainTab === 'blog' && <HealthBlog />}
 
         {mainTab === 'webtoon' && (
           <div>
