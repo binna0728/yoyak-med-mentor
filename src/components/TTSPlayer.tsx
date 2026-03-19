@@ -14,13 +14,26 @@ const preprocessTTS = (text: string): string => {
   // "1일 3회" → "하루 세 번"
   text = text.replace(/1일\s*(\d{1,2})\s*회/g, (_, n) => `하루 ${nativeNum(+n)} 번`);
   // 숫자+단위 → 고유어
-  const unitMap: Record<string, string> = { '정': '정', '알': '알', '캡슐': '캡슐', '포': '포', '회': '번', '번': '번', '개': '개', '잔': '잔', '시': '시' };
+  const unitMap: Record<string, string> = { '정': '정', '알': '알', '캡슐': '캡슐', '포': '포', '회': '번', '번': '번', '개': '개', '잔': '잔', '시': '시', '가지': '가지', '종': '종', '종류': '종류' };
   const units = Object.keys(unitMap).join('|');
   text = text.replace(new RegExp(`(\\d{1,2})\\s*(${units})`, 'g'), (_, n, u) => {
     const num = +n;
     return num >= 1 && num <= 10 ? `${nativeNum(num)} ${unitMap[u]}` : `${n} ${unitMap[u]}`;
   });
   text = text.replace(/mg/g, '밀리그램').replace(/ml/g, '밀리리터');
+  // 문어체 → 대화체
+  const style: [string, string][] = [
+    ['복용하십시오', '드세요'], ['복용하시기 바랍니다', '드세요'],
+    ['복용해야 합니다', '드셔야 해요'], ['복용합니다', '드세요'],
+    ['섭취하십시오', '드세요'], ['섭취합니다', '드세요'],
+    ['주의하십시오', '주의하세요'], ['주의해야 합니다', '주의하셔야 해요'],
+    ['금지됩니다', '안 돼요'], ['금합니다', '피해주세요'],
+    ['하십시오', '하세요'], ['하시기 바랍니다', '하세요'],
+    ['않습니다', '않아요'], ['됩니다', '돼요'],
+    ['합니다', '해요'], ['입니다', '이에요'],
+    ['습니다', '세요'], ['십시오', '세요'], ['바랍니다', '주세요'],
+  ];
+  for (const [f, c] of style) text = text.split(f).join(c);
   return text;
 };
 
