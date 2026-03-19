@@ -118,10 +118,12 @@ const Sounds = () => {
   const activeTrackRef = useRef(activeTrack);
   const shuffleRef = useRef(shuffle);
   const trackOrderRef = useRef(trackOrder);
+  const volumeRef = useRef(volume);
   repeatModeRef.current = repeatMode;
   activeTrackRef.current = activeTrack;
   shuffleRef.current = shuffle;
   trackOrderRef.current = trackOrder;
+  volumeRef.current = volume;
 
   // 카테고리별 정렬된 트랙 가져오기
   const getOrderedTracks = useCallback((category: Category) => {
@@ -163,11 +165,11 @@ const Sounds = () => {
       const audio = audioRef.current;
       if (audio) {
         audio.src = next.src;
-        audio.volume = volume / 100;
+        audio.volume = volumeRef.current / 100;
         audio.play().catch(() => setIsPlaying(false));
       }
     }
-  }, [volume, getOrderedTracks]);
+  }, [getOrderedTracks]);
 
   // Audio 초기화
   useEffect(() => {
