@@ -1,10 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
-import apiClient from '@/api/client';
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -18,11 +19,12 @@ interface ChatSections {
   tips: string;
 }
 
-interface ChatApiResponse {
-  success: boolean;
-  answer: string;
-  sections: ChatSections;
-  disclaimer: string;
+interface StreamEvent {
+  type: 'content' | 'done' | 'error';
+  text?: string;
+  sections?: ChatSections;
+  disclaimer?: string;
+  message?: string;
 }
 
 const AiChat = () => {
@@ -49,18 +51,13 @@ const AiChat = () => {
      .replace(/\*{1,2}/g, '')
      .trim();
 
-  const formatResponse = (data: ChatApiResponse): string => {
-    const answer = data.answer || '';
-    // 섹션이 없거나 일반 대화 응답이면 raw answer 정리해서 반환
-    if (!data.sections) return cleanMarkdown(answer) || t('aiChat.defaultAnswer');
-
-    const { summary, dosage, precautions, tips } = data.sections;
+  const formatSections = useCallback((sections: ChatSections, rawAnswer: string): string => {
+    const { summary, dosage, precautions, tips } = sections;
     const isDefault = (s: string) =>
       !s || s.includes('해당 정보가 제공되지 않았습니다') || s.includes('죄송합니다. 제공된 의약품 정보 내에서');
 
-    // 모든 섹션이 기본값이면 → 일반 대화 응답
     if (isDefault(summary) && isDefault(dosage) && isDefault(precautions) && isDefault(tips)) {
-      return cleanMarkdown(answer) || t('aiChat.defaultAnswer');
+      return cleanMarkdown(rawAnswer) || t('aiChat.defaultAnswer');
     }
 
     const parts: string[] = [];
@@ -68,8 +65,8 @@ const AiChat = () => {
     if (!isDefault(dosage)) parts.push('📋 ' + cleanMarkdown(dosage));
     if (!isDefault(precautions)) parts.push('⚠️ ' + cleanMarkdown(precautions));
     if (!isDefault(tips)) parts.push('💡 ' + cleanMarkdown(tips));
-    return parts.join('\n\n') || cleanMarkdown(answer) || t('aiChat.defaultAnswer');
-  };
+    return parts.join('\n\n') || cleanMarkdown(rawAnswer) || t('aiChat.defaultAnswer');
+  }, [t]);
 
   const handleSend = async (text?: string) => {
     const msg = text || input.trim();
@@ -79,16 +76,89 @@ const AiChat = () => {
     setInput('');
     setIsTyping(true);
 
+    // Add empty assistant message that we'll stream into
+    setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+
     try {
-      const response = await apiClient.post<ChatApiResponse>('/chat', { question: msg });
-      const data = response.data;
-      const content = data.success ? formatResponse(data) : t('aiChat.defaultAnswer');
-      setMessages(prev => [...prev, { role: 'assistant', content }]);
+      const response = await fetch(`${API_BASE_URL}/chat/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: msg }),
+      });
+
+      if (!response.ok || !response.body) throw new Error('Stream failed');
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+
+          try {
+            const event: StreamEvent = JSON.parse(trimmed.slice(6));
+
+            if (event.type === 'content' && event.text) {
+              fullText += event.text;
+              const cleaned = cleanMarkdown(fullText);
+              setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: cleaned };
+                return updated;
+              });
+            } else if (event.type === 'done') {
+              // If sections are available, reformat the final message
+              if (event.sections) {
+                const formatted = formatSections(event.sections, fullText);
+                setMessages(prev => {
+                  const updated = [...prev];
+                  updated[updated.length - 1] = { role: 'assistant', content: formatted };
+                  return updated;
+                });
+              }
+            } else if (event.type === 'error') {
+              setMessages(prev => {
+                const updated = [...prev];
+                updated[updated.length - 1] = {
+                  role: 'assistant',
+                  content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
+                };
+                return updated;
+              });
+            }
+          } catch {
+            // skip malformed JSON
+          }
+        }
+      }
+
+      // If we got no content at all, show default
+      if (!fullText) {
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = { role: 'assistant', content: t('aiChat.defaultAnswer') };
+          return updated;
+        });
+      }
     } catch {
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
-      }]);
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
+        };
+        return updated;
+      });
     } finally {
       setIsTyping(false);
     }
