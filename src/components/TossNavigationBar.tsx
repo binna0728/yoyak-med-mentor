@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronLeft, AArrowUp } from 'lucide-react';
+import { ChevronLeft, Sun } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useState } from 'react';
 
