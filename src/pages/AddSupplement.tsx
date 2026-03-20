@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Plus, Pill } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { toast } from 'sonner';
 import apiClient from '@/api/client';
 
