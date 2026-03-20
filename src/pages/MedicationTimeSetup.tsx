@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 type PeriodKey = 'morning' | 'afternoon' | 'evening' | 'bedtime';
 
@@ -92,7 +93,9 @@ const MedicationTimeSetup = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main className="flex-1 px-5 py-6 pb-28 overflow-y-auto">
         <div className="max-w-sm mx-auto space-y-6">
 

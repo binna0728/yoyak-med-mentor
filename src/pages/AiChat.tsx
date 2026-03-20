@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Send } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
@@ -164,7 +165,9 @@ const AiChat = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto pb-44">
         <div className="max-w-lg mx-auto space-y-4">
           {messages.map((msg, idx) => {

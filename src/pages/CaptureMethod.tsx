@@ -3,6 +3,7 @@ import { Camera, FileText, Upload, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 const CaptureMethod = () => {
   const navigate = useNavigate();
@@ -19,7 +20,10 @@ const CaptureMethod = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <main className="flex-1 px-5 py-6 pb-28 max-w-lg mx-auto w-full flex flex-col">
-        <p className={`text-muted-foreground mb-6 ${sr ? 'text-lg' : 'text-sm'}`}>{t('capture.howToRegister')}</p>
+        <div className="flex items-center justify-between mb-4">
+          <p className={`text-muted-foreground ${sr ? 'text-lg' : 'text-sm'}`}>{t('capture.howToRegister')}</p>
+          <SeniorModeToggle />
+        </div>
 
         <div className="space-y-3 flex-1">
           {methods.map(({ emoji, title, desc, to }) => (

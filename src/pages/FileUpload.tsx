@@ -4,6 +4,7 @@ import { Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 const FileUpload = () => {
   const navigate = useNavigate();
@@ -23,7 +24,9 @@ const FileUpload = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main className="flex-1 flex flex-col items-center justify-center px-6">
         <input ref={fileRef} type="file" accept="image/*" onChange={onInput} className="hidden" />
 

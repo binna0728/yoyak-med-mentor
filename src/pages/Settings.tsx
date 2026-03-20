@@ -5,6 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 
 const Settings = () => {
@@ -35,7 +36,9 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main className={`flex-1 px-5 py-6 pb-24 max-w-lg mx-auto w-full ${sr ? 'space-y-6' : 'space-y-5'}`}>
         {/* Profile card */}
         <div className="tds-card flex items-center gap-4">

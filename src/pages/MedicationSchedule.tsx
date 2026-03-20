@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2, Pencil, Check, X, Volume2, VolumeX } from 'lucide-react';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import AlarmBanner from '@/components/AlarmBanner';
@@ -307,6 +308,11 @@ const MedicationSchedule = () => {
       {currentAlarm && <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />}
 
       <main className="flex-1 px-5 py-4 pb-24 overflow-y-auto max-w-3xl mx-auto w-full">
+        {!isAnyMode && (
+          <div className="flex justify-end mb-2">
+            <SeniorModeToggle />
+          </div>
+        )}
         {/* 캘린더 카드 */}
         <div className="tds-card mb-5 p-3">
           <div className="flex items-center justify-between mb-3">

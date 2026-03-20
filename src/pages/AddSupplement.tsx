@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Sparkles, Plus, Pill } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { toast } from 'sonner';
 import apiClient from '@/api/client';
 
@@ -131,6 +132,9 @@ const AddSupplement = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
 
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main className="flex-1 px-5 py-6 pb-32 overflow-y-auto">
         <div className="max-w-lg mx-auto space-y-6">
 

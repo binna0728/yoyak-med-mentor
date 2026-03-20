@@ -10,6 +10,7 @@ import {
   Volume2, VolumeX, ChevronLeft, CloudRain, Wind, Music, Coffee, Shuffle,
   Leaf, MapPin, Newspaper, BookImage, GripVertical, ListMusic, Heart
 } from 'lucide-react';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -454,9 +455,12 @@ const Sounds = () => {
   return (
     <div className="tds-page bg-background">
       <div className="tds-content px-5 pt-6 pb-28">
-        <h1 className={cn('font-bold text-foreground mb-1', sr ? 'text-2xl' : 'text-xl')}>
-          더보기
-        </h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className={cn('font-bold text-foreground', sr ? 'text-2xl' : 'text-xl')}>
+            더보기
+          </h1>
+          <SeniorModeToggle />
+        </div>
         <p className={cn('text-muted-foreground mb-5', sr ? 'text-base' : 'text-sm')}>
           유용한 건강 서비스를 이용해보세요
         </p>
@@ -546,8 +550,8 @@ const Sounds = () => {
                   <span className={sr ? 'text-lg' : 'text-sm'}>목록으로</span>
                 </button>
                 <h2 className={cn('font-semibold text-foreground mb-3', sr ? 'text-xl' : 'text-lg')}>약호랑 토복이의 하루</h2>
-                <div className="rounded-2xl border border-border overflow-hidden shadow-sm">
-                  <img src={viewingWebtoon} alt="약호랑 토복이의 하루" className="w-full h-auto" />
+                <div className={cn('rounded-2xl border border-border overflow-hidden shadow-sm', sr && '-mx-5')}>
+                  <img src={viewingWebtoon} alt="약호랑 토복이의 하루" className={sr ? 'w-[120%] max-w-none -ml-[10%] h-auto' : 'w-full h-auto'} />
                 </div>
               </div>
             ) : (
@@ -559,8 +563,8 @@ const Sounds = () => {
                       <p className={cn('font-semibold text-foreground', sr ? 'text-lg' : 'text-base')}>{ep.title}</p>
                       <p className="text-xs text-muted-foreground">터치하면 전체화면으로 볼 수 있어요</p>
                     </div>
-                    <div className="max-h-[50vh] overflow-y-auto">
-                      <img src={ep.src} alt={ep.title} className="w-full h-auto" />
+                    <div className={cn('overflow-y-auto', sr ? 'max-h-[60vh]' : 'max-h-[50vh]')}>
+                      <img src={ep.src} alt={ep.title} className={sr ? 'w-[120%] max-w-none -ml-[10%] h-auto' : 'w-full h-auto'} />
                     </div>
                   </div>
                 ))}
