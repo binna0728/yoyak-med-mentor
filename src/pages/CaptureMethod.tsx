@@ -55,9 +55,6 @@ const CaptureMethod = () => {
           ))}
         </div>
 
-        <p className={`text-center text-muted-foreground py-6 ${sr ? 'text-base' : 'text-xs'}`}>
-          {t('capture.footer')}
-        </p>
       </main>
 
       <BottomNav />
