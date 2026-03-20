@@ -36,7 +36,7 @@ const PERIOD_LABEL: Record<string, string> = {
 
 const Home = () => {
   const { user } = useAuth();
-  const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
+  const { isSeniorMode } = useSeniorMode();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
