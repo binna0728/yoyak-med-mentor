@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Image } from 'lucide-react';
+import { Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
