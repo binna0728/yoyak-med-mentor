@@ -163,18 +163,7 @@ const AiChat = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-foreground" />
-          </button>
-          <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('aiChat.title')}</span>
-          </div>
-          <div className="w-10" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto pb-44">
         <div className="max-w-lg mx-auto space-y-4">

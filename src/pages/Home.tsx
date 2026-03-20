@@ -133,9 +133,9 @@ const Home = () => {
   const sr = isSeniorMode;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+    <div className="min-h-screen bg-background flex flex-col">
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className={`font-bold text-foreground ${sr ? 'text-2xl' : 'text-lg'}`}>
               {t('home.greeting', { name: user?.name || t('common.user') })}
@@ -152,7 +152,7 @@ const Home = () => {
             <Sun className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
           </button>
         </div>
-      </header>
+      </div>
 
       <main className={`flex-1 px-5 py-5 pb-24 overflow-y-auto max-w-3xl mx-auto w-full ${sr ? 'space-y-6' : 'space-y-5'}`}>
         <div className="tds-card">

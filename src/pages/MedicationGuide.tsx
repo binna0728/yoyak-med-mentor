@@ -74,20 +74,7 @@ const MedicationGuide = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-foreground" />
-          </button>
-          <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('guide.title')}</span>
-          </div>
-          <button onClick={handleSaveImage} className="p-2 -mr-2">
-            <Download className="w-5 h-5 text-muted-foreground" />
-          </button>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 px-5 py-5 pb-48 overflow-y-auto">
         <div ref={guideRef} className="max-w-lg mx-auto space-y-4">

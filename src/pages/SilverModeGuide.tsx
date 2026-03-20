@@ -57,11 +57,8 @@ const SilverModeGuide = () => {
   const isFirst = step === 0;
 
   return (
-    <div className="min-h-screen bg-card flex flex-col safe-area-padding">
-      <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-        <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-          <ArrowLeft className="w-7 h-7 text-foreground" />
-        </button>
+    <div className="min-h-screen bg-card flex flex-col">
+      <div className="flex items-center justify-between px-5 py-4">
         <span className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-bold uppercase tracking-wider">
           SILVER
         </span>
