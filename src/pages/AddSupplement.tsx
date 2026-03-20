@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Sparkles, Plus, Pill } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import BottomNav from '@/components/BottomNav';
 import { toast } from 'sonner';
 import apiClient from '@/api/client';
 
@@ -283,7 +284,7 @@ const AddSupplement = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-lg mx-auto">
           <button
             onClick={handleSave}
@@ -295,6 +296,8 @@ const AddSupplement = () => {
           </button>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };
