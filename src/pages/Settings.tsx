@@ -5,6 +5,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 
 const Settings = () => {
