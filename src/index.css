@@ -206,23 +206,30 @@
     border-color: hsl(var(--primary));
   }
 
+  /* 토스 스타일 플로팅 탭바 */
   .tds-bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 bg-card;
-    @apply flex items-center justify-around h-16;
-    border-top: 1px solid hsl(var(--border));
-    padding-bottom: var(--sab);
+    @apply fixed left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-lg;
+    @apply flex items-center justify-around;
+    border-radius: 999px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px hsl(var(--border) / 0.5);
+    bottom: calc(12px + var(--sab));
+    height: 56px;
+    width: calc(100% - 32px);
+    max-width: 420px;
+    padding: 0 8px;
   }
 
   .tds-nav-item {
-    @apply flex flex-col items-center justify-center gap-1 py-2 px-4;
-    @apply transition-colors duration-200;
+    @apply flex flex-col items-center justify-center gap-0.5 py-1.5 px-3;
+    @apply transition-colors duration-200 rounded-full;
     color: hsl(var(--muted-foreground));
   }
   .tds-nav-item.active {
     color: hsl(var(--primary));
+    background-color: hsl(var(--accent));
   }
   .tds-nav-item span {
-    @apply text-xs font-medium;
+    @apply text-[10px] font-medium leading-tight;
   }
 
   .tds-card {
