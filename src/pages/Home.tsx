@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { Camera, CalendarDays, Bot, BookOpen, Sun, Volume2, VolumeX } from 'lucide-react';
+import { Camera, CalendarDays, Bot, BookOpen, Accessibility, Volume2, VolumeX } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
@@ -157,7 +157,7 @@ const Home = () => {
             }`}
             title={t('home.seniorMode')}
           >
-            <Sun className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
+            <Accessibility className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
           </button>
         </div>
       </header>
