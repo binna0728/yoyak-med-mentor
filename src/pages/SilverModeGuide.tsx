@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { medicineApi } from '@/api/medicine';
 import { Medicine } from '@/types/medicine';
-import { ArrowLeft, Volume2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Volume2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const SilverModeGuide = () => {
