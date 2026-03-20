@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ArrowLeft, ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
+import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 
@@ -34,18 +34,7 @@ const Settings = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className="w-6 h-6 text-foreground" />
-          </button>
-          <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('settings.title')}</span>
-          </div>
-          <div className="w-10" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className={`flex-1 px-5 py-6 pb-24 max-w-lg mx-auto w-full ${sr ? 'space-y-6' : 'space-y-5'}`}>
         {/* Profile card */}

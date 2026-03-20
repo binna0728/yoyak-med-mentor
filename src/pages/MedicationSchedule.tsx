@@ -303,53 +303,8 @@ const MedicationSchedule = () => {
   const stats = monthStats();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
+    <div className="min-h-screen bg-background flex flex-col">
       {currentAlarm && <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />}
-
-      <header className="tds-header">
-        <div className="flex items-center justify-between h-14 px-5 border-b border-border">
-          <div className="flex items-center gap-2">
-            <h1 className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('schedule.title')}</h1>
-            {!isAnyMode && (
-              <span className={`inline-flex items-center rounded-full text-xs font-semibold px-2.5 py-0.5 ${
-                takenCount === items.length ? 'bg-primary/10 text-primary' : 'bg-accent text-accent-foreground'
-              }`}>{takenCount}/{items.length}</span>
-            )}
-          </div>
-          <div className="flex items-center gap-1">
-            {isAnyMode ? (
-              <button
-                onClick={() => { setDeleteMode(false); setEditMode(false); setEditingId(null); setSelectedForDelete(new Set()); }}
-                className={`text-muted-foreground font-medium ${sr ? 'text-base' : 'text-sm'} px-3 py-1`}
-              >
-                취소
-              </button>
-            ) : (
-              <>
-                <button
-                  onClick={handleTTS}
-                  className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'text-primary' : 'text-muted-foreground'}`}
-                  title="오늘 복약 읽어주기"
-                >
-                  {isSpeaking ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                </button>
-                <button
-                  onClick={() => setViewMode(viewMode === 'week' ? 'month' : 'week')}
-                  className={`p-2 rounded-lg transition-colors ${viewMode === 'month' ? 'bg-primary/10 text-primary' : 'text-muted-foreground'}`}
-                >
-                  {viewMode === 'week' ? <Calendar className="w-5 h-5" /> : <List className="w-5 h-5" />}
-                </button>
-                <button onClick={() => setEditMode(true)} className="p-2">
-                  <Pencil className="w-5 h-5 text-muted-foreground" />
-                </button>
-                <button onClick={() => setDeleteMode(true)} className="p-2">
-                  <Trash2 className="w-5 h-5 text-muted-foreground" />
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1 px-5 py-4 pb-24 overflow-y-auto max-w-3xl mx-auto w-full">
         {/* 캘린더 카드 */}
