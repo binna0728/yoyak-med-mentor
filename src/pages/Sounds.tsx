@@ -455,9 +455,12 @@ const Sounds = () => {
   return (
     <div className="tds-page bg-background">
       <div className="tds-content px-5 pt-6 pb-28">
-        <h1 className={cn('font-bold text-foreground mb-1', sr ? 'text-2xl' : 'text-xl')}>
-          더보기
-        </h1>
+        <div className="flex items-center justify-between mb-1">
+          <h1 className={cn('font-bold text-foreground', sr ? 'text-2xl' : 'text-xl')}>
+            더보기
+          </h1>
+          <SeniorModeToggle />
+        </div>
         <p className={cn('text-muted-foreground mb-5', sr ? 'text-base' : 'text-sm')}>
           유용한 건강 서비스를 이용해보세요
         </p>
