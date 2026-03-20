@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { ChevronLeft, MoreHorizontal } from 'lucide-react';
+import { ChevronLeft, AArrowUp } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useState } from 'react';
 
@@ -72,9 +72,9 @@ const TossNavigationBar = ({
               <button
                 onClick={() => setMoreOpen(!moreOpen)}
                 className="w-10 h-10 flex items-center justify-center rounded-full active:bg-muted transition-colors"
-                aria-label="더보기"
+                aria-label="글씨 크기 키우기"
               >
-                <MoreHorizontal className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
+                <AArrowUp className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
               </button>
             )}
           </div>
