@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { User } from '@/types/user';
 import authApi from '@/api/auth';
+import { isInTossApp } from '@/utils/toss';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  isInToss: boolean;
+  loginWithToss: (tossToken: string) => Promise<void>;
   logout: () => void;
   refreshUser: () => Promise<void>;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -14,16 +16,10 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const DEMO_USER: User = {
-  user_id: 'demo_0', email: 'demo@yoyak.kr', name: '깐부치킨', nickname: '깐부', gender: 'M',
-  birthday: '1960-01-01', phone_number: '01012345678',
-  is_active: true, is_admin: false, last_login: null,
-  created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-};
-
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const inToss = isInTossApp();
 
   const refreshUser = useCallback(async () => {
     try {
@@ -33,6 +29,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Backend unavailable — keep current user (don't clear)
     }
   }, []);
+
+  const loginWithToss = useCallback(async (tossToken: string) => {
+    try {
+      const response = await authApi.tossLogin(tossToken);
+      localStorage.setItem('access_token', response.data.access_token);
+      await refreshUser();
+    } catch {
+      // Demo mode fallback
+      localStorage.setItem('access_token', 'demo_token');
+      setUser({
+        user_id: 'demo_0', email: 'toss@yoyak.kr', name: '토스 사용자', nickname: '사용자',
+        gender: 'M', birthday: '1990-01-01', phone_number: '',
+        is_active: true, is_admin: false, last_login: null,
+        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+      });
+    }
+  }, [refreshUser]);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -44,31 +57,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // ignore
         }
       } else if (token === 'demo_token') {
-        setUser(DEMO_USER);
+        setUser({
+          user_id: 'demo_0', email: 'toss@yoyak.kr', name: '토스 사용자', nickname: '사용자',
+          gender: 'M', birthday: '1990-01-01', phone_number: '',
+          is_active: true, is_admin: false, last_login: null,
+          created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+        });
       }
-      // 토큰 없으면 비로그인 상태 유지 (온보딩 표시)
       setIsLoading(false);
     };
 
     initAuth();
   }, [refreshUser]);
-
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await authApi.login({ email, password });
-      localStorage.setItem('access_token', response.data.access_token);
-      await refreshUser();
-    } catch {
-      // Demo mode fallback when backend is unavailable
-      localStorage.setItem('access_token', 'demo_token');
-      setUser({
-        user_id: 'demo_0', email, name: email.split('@')[0] || '사용자', nickname: '사용자',
-        gender: 'M', birthday: '1960-01-01', phone_number: '01012345678',
-        is_active: true, is_admin: false, last_login: null,
-        created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
-      });
-    }
-  };
 
   const logout = () => {
     localStorage.removeItem('access_token');
@@ -81,7 +81,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         isAuthenticated: !!user,
         isLoading,
-        login,
+        isInToss: inToss,
+        loginWithToss,
         logout,
         refreshUser,
         setUser,

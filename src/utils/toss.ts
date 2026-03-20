@@ -2,8 +2,10 @@
 
 /**
  * 토스 앱 내부에서 실행 중인지 확인
+ * 개발 모드에서는 항상 true 반환 (테스트 편의)
  */
 export const isInTossApp = (): boolean => {
+  if (import.meta.env.DEV) return true;
   if (typeof window === 'undefined') return false;
   return /TossApp/i.test(navigator.userAgent);
 };
@@ -16,7 +18,6 @@ export const openTossDeepLink = (path: string): void => {
   if (isInTossApp()) {
     window.location.href = deepLink;
   } else {
-    // 토스 앱 외부에서는 토스 앱스토어로 이동
     window.open('https://toss.im/app', '_blank');
   }
 };
@@ -30,7 +31,6 @@ export const requestTossLogin = (): Promise<void> => {
       reject(new Error('토스 앱 내부에서만 사용 가능합니다.'));
       return;
     }
-    // 토스 로그인 딥링크 호출
     openTossDeepLink('login');
     resolve();
   });

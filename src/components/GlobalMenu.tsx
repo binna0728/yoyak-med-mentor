@@ -4,14 +4,14 @@ import { Menu } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import SideMenu from '@/components/SideMenu';
 
-const HIDDEN_PATHS = ['/', '/login', '/signup'];
+const HIDDEN_PATHS = ['/', '/login'];
 
 const GlobalMenu = () => {
   const [open, setOpen] = useState(false);
   const { isSeniorMode: sr } = useSeniorMode();
   const { pathname } = useLocation();
 
-  const isHidden = HIDDEN_PATHS.includes(pathname) || pathname.startsWith('/auth');
+  const isHidden = HIDDEN_PATHS.includes(pathname);
   if (isHidden) return null;
 
   return (
