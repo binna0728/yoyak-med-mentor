@@ -71,7 +71,10 @@ const OcrResultEdit = () => {
 
       <main className="flex-1 px-5 py-6 pb-28 overflow-y-auto">
         <div className="max-w-sm mx-auto">
-          <h1 className={`font-bold text-foreground mb-6 ${sr ? 'text-2xl' : 'text-lg'}`}>{t('ocrEdit.editInfo')}</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className={`font-bold text-foreground ${sr ? 'text-2xl' : 'text-lg'}`}>{t('ocrEdit.editInfo')}</h1>
+            <SeniorModeToggle />
+          </div>
 
           {items.map((item, idx) => (
             <div key={idx} className="tds-card space-y-3 mb-4">

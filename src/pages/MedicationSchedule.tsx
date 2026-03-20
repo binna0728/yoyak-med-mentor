@@ -308,6 +308,11 @@ const MedicationSchedule = () => {
       {currentAlarm && <AlarmBanner alarm={currentAlarm} onDismiss={dismissAlarm} />}
 
       <main className="flex-1 px-5 py-4 pb-24 overflow-y-auto max-w-3xl mx-auto w-full">
+        {!isAnyMode && (
+          <div className="flex justify-end mb-2">
+            <SeniorModeToggle />
+          </div>
+        )}
         {/* 캘린더 카드 */}
         <div className="tds-card mb-5 p-3">
           <div className="flex items-center justify-between mb-3">

@@ -165,7 +165,9 @@ const AiChat = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-
+      <div className="flex justify-end px-5 pt-4">
+        <SeniorModeToggle />
+      </div>
       <main ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto pb-44">
         <div className="max-w-lg mx-auto space-y-4">
           {messages.map((msg, idx) => {

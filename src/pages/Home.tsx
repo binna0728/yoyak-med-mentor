@@ -143,15 +143,7 @@ const Home = () => {
             </h1>
             <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'} mt-0.5`}>{dateStr}</p>
           </div>
-          <button
-            onClick={toggleSeniorMode}
-            className={`flex items-center justify-center rounded-full transition-all ${
-              sr ? 'w-14 h-14 bg-primary text-primary-foreground' : 'w-10 h-10 bg-accent text-primary'
-            }`}
-            title={t('home.seniorMode')}
-          >
-            <Sun className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
-          </button>
+          <SeniorModeToggle />
         </div>
       </div>
 

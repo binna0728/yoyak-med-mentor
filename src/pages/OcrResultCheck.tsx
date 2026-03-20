@@ -215,9 +215,12 @@ const OcrResultCheck = () => {
 
       <main className="flex-1 px-5 py-6 pb-44 overflow-y-auto">
         <div className="max-w-lg mx-auto">
-          <h1 className={`font-bold text-foreground ${sr ? 'text-2xl mb-2' : 'text-lg mb-1'}`}>
-            {t('ocr.extractedInfo')}
-          </h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className={`font-bold text-foreground ${sr ? 'text-2xl' : 'text-lg'}`}>
+              {t('ocr.extractedInfo')}
+            </h1>
+            <SeniorModeToggle />
+          </div>
           <p className={`font-bold text-foreground ${sr ? 'text-2xl mb-8' : 'text-lg mb-6'}`}>
             {t('ocr.pleaseCheck')}
           </p>
