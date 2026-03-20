@@ -87,6 +87,13 @@ const Home = () => {
   const takenMeds = scheduleItems.filter(i => i.taken).length;
   const progressValue = totalMeds > 0 ? (takenMeds / totalMeds) * 100 : 0;
 
+  const toKoreanCount = (n: number): string => {
+    const native = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
+    if (n <= 10) return native[n];
+    if (n <= 19) return `열${native[n - 10]}`;
+    return `${n}`;
+  };
+
   const handleTTS = () => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
@@ -94,23 +101,24 @@ const Home = () => {
       return;
     }
     if (totalMeds === 0) {
-      const utter = new SpeechSynthesisUtterance('오늘 등록된 복약 스케줄이 없습니다.');
+      const utter = new SpeechSynthesisUtterance('오늘 등록된 복약 스케줄이 없어요.');
       utter.lang = 'ko-KR';
       window.speechSynthesis.speak(utter);
       return;
     }
     const remaining = scheduleItems.filter(i => !i.taken);
-    let text = `오늘 복약 스케줄입니다. 총 ${totalMeds}가지 중 ${takenMeds}가지를 복용하셨습니다. `;
+    let text = `안녕하세요, 오늘 복약 안내 드릴게요. 총 ${toKoreanCount(totalMeds)} 가지 약 중에 ${toKoreanCount(takenMeds)} 가지를 드셨어요. `;
     if (remaining.length === 0) {
-      text += '오늘 모든 약을 복용하셨습니다. 수고하셨습니다!';
+      text += '오늘 약을 다 드셨네요, 수고하셨어요!';
     } else {
+      text += `아직 ${toKoreanCount(remaining.length)} 가지가 남았어요. `;
       const byPeriod: Record<string, string[]> = {};
       remaining.forEach(i => {
         if (!byPeriod[i.period]) byPeriod[i.period] = [];
         byPeriod[i.period].push(i.name);
       });
       ['morning', 'afternoon', 'evening', 'bedtime'].forEach(p => {
-        if (byPeriod[p]?.length) text += `${PERIOD_LABEL[p]}에 ${byPeriod[p].join(', ')}. `;
+        if (byPeriod[p]?.length) text += `${PERIOD_LABEL[p]}에는 ${byPeriod[p].join(', ')} 드셔야 해요. `;
       });
     }
     const utter = new SpeechSynthesisUtterance(text);
