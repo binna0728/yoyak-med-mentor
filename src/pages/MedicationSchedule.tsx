@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2, Pencil, Check, X, Volume2, VolumeX } from 'lucide-react';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import AlarmBanner from '@/components/AlarmBanner';
