@@ -148,7 +148,7 @@ const MedicationSchedule = () => {
       return (!i.startDate || i.startDate <= sel) && (!i.endDate || i.endDate >= sel);
     });
     if (todayItems.length === 0) {
-      const utter = new SpeechSynthesisUtterance('오늘 등록된 복약 스케줄이 없습니다.');
+      const utter = new SpeechSynthesisUtterance('오늘은 등록된 약이 없어요.');
       utter.lang = 'ko-KR';
       window.speechSynthesis.speak(utter);
       return;
@@ -156,18 +156,20 @@ const MedicationSchedule = () => {
     const total = todayItems.length;
     const taken = todayItems.filter(i => i.taken).length;
     const remaining = todayItems.filter(i => !i.taken);
-    const periodMap: Record<string, string> = { morning: '아침', afternoon: '점심', evening: '저녁', bedtime: '취침 전' };
-    let text = `오늘의 복약 스케줄입니다. 총 ${total}가지 중 ${taken}가지를 복용하셨습니다. `;
+    const periodMap: Record<string, string> = { morning: '아침', afternoon: '점심', evening: '저녁', bedtime: '자기 전' };
+    const nativeNum = (n: number) => ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'][n] || String(n);
+    let text = `오늘 드실 약은 총 ${nativeNum(total)} 가지이고요, 지금까지 ${nativeNum(taken)} 가지를 드셨어요. `;
     if (remaining.length === 0) {
-      text += '오늘 모든 약을 복용하셨습니다. 수고하셨습니다!';
+      text += '오늘 약은 다 드셨네요! 잘하셨어요.';
     } else {
+      text += `아직 ${nativeNum(remaining.length)} 가지가 남았어요. `;
       const byPeriod: Record<string, string[]> = {};
       remaining.forEach(i => {
         if (!byPeriod[i.period]) byPeriod[i.period] = [];
         byPeriod[i.period].push(i.name);
       });
       ['morning', 'afternoon', 'evening', 'bedtime'].forEach(p => {
-        if (byPeriod[p]?.length) text += `${periodMap[p]}에 ${byPeriod[p].join(', ')}. `;
+        if (byPeriod[p]?.length) text += `${periodMap[p]}에 ${byPeriod[p].join(', ')} 드셔야 해요. `;
       });
     }
     const utter = new SpeechSynthesisUtterance(text);
