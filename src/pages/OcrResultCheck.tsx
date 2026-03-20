@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Volume2, VolumeX, CalendarPlus, Loader2, ChevronDown, ChevronUp, Camera, Plus } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { medicineApi } from '@/api/medicine';
 import apiClient from '@/api/client';
 import { toast } from 'sonner';
