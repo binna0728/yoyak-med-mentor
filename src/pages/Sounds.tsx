@@ -563,8 +563,8 @@ const Sounds = () => {
                       <p className={cn('font-semibold text-foreground', sr ? 'text-lg' : 'text-base')}>{ep.title}</p>
                       <p className="text-xs text-muted-foreground">터치하면 전체화면으로 볼 수 있어요</p>
                     </div>
-                    <div className="max-h-[50vh] overflow-y-auto">
-                      <img src={ep.src} alt={ep.title} className="w-full h-auto" />
+                    <div className={cn('overflow-y-auto', sr ? 'max-h-[60vh]' : 'max-h-[50vh]')}>
+                      <img src={ep.src} alt={ep.title} className={sr ? 'w-[120%] max-w-none -ml-[10%] h-auto' : 'w-full h-auto'} />
                     </div>
                   </div>
                 ))}
