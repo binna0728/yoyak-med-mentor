@@ -7,6 +7,7 @@ import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import html2canvas from 'html2canvas';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import BottomNav from '@/components/BottomNav';
 
 const MedicationGuide = () => {
   const { id } = useParams<{ id: string }>();
@@ -127,7 +128,7 @@ const MedicationGuide = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border safe-area-padding z-40">
+      <div className="fixed bottom-16 left-0 right-0 bg-background border-t border-border safe-area-padding z-40">
         <div className="flex justify-center py-2">
           <button
             onClick={() => navigate(`/guide/${id}/tts`)}
@@ -147,6 +148,8 @@ const MedicationGuide = () => {
           </Button>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };

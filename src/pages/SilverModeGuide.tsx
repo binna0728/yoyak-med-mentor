@@ -4,6 +4,7 @@ import { medicineApi } from '@/api/medicine';
 import { Medicine } from '@/types/medicine';
 import { ArrowLeft, Volume2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import BottomNav from '@/components/BottomNav';
 
 const SilverModeGuide = () => {
   const { id } = useParams<{ id: string }>();
@@ -99,7 +100,7 @@ const SilverModeGuide = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-5 safe-area-padding">
+      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-5 safe-area-padding">
         <div className="max-w-lg mx-auto space-y-3">
           <div className="flex gap-3">
             {!isFirst && (
@@ -126,6 +127,8 @@ const SilverModeGuide = () => {
           )}
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };

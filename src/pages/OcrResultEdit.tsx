@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import BottomNav from '@/components/BottomNav';
 
 interface OcrItem {
   name: string;
@@ -143,11 +144,13 @@ const OcrResultEdit = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-sm mx-auto">
           <button onClick={handleSave} className={`tds-button-primary w-full ${sr ? 'h-14 text-lg' : ''}`}>{t('ocrEdit.saveConfirm')}</button>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };

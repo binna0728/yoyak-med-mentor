@@ -6,6 +6,7 @@ import { medicineApi } from '@/api/medicine';
 import apiClient from '@/api/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import BottomNav from '@/components/BottomNav';
 
 interface GuideInfo {
   summary: string;
@@ -290,7 +291,7 @@ const OcrResultCheck = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-lg mx-auto space-y-2">
           <button onClick={handleAutoRegister} disabled={saving || items.length === 0}
             className="tds-button-primary w-full flex items-center justify-center gap-2">
@@ -323,6 +324,8 @@ const OcrResultCheck = () => {
           </div>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };

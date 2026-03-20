@@ -4,6 +4,7 @@ import { ArrowLeft, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import BottomNav from '@/components/BottomNav';
 
 const FileUpload = () => {
   const navigate = useNavigate();
@@ -49,6 +50,8 @@ const FileUpload = () => {
           <p className={`text-center text-muted-foreground mt-4 ${sr ? 'text-sm' : 'text-xs'}`}>{t('upload.prescriptionToo')}</p>
         </div>
       </main>
+
+      <BottomNav />
     </div>
   );
 };

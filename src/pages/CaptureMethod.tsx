@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Camera, FileText, Upload, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
+import BottomNav from '@/components/BottomNav';
 
 const CaptureMethod = () => {
   const navigate = useNavigate();
@@ -58,6 +59,8 @@ const CaptureMethod = () => {
           {t('capture.footer')}
         </p>
       </main>
+
+      <BottomNav />
     </div>
   );
 };

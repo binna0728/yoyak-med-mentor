@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import BottomNav from '@/components/BottomNav';
 
 type PeriodKey = 'morning' | 'afternoon' | 'evening' | 'bedtime';
 
@@ -173,11 +174,13 @@ const MedicationTimeSetup = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
+      <div className="fixed bottom-16 left-0 right-0 bg-card border-t border-border p-4 safe-area-padding">
         <div className="max-w-sm mx-auto">
           <button onClick={handleSave} className={`tds-button-primary w-full ${sr ? 'h-14 text-lg' : ''}`}>{t('timeSetup.save')}</button>
         </div>
       </div>
+
+      <BottomNav />
     </div>
   );
 };
