@@ -9,9 +9,6 @@ import PrivateRoute from "@/components/PrivateRoute";
 
 import Onboarding from "./pages/Onboarding";
 import Login from "./pages/Login";
-import KakaoCallback from "./pages/KakaoCallback";
-import GoogleCallback from "./pages/GoogleCallback";
-import Signup from "./pages/Signup";
 import Home from "./pages/Home";
 import CaptureMethod from "./pages/CaptureMethod";
 import PillCamera from "./pages/PillCamera";
@@ -42,15 +39,17 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="h-screen flex flex-col">
+            <div className="h-screen flex flex-col" style={{
+              paddingTop: 'env(safe-area-inset-top)',
+              paddingBottom: 'env(safe-area-inset-bottom)',
+              paddingLeft: 'env(safe-area-inset-left)',
+              paddingRight: 'env(safe-area-inset-right)',
+            }}>
               <GlobalMenu />
               <div className="flex-1 overflow-y-auto">
                 <Routes>
                   <Route path="/" element={<Onboarding />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
-                  <Route path="/auth/google/callback" element={<GoogleCallback />} />
-                  <Route path="/signup" element={<Signup />} />
                   <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
                   <Route path="/capture" element={<PrivateRoute><CaptureMethod /></PrivateRoute>} />
                   <Route path="/camera/pill" element={<PrivateRoute><PillCamera /></PrivateRoute>} />

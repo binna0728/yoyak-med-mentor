@@ -1,44 +1,32 @@
-import { useNavigate, Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import pillCharacter from '@/assets/pill-character.png';
+import { isInTossApp } from '@/utils/toss';
+import { Loader2 } from 'lucide-react';
 
 const Onboarding = () => {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
-  const { t } = useTranslation();
 
-  // 데모용: 로그인 상태여도 온보딩 표시
-  // if (!isLoading && isAuthenticated) {
-  //   return <Navigate to="/home" replace />;
-  // }
+  useEffect(() => {
+    if (!isLoading) {
+      if (isAuthenticated) {
+        navigate('/home', { replace: true });
+      } else {
+        navigate('/login', { replace: true });
+      }
+    }
+  }, [isLoading, isAuthenticated, navigate]);
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <div className="flex justify-end px-5 pt-4">
-        <button onClick={() => navigate('/login')} className="text-sm text-muted-foreground">{t('app.intro')}</button>
-      </div>
-
-      <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-        <h1 className="text-4xl font-bold text-foreground mb-1">{t('app.name')}</h1>
-        <p className="text-muted-foreground text-sm mb-8">{t('app.subtitle')}</p>
-
-        <div className="w-32 h-32 rounded-3xl bg-accent flex items-center justify-center mb-12 overflow-hidden shadow-lg">
-          <img src={pillCharacter} alt="Pill Character" className="w-full h-full object-cover" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center safe-area-padding">
+      <div className="text-center space-y-4">
+        <div className="w-20 h-20 rounded-2xl bg-accent flex items-center justify-center mx-auto">
+          <span className="text-4xl">💊</span>
         </div>
-      </div>
-
-      <div className="flex items-center justify-center gap-2 pb-4">
-        <div className="w-2 h-2 rounded-full bg-primary" />
-        <div className="w-2 h-2 rounded-full bg-border" />
-        <div className="w-2 h-2 rounded-full bg-border" />
-      </div>
-
-      <div className="px-5 pb-8 safe-area-padding">
-        <Button className="w-full h-14 text-lg font-semibold rounded-2xl" onClick={() => navigate('/login')}>
-          {t('app.start')}
-        </Button>
+        <h1 className="text-3xl font-bold text-foreground">요약</h1>
+        <p className="text-muted-foreground text-sm">AI 복약 도우미</p>
+        <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto mt-4" />
       </div>
     </div>
   );
