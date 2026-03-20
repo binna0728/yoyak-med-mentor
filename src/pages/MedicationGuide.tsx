@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { medicineApi } from '@/api/medicine';
 import { Medicine } from '@/types/medicine';
-import { ArrowLeft, Volume2, Eye, Download } from 'lucide-react';
+import { Volume2, Eye, Download } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import html2canvas from 'html2canvas';
 import { useTranslation } from 'react-i18next';
