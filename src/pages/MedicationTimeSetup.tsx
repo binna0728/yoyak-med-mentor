@@ -91,18 +91,7 @@ const MedicationTimeSetup = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2">
-            <ArrowLeft className={`text-foreground ${sr ? 'w-7 h-7' : 'w-6 h-6'}`} />
-          </button>
-          <div className="flex-1 text-center">
-            <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('timeSetup.title')}</span>
-          </div>
-          <div className="w-10" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 px-5 py-6 pb-28 overflow-y-auto">
         <div className="max-w-sm mx-auto space-y-6">

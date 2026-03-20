@@ -210,16 +210,7 @@ const OcrResultCheck = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col safe-area-padding">
-      <header className="tds-header">
-        <div className="flex items-center h-14 px-4 border-b border-border">
-          <button onClick={() => navigate('/home')} className="p-2 -ml-2">
-            <ArrowLeft className={`text-foreground ${sr ? 'w-7 h-7' : 'w-6 h-6'}`} />
-          </button>
-          <div className="flex-1" />
-          <div className="w-10" />
-        </div>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 px-5 py-6 pb-44 overflow-y-auto">
         <div className="max-w-lg mx-auto">
