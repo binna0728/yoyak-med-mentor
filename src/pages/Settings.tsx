@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ArrowLeft, ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
+import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 
