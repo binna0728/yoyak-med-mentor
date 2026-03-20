@@ -10,6 +10,7 @@ import {
   Volume2, VolumeX, ChevronLeft, CloudRain, Wind, Music, Coffee, Shuffle,
   Leaf, MapPin, Newspaper, BookImage, GripVertical, ListMusic, Heart
 } from 'lucide-react';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
