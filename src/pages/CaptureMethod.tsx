@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, FileText, Upload, PlusCircle } from 'lucide-react';
+import { Camera, FileText, Upload, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 
