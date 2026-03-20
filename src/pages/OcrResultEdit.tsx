@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 interface OcrItem {
   name: string;
