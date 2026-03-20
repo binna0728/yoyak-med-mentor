@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 type PeriodKey = 'morning' | 'afternoon' | 'evening' | 'bedtime';
 
