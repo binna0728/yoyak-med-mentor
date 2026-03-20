@@ -27,7 +27,6 @@ interface StreamEvent {
 }
 
 const AiChat = () => {
-  const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
   const { t } = useTranslation();
   const [messages, setMessages] = useState<ChatMessage[]>([
