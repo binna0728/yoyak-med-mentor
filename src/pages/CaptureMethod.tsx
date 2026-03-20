@@ -16,7 +16,7 @@ const CaptureMethod = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">(
+    <div className="min-h-screen bg-background flex flex-col">
 
       <main className="flex-1 px-5 py-6 max-w-lg mx-auto w-full flex flex-col">
         <p className={`text-muted-foreground mb-6 ${sr ? 'text-lg' : 'text-sm'}`}>{t('capture.howToRegister')}</p>
