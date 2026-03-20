@@ -4,6 +4,7 @@ import { Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 const FileUpload = () => {
   const navigate = useNavigate();
