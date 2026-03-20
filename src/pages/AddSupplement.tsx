@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Sparkles, Plus, Pill } from 'lucide-react';
+import { Sparkles, Plus, Pill } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { toast } from 'sonner';
 import apiClient from '@/api/client';
