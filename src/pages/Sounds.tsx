@@ -550,8 +550,8 @@ const Sounds = () => {
                   <span className={sr ? 'text-lg' : 'text-sm'}>목록으로</span>
                 </button>
                 <h2 className={cn('font-semibold text-foreground mb-3', sr ? 'text-xl' : 'text-lg')}>약호랑 토복이의 하루</h2>
-                <div className="rounded-2xl border border-border overflow-hidden shadow-sm">
-                  <img src={viewingWebtoon} alt="약호랑 토복이의 하루" className="w-full h-auto" />
+                <div className={cn('rounded-2xl border border-border overflow-hidden shadow-sm', sr && '-mx-5')}>
+                  <img src={viewingWebtoon} alt="약호랑 토복이의 하루" className={sr ? 'w-[120%] max-w-none -ml-[10%] h-auto' : 'w-full h-auto'} />
                 </div>
               </div>
             ) : (
