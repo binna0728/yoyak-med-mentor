@@ -15,14 +15,11 @@ import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-/* ─── 더보기 탭 정의 ─── */
-type MainTab = 'sounds' | 'pharmacy' | 'blog' | 'webtoon';
+/* ─── 더보기 탭 정의 (v1: 사운드만 표시) ─── */
+type MainTab = 'sounds';
 
 const mainTabs: { id: MainTab; label: string; icon: React.ElementType; emoji: string }[] = [
-  { id: 'sounds', label: '사운드', icon: Music, emoji: '🎵' },
-  { id: 'pharmacy', label: '가까운 약국', icon: MapPin, emoji: '💊' },
-  { id: 'blog', label: '건강 블로그', icon: Newspaper, emoji: '📰' },
-  { id: 'webtoon', label: '상식 웹툰', icon: BookImage, emoji: '📚' },
+  { id: 'sounds', label: '힐링 사운드', icon: Music, emoji: '🎵' },
 ];
 
 /* ─── 사운드 카테고리 & 트랙 ─── */
@@ -535,12 +532,8 @@ const Sounds = () => {
             </div>
           </>
         )}
-
-        {mainTab === 'pharmacy' && <NearbyPharmacy />}
-
-        {mainTab === 'blog' && <HealthBlog />}
-
-        {mainTab === 'webtoon' && (
+        {/* v1: pharmacy, blog, webtoon 탭 숨김 */}
+        {false && (
           <div>
             {viewingWebtoon ? (
               <div>
