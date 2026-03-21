@@ -68,7 +68,7 @@ const tracks: Track[] = [
   { id: 'let-go', name: '내려놓기', icon: Leaf, category: 'comfort', src: '/sounds/comfort/내려놓기.mp3' },
   { id: 'behind', name: '뒤쳐진 느낌', icon: Heart, category: 'comfort', src: '/sounds/comfort/뒤쳐진 느낌.mp3' },
   { id: 'anxiety', name: '불안, 후회', icon: CloudRain, category: 'comfort', src: '/sounds/comfort/불안, 후회.mp3' },
-  { id: 'lonely', name: '외로움', icon: Moon, category: 'comfort', src: '/sounds/comfort/외로움.mp3' },
+  
 ];
 
 const TIMER_OPTIONS = [
