@@ -16,6 +16,7 @@ import AiChat from "./pages/AiChat";
 import AddSupplement from "./pages/AddSupplement";
 import MedicationTimeSetup from "./pages/MedicationTimeSetup";
 import Settings from "./pages/Settings";
+import Sounds from "./pages/Sounds";
 import NotFound from "./pages/NotFound";
 import GlobalMenu from "./components/GlobalMenu";
 
@@ -47,6 +48,7 @@ const App = () => (
                   <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
                   <Route path="/setup/time" element={<PrivateRoute><MedicationTimeSetup /></PrivateRoute>} />
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+                  <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
