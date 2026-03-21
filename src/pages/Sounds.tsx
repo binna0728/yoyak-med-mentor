@@ -533,11 +533,8 @@ const Sounds = () => {
           </>
         )}
 
-        {mainTab === 'pharmacy' && <NearbyPharmacy />}
-
-        {mainTab === 'blog' && <HealthBlog />}
-
-        {mainTab === 'webtoon' && (
+        {/* v1: pharmacy, blog, webtoon 탭 숨김 */}
+        {false && (
           <div>
             {viewingWebtoon ? (
               <div>
