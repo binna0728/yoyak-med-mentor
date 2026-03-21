@@ -454,12 +454,12 @@ const Sounds = () => {
       <div className="tds-content px-5 pt-6 pb-28">
         <div className="flex items-center justify-between mb-1">
           <h1 className={cn('font-bold text-foreground', sr ? 'text-2xl' : 'text-xl')}>
-            더보기
+            힐링 사운드
           </h1>
           <SeniorModeToggle />
         </div>
         <p className={cn('text-muted-foreground mb-5', sr ? 'text-base' : 'text-sm')}>
-          유용한 건강 서비스를 이용해보세요
+          마음을 편안하게 해주는 배경음을 들어보세요
         </p>
 
         {/* 메인 탭 */}
