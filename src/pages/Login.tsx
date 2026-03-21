@@ -16,16 +16,15 @@ const Login = () => {
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
 
-  // 토스 앱 내부일 때 자동 로그인 시도
+  // 이미 인증됐으면 홈으로
   useEffect(() => {
     if (isAuthenticated) {
       navigate(from, { replace: true });
       return;
     }
 
-    if (inToss) {
-      handleTossAutoLogin();
-    }
+    // 토스 인앱이든 외부 브라우저든 자동 로그인 시도
+    handleAutoLogin();
   }, [isAuthenticated]);
 
   const handleTossAutoLogin = async () => {
