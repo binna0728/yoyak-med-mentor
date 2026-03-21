@@ -27,16 +27,21 @@ const Login = () => {
     handleAutoLogin();
   }, [isAuthenticated]);
 
-  const handleTossAutoLogin = async () => {
+  const handleAutoLogin = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // 토스 WebView Bridge에서 토큰 획득 시도
-      const tossToken = await getTossToken();
-      await loginWithToss(tossToken);
+      if (inToss) {
+        // 토스 WebView Bridge에서 토큰 획득
+        const tossToken = await getTossToken();
+        await loginWithToss(tossToken);
+      } else {
+        // 외부 브라우저: 데모 모드로 자동 진입
+        await loginWithToss('demo_token');
+      }
       navigate(from, { replace: true });
     } catch {
-      setError('토스 로그인에 실패했습니다. 다시 시도해주세요.');
+      setError('로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -44,9 +49,6 @@ const Login = () => {
 
   const getTossToken = (): Promise<string> => {
     return new Promise((resolve) => {
-      // 토스 앱 환경에서 WebView Bridge를 통해 토큰을 받음
-      // 실제 구현 시 Toss SDK의 bridge 호출로 교체
-      // 데모 모드: 바로 demo token 반환
       resolve('toss_demo_token');
     });
   };
