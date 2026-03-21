@@ -125,7 +125,6 @@ const Home = () => {
   };
 
   const quickActions = [
-    { icon: Camera, label: t('home.pillScan'), desc: t('home.pillScanDesc'), to: '/capture', emoji: '📷' },
     { icon: CalendarDays, label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
     { icon: Bot, label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
     { icon: BookOpen, label: '약(영양제 등) 추가', desc: 'AI로 간편 등록', to: '/add/supplement', emoji: '💊' },
