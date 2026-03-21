@@ -230,7 +230,7 @@ const Sounds = () => {
     const audio = audioRef.current;
     if (!audio) return;
     stopSound();
-    audio.src = track.src;
+    audio.src = encodeURI(track.src);
     audio.volume = volume / 100;
     audio.play().then(() => {
       setIsPlaying(true);
