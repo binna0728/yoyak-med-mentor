@@ -73,7 +73,7 @@ const Login = () => {
           <div className="space-y-4">
             <p className="text-destructive text-sm">{error}</p>
             <button
-              onClick={handleTossAutoLogin}
+              onClick={handleAutoLogin}
               className="tds-button-primary w-full"
             >
               다시 시도
