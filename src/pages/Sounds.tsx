@@ -163,7 +163,7 @@ const Sounds = () => {
       setActiveTrack(next);
       const audio = audioRef.current;
       if (audio) {
-        audio.src = next.src;
+        audio.src = encodeURI(next.src);
         audio.volume = volumeRef.current / 100;
         audio.play().catch(() => setIsPlaying(false));
       }
