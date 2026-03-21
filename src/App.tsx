@@ -16,6 +16,7 @@ import AiChat from "./pages/AiChat";
 import AddSupplement from "./pages/AddSupplement";
 import MedicationTimeSetup from "./pages/MedicationTimeSetup";
 import Settings from "./pages/Settings";
+import Sounds from "./pages/Sounds";
 import NotFound from "./pages/NotFound";
 import GlobalMenu from "./components/GlobalMenu";
 
