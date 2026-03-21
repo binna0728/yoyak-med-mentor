@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: '요약',
     primaryColor: '#7C9A7E',
-    icon: '',
+    icon: '', // TODO: 콘솔 등록 후 정식 아이콘 URL로 교체
   },
   web: {
     host: 'localhost',
@@ -14,6 +14,10 @@ export default defineConfig({
       dev: 'vite --host',
       build: 'vite build',
     },
+  },
+  navigationBar: {
+    withBackButton: true,
+    withHomeButton: true,
   },
   permissions: [],
 });

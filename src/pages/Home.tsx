@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { Camera, CalendarDays, Bot, BookOpen, Volume2, VolumeX } from 'lucide-react';
+import { CalendarDays, Bot, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
@@ -125,7 +125,6 @@ const Home = () => {
   };
 
   const quickActions = [
-    { icon: Camera, label: t('home.pillScan'), desc: t('home.pillScanDesc'), to: '/capture', emoji: '📷' },
     { icon: CalendarDays, label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
     { icon: Bot, label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
     { icon: BookOpen, label: '약(영양제 등) 추가', desc: 'AI로 간편 등록', to: '/add/supplement', emoji: '💊' },
