@@ -532,7 +532,6 @@ const Sounds = () => {
             </div>
           </>
         )}
-
         {/* v1: pharmacy, blog, webtoon 탭 숨김 */}
         {false && (
           <div>
