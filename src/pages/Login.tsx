@@ -16,28 +16,32 @@ const Login = () => {
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
 
-  // 토스 앱 내부일 때 자동 로그인 시도
+  // 이미 인증됐으면 홈으로
   useEffect(() => {
     if (isAuthenticated) {
       navigate(from, { replace: true });
       return;
     }
 
-    if (inToss) {
-      handleTossAutoLogin();
-    }
+    // 토스 인앱이든 외부 브라우저든 자동 로그인 시도
+    handleAutoLogin();
   }, [isAuthenticated]);
 
-  const handleTossAutoLogin = async () => {
+  const handleAutoLogin = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // 토스 WebView Bridge에서 토큰 획득 시도
-      const tossToken = await getTossToken();
-      await loginWithToss(tossToken);
+      if (inToss) {
+        // 토스 WebView Bridge에서 토큰 획득
+        const tossToken = await getTossToken();
+        await loginWithToss(tossToken);
+      } else {
+        // 외부 브라우저: 데모 모드로 자동 진입
+        await loginWithToss('demo_token');
+      }
       navigate(from, { replace: true });
     } catch {
-      setError('토스 로그인에 실패했습니다. 다시 시도해주세요.');
+      setError('로그인에 실패했습니다. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -45,52 +49,12 @@ const Login = () => {
 
   const getTossToken = (): Promise<string> => {
     return new Promise((resolve) => {
-      // 토스 앱 환경에서 WebView Bridge를 통해 토큰을 받음
-      // 실제 구현 시 Toss SDK의 bridge 호출로 교체
-      // 데모 모드: 바로 demo token 반환
       resolve('toss_demo_token');
     });
   };
 
-  // 토스 앱 외부 접근 시
-  if (!inToss) {
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center safe-area-padding px-6">
-        <div className="max-w-sm w-full text-center space-y-6">
-          <div className="w-20 h-20 rounded-2xl bg-accent flex items-center justify-center mx-auto">
-            <span className="text-4xl">💊</span>
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl font-bold text-foreground">요약</h1>
-            <p className="text-muted-foreground text-sm">
-              이 서비스는 토스 앱에서만 이용할 수 있습니다.
-            </p>
-          </div>
-          <a
-            href="https://toss.im/app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="tds-button-primary w-full inline-flex items-center justify-center"
-          >
-            토스 앱 다운로드
-          </a>
-
-          {/* 개발 모드 둘러보기 */}
-          {import.meta.env.DEV && (
-            <button
-              onClick={async () => {
-                await loginWithToss('dev_demo_token');
-                navigate('/home', { replace: true });
-              }}
-              className="w-full h-12 rounded-xl text-sm font-medium text-muted-foreground border border-border bg-card hover:bg-muted transition-colors"
-            >
-              둘러보기 (개발 모드)
-            </button>
-          )}
-        </div>
-      </div>
-    );
-  }
+  // 외부 브라우저에서도 자동 로그인하므로 별도 분기 불필요
+  // 로딩/에러 UI만 표시
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center safe-area-padding">
@@ -109,7 +73,7 @@ const Login = () => {
           <div className="space-y-4">
             <p className="text-destructive text-sm">{error}</p>
             <button
-              onClick={handleTossAutoLogin}
+              onClick={handleAutoLogin}
               className="tds-button-primary w-full"
             >
               다시 시도
