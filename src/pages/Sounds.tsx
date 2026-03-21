@@ -462,28 +462,7 @@ const Sounds = () => {
           마음을 편안하게 해주는 배경음을 들어보세요
         </p>
 
-        {/* 메인 탭 */}
-        <div className="flex gap-2 overflow-x-auto pb-1 mb-6 scrollbar-hide">
-          {mainTabs.map(tab => {
-            const isActive = mainTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setMainTab(tab.id)}
-                className={cn(
-                  'flex items-center gap-1.5 px-4 py-2 rounded-full border font-medium whitespace-nowrap transition-all',
-                  sr ? 'text-base' : 'text-sm',
-                  isActive
-                    ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                    : 'bg-card border-border text-muted-foreground hover:bg-muted'
-                )}
-              >
-                <span>{tab.emoji}</span>
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* v1: 탭 1개뿐이므로 탭 바 숨김 */}
 
         {/* 탭 콘텐츠 */}
         {mainTab === 'sounds' && (
