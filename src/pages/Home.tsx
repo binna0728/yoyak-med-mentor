@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { CalendarDays, Bot, BookOpen, Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';

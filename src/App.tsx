@@ -48,6 +48,7 @@ const App = () => (
                   <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
                   <Route path="/setup/time" element={<PrivateRoute><MedicationTimeSetup /></PrivateRoute>} />
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+                  <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
