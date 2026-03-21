@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, ScanLine, CalendarDays, Bot, LayoutGrid } from 'lucide-react';
+import { Home, CalendarDays, Bot, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -10,10 +10,9 @@ const BottomNav = () => {
 
   const items = [
     { to: '/home', icon: Home, label: t('nav.home') },
-    { to: '/capture', icon: ScanLine, label: t('nav.scan') },
     { to: '/schedule', icon: CalendarDays, label: t('nav.schedule') },
+    { to: '/add/supplement', icon: PlusCircle, label: '약 추가' },
     { to: '/ai-chat', icon: Bot, label: t('nav.ai') },
-    { to: '/sounds', icon: LayoutGrid, label: '더보기' },
   ];
 
   const isActive = (to: string) => {
