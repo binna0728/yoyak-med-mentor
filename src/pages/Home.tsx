@@ -125,9 +125,10 @@ const Home = () => {
   };
 
   const quickActions = [
-    { icon: CalendarDays, label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
-    { icon: Bot, label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
-    { icon: BookOpen, label: '약(영양제 등) 추가', desc: 'AI로 간편 등록', to: '/add/supplement', emoji: '💊' },
+    { label: t('home.medSchedule'), desc: t('home.medScheduleDesc'), to: '/schedule', emoji: '📋' },
+    { label: t('home.aiChat'), desc: t('home.aiChatDesc'), to: '/ai-chat', emoji: '🤖' },
+    { label: '약(영양제 등) 추가', desc: 'AI로 간편 등록', to: '/add/supplement', emoji: '💊' },
+    { label: '힐링 사운드', desc: '명상·수면·집중', to: '/sounds', emoji: '🎵' },
   ];
 
   const sr = isSeniorMode;
