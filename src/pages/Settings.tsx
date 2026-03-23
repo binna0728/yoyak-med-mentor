@@ -156,6 +156,38 @@ const Settings = () => {
           {t('auth.logout')}
         </button>
 
+        {/* 회원 탈퇴 (토스 연결 끊기) */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              className={`w-full flex items-center justify-center gap-2 text-destructive font-medium transition-colors ${
+                sr ? 'text-base py-3' : 'text-sm py-2'
+              }`}
+            >
+              <UserX className={sr ? 'w-5 h-5' : 'w-4 h-4'} />
+              회원 탈퇴
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>정말 탈퇴하시겠어요?</AlertDialogTitle>
+              <AlertDialogDescription>
+                탈퇴하면 모든 약 정보, 복용 기록, 설정이 삭제되며 복구할 수 없어요.
+                토스 앱에서도 연결이 해제됩니다.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => { logout(); navigate('/'); }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                탈퇴하기
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
         <div className="flex items-center justify-center gap-2 pt-2">
           <Info className="w-4 h-4 text-muted-foreground" />
           <p className="text-xs text-muted-foreground">{t('app.version')}</p>
