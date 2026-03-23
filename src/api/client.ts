@@ -64,7 +64,7 @@ apiClient.interceptors.response.use(
         }
 
         // refresh_token을 요청 본문으로 전송 (쿠키 대신)
-        const response = await axios.post(`${API_BASE_URL}/accounts/token/refresh`, {
+        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`, {
           refresh_token: refreshToken,
         });
 
