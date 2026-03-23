@@ -19,6 +19,20 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Basic Auth 검증
+    const authHeader = req.headers.get("Authorization");
+    const expectedToken = Deno.env.get("TOSS_UNLINK_AUTH_TOKEN");
+
+    if (expectedToken) {
+      const expected = `Basic ${btoa(expectedToken)}`;
+      if (authHeader !== expected) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
     const body = await req.json().catch(() => ({}));
     console.log("Toss unlink callback received:", JSON.stringify(body));
 
