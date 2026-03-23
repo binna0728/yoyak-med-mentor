@@ -10,6 +10,7 @@ export default defineConfig({
   web: {
     host: 'localhost',
     port: 5173,
+    outdir: 'dist',
     commands: {
       dev: 'vite --host',
       build: 'vite build',
