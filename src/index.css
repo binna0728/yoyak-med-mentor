@@ -4,6 +4,7 @@
 
 /* Safe Area */
 :root {
+  color-scheme: light only;
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
@@ -70,7 +71,8 @@
     --sidebar-ring: 123 12% 55%;
   }
 
-  .dark {
+  /* Dark mode disabled — Toss mini-app requires light mode only */
+  .dark-disabled {
     --background: 120 10% 10%;
     --foreground: 0 0% 95%;
     --card: 120 10% 14%;
