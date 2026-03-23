@@ -186,50 +186,17 @@ const OcrResultCheck = () => {
       t('sampleMeds.ttsIntro', { name: item.name, dosage: item.dosage, frequency: item.frequency, schedule: item.schedule, duration: item.duration })
     ).join(' ');
 
-    // 서버 TTS 시도 → 실패 시 브라우저 TTS fallback
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
-    try {
-      const res = await fetch(`${API_BASE_URL}/tts/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) throw new Error('TTS API error');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); audioRef.current = null; };
-      audio.onerror = () => {
-        URL.revokeObjectURL(url);
-        // 서버 TTS 오디오 재생 실패 → 브라우저 TTS
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(text);
-          utter.lang = 'ko-KR';
-          utter.rate = 0.9;
-          utter.onend = () => setIsSpeaking(false);
-          window.speechSynthesis.speak(utter);
-        } else {
-          setIsSpeaking(false);
-        }
-      };
-      await audio.play();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ko-KR';
+      utter.rate = 0.9;
+      utter.onend = () => setIsSpeaking(false);
+      utter.onerror = () => { setIsSpeaking(false); toast.error('TTS를 사용할 수 없습니다'); };
+      window.speechSynthesis.speak(utter);
       setIsSpeaking(true);
-    } catch {
-      // 서버 TTS 실패 → 브라우저 TTS fallback
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'ko-KR';
-        utter.rate = 0.9;
-        utter.onend = () => setIsSpeaking(false);
-        utter.onerror = () => { setIsSpeaking(false); toast.error('TTS를 사용할 수 없습니다'); };
-        window.speechSynthesis.speak(utter);
-        setIsSpeaking(true);
-      } else {
-        toast.error('TTS를 사용할 수 없습니다');
-      }
+    } else {
+      toast.error('TTS를 사용할 수 없습니다');
     }
     setTtsLoading(false);
   };
