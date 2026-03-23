@@ -27,6 +27,17 @@ const Login = () => {
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
 
   useEffect(() => {
+    supabase.from('terms').select('*').eq('is_active', true).order('sort_order').then(({ data }) => {
+      if (data) {
+        setTerms(data as Term[]);
+        const initial: Record<string, boolean> = {};
+        data.forEach((t: any) => { initial[t.id] = false; });
+        setConsents(initial);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     if (isAuthenticated) {
       navigate(from, { replace: true });
       return;
