@@ -7,7 +7,8 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // for httpOnly cookies (refresh_token)
+  // iOS 토스 미니앱에서 서드파티 쿠키 차단으로 인해
+  // withCredentials 대신 localStorage 기반 토큰 관리 사용
 });
 
 // Request interceptor - add access token
@@ -57,19 +58,28 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call refresh endpoint (POST) - refresh_token is in httpOnly cookie
-        const response = await axios.post(`${API_BASE_URL}/accounts/token/refresh`, null, {
-          withCredentials: true,
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) {
+          throw new Error('No refresh token');
+        }
+
+        // refresh_token을 요청 본문으로 전송 (쿠키 대신)
+        const response = await axios.post(`${API_BASE_URL}/accounts/token/refresh`, {
+          refresh_token: refreshToken,
         });
 
-        const { access_token } = response.data.data;
+        const { access_token, refresh_token: newRefreshToken } = response.data.data;
         localStorage.setItem('access_token', access_token);
+        if (newRefreshToken) {
+          localStorage.setItem('refresh_token', newRefreshToken);
+        }
 
         processQueue(null);
         return apiClient(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as AxiosError);
         localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
         window.location.href = '/login';
         return Promise.reject(refreshError);
       } finally {
