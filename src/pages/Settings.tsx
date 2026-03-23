@@ -26,11 +26,30 @@ const Settings = () => {
   const { user, logout } = useAuth();
   const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
   const [notificationOn, setNotificationOn] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { t, i18n } = useTranslation();
 
   const sr = isSeniorMode;
 
   const handleLogout = () => { logout(); navigate('/login'); };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.functions.invoke('toss-unlink', {
+        body: { user_id: user?.user_id },
+      });
+      if (error) throw error;
+      logout();
+      navigate('/');
+      toast({ title: '탈퇴 완료', description: '모든 데이터가 삭제되었습니다.' });
+    } catch (e) {
+      console.error('Delete account error:', e);
+      toast({ title: '탈퇴 실패', description: '잠시 후 다시 시도해 주세요.', variant: 'destructive' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'ko' ? 'en' : 'ko');
