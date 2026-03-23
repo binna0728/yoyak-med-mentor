@@ -2,7 +2,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
+import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe, UserX } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
@@ -144,6 +155,38 @@ const Settings = () => {
           <LogOut className={sr ? 'w-6 h-6' : 'w-5 h-5'} />
           {t('auth.logout')}
         </button>
+
+        {/* 회원 탈퇴 (토스 연결 끊기) */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <button
+              className={`w-full flex items-center justify-center gap-2 text-destructive font-medium transition-colors ${
+                sr ? 'text-base py-3' : 'text-sm py-2'
+              }`}
+            >
+              <UserX className={sr ? 'w-5 h-5' : 'w-4 h-4'} />
+              회원 탈퇴
+            </button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>정말 탈퇴하시겠어요?</AlertDialogTitle>
+              <AlertDialogDescription>
+                탈퇴하면 모든 약 정보, 복용 기록, 설정이 삭제되며 복구할 수 없어요.
+                토스 앱에서도 연결이 해제됩니다.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => { logout(); navigate('/'); }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                탈퇴하기
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         <div className="flex items-center justify-center gap-2 pt-2">
           <Info className="w-4 h-4 text-muted-foreground" />
