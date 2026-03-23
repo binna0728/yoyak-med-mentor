@@ -297,6 +297,42 @@ export type Database = {
           },
         ]
       }
+      terms: {
+        Row: {
+          content_url: string
+          created_at: string
+          id: string
+          is_active: boolean
+          is_required: boolean
+          sort_order: number
+          term_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_url?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          sort_order?: number
+          term_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_url?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_required?: boolean
+          sort_order?: number
+          term_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -314,6 +350,38 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_term_consents: {
+        Row: {
+          agreed: boolean
+          agreed_at: string
+          id: string
+          term_id: string
+          user_id: string
+        }
+        Insert: {
+          agreed?: boolean
+          agreed_at?: string
+          id?: string
+          term_id: string
+          user_id: string
+        }
+        Update: {
+          agreed?: boolean
+          agreed_at?: string
+          id?: string
+          term_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_term_consents_term_id_fkey"
+            columns: ["term_id"]
+            isOneToOne: false
+            referencedRelation: "terms"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

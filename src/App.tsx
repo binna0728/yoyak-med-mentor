@@ -17,6 +17,8 @@ import AddSupplement from "./pages/AddSupplement";
 import MedicationTimeSetup from "./pages/MedicationTimeSetup";
 import Settings from "./pages/Settings";
 import Sounds from "./pages/Sounds";
+import Terms from "./pages/Terms";
+import TermsManage from "./pages/TermsManage";
 import NotFound from "./pages/NotFound";
 import GlobalMenu from "./components/GlobalMenu";
 
@@ -49,6 +51,8 @@ const App = () => (
                   <Route path="/setup/time" element={<PrivateRoute><MedicationTimeSetup /></PrivateRoute>} />
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
                   <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/terms/manage" element={<PrivateRoute><TermsManage /></PrivateRoute>} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>

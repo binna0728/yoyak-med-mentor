@@ -1,18 +1,41 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isInTossApp } from '@/utils/toss';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Checkbox } from '@/components/ui/checkbox';
+
+interface Term {
+  id: string;
+  title: string;
+  content_url: string;
+  is_required: boolean;
+  term_type: string;
+}
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { loginWithToss, isAuthenticated } = useAuth();
+  const [terms, setTerms] = useState<Term[]>([]);
+  const [consents, setConsents] = useState<Record<string, boolean>>({});
+  const { loginWithToss, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const inToss = isInTossApp();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/home';
+
+  useEffect(() => {
+    supabase.from('terms').select('*').eq('is_active', true).order('sort_order').then(({ data }) => {
+      if (data) {
+        setTerms(data as Term[]);
+        const initial: Record<string, boolean> = {};
+        data.forEach((t: any) => { initial[t.id] = false; });
+        setConsents(initial);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -24,7 +47,24 @@ const Login = () => {
     }
   }, [isAuthenticated]);
 
+  const requiredTermsAgreed = terms.filter(t => t.is_required).every(t => consents[t.id]);
+
+  const saveConsents = async (userId: string) => {
+    const rows = Object.entries(consents).map(([term_id, agreed]) => ({
+      user_id: userId,
+      term_id,
+      agreed,
+    }));
+    if (rows.length > 0) {
+      await supabase.from('user_term_consents').upsert(rows, { onConflict: 'user_id,term_id' });
+    }
+  };
+
   const handleLogin = async () => {
+    if (terms.length > 0 && !requiredTermsAgreed) {
+      setError('필수 약관에 모두 동의해주세요.');
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -33,6 +73,11 @@ const Login = () => {
         await loginWithToss(tossToken);
       } else {
         await loginWithToss('demo_token');
+      }
+      // Save consents after login
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        await saveConsents(currentUser.id);
       }
       navigate(from, { replace: true });
     } catch {
@@ -117,6 +162,41 @@ const Login = () => {
         </div>
       </div>
 
+      {/* 약관 동의 */}
+      {terms.length > 0 && (
+        <div className="px-6 max-w-sm w-full mx-auto space-y-2 pt-2">
+          <div className="flex items-center gap-2 mb-2">
+            <Checkbox
+              checked={terms.every(t => consents[t.id])}
+              onCheckedChange={(checked) => {
+                const all: Record<string, boolean> = {};
+                terms.forEach(t => { all[t.id] = !!checked; });
+                setConsents(all);
+              }}
+            />
+            <span className="text-sm font-semibold text-foreground">전체 동의</span>
+          </div>
+          {terms.map(term => (
+            <div key={term.id} className="flex items-center gap-2">
+              <Checkbox
+                checked={consents[term.id] || false}
+                onCheckedChange={(checked) => setConsents(c => ({ ...c, [term.id]: !!checked }))}
+              />
+              <span className="text-sm text-foreground flex-1">
+                {term.content_url ? (
+                  <a href={term.content_url} target="_blank" rel="noopener noreferrer" className="underline">{term.title}</a>
+                ) : (
+                  <Link to="/terms" className="underline">{term.title}</Link>
+                )}
+              </span>
+              <span className={`text-xs ${term.is_required ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {term.is_required ? '(필수)' : '(선택)'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 하단 CTA */}
       <div className="px-6 pb-8 pt-4 max-w-sm w-full mx-auto space-y-4">
         {isLoading ? (
@@ -137,7 +217,8 @@ const Login = () => {
         ) : (
           <button
             onClick={handleLogin}
-            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base active:scale-[0.98] transition-transform shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
+            disabled={terms.length > 0 && !requiredTermsAgreed}
+            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base active:scale-[0.98] transition-transform shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             시작하기
           </button>
