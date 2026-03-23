@@ -162,6 +162,41 @@ const Login = () => {
         </div>
       </div>
 
+      {/* 약관 동의 */}
+      {terms.length > 0 && (
+        <div className="px-6 max-w-sm w-full mx-auto space-y-2 pt-2">
+          <div className="flex items-center gap-2 mb-2">
+            <Checkbox
+              checked={terms.every(t => consents[t.id])}
+              onCheckedChange={(checked) => {
+                const all: Record<string, boolean> = {};
+                terms.forEach(t => { all[t.id] = !!checked; });
+                setConsents(all);
+              }}
+            />
+            <span className="text-sm font-semibold text-foreground">전체 동의</span>
+          </div>
+          {terms.map(term => (
+            <div key={term.id} className="flex items-center gap-2">
+              <Checkbox
+                checked={consents[term.id] || false}
+                onCheckedChange={(checked) => setConsents(c => ({ ...c, [term.id]: !!checked }))}
+              />
+              <span className="text-sm text-foreground flex-1">
+                {term.content_url ? (
+                  <a href={term.content_url} target="_blank" rel="noopener noreferrer" className="underline">{term.title}</a>
+                ) : (
+                  <Link to="/terms" className="underline">{term.title}</Link>
+                )}
+              </span>
+              <span className={`text-xs ${term.is_required ? 'text-destructive' : 'text-muted-foreground'}`}>
+                {term.is_required ? '(필수)' : '(선택)'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 하단 CTA */}
       <div className="px-6 pb-8 pt-4 max-w-sm w-full mx-auto space-y-4">
         {isLoading ? (
@@ -182,7 +217,8 @@ const Login = () => {
         ) : (
           <button
             onClick={handleLogin}
-            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base active:scale-[0.98] transition-transform shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)]"
+            disabled={terms.length > 0 && !requiredTermsAgreed}
+            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold text-base active:scale-[0.98] transition-transform shadow-[0_4px_14px_-4px_hsl(var(--primary)/0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             시작하기
           </button>
