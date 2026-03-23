@@ -17,6 +17,8 @@ import AddSupplement from "./pages/AddSupplement";
 import MedicationTimeSetup from "./pages/MedicationTimeSetup";
 import Settings from "./pages/Settings";
 import Sounds from "./pages/Sounds";
+import Terms from "./pages/Terms";
+import TermsManage from "./pages/TermsManage";
 import NotFound from "./pages/NotFound";
 import GlobalMenu from "./components/GlobalMenu";
 
