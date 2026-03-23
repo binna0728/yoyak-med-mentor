@@ -208,30 +208,40 @@
     border-color: hsl(var(--primary));
   }
 
-  /* 토스 스타일 플로팅 탭바 */
+  /* 토스 스타일 플로팅 탭바 — Floating Pill */
   .tds-bottom-nav {
-    @apply fixed left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur-lg;
+    @apply fixed left-1/2 -translate-x-1/2;
     @apply flex items-center justify-around;
+    background: hsl(var(--card) / 0.92);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
     border-radius: 999px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 0 0 1px hsl(var(--border) / 0.5);
-    bottom: calc(12px + var(--sab));
-    height: 56px;
-    width: calc(100% - 32px);
-    max-width: 420px;
-    padding: 0 8px;
+    box-shadow:
+      0 2px 8px rgba(0, 0, 0, 0.08),
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      inset 0 0 0 0.5px hsl(var(--border) / 0.4);
+    bottom: calc(16px + var(--sab));
+    height: 60px;
+    width: calc(100% - 40px);
+    max-width: 400px;
+    padding: 0 6px;
+    z-index: 50;
   }
 
   .tds-nav-item {
-    @apply flex flex-col items-center justify-center gap-0.5 py-1.5 px-3;
-    @apply transition-colors duration-200 rounded-full;
+    @apply flex flex-col items-center justify-center gap-0.5;
+    @apply transition-all duration-200;
     color: hsl(var(--muted-foreground));
+    border-radius: 999px;
+    padding: 6px 14px;
+    min-width: 56px;
   }
   .tds-nav-item.active {
-    color: hsl(var(--primary));
-    background-color: hsl(var(--accent));
+    color: hsl(var(--primary-dark));
+    background: hsl(var(--accent));
   }
   .tds-nav-item span {
-    @apply text-[10px] font-medium leading-tight;
+    @apply text-[10px] font-semibold leading-tight;
   }
 
   .tds-card {
