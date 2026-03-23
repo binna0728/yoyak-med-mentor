@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe, UserX } from 'lucide-react';
+import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe, UserX, Loader2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +17,8 @@ import {
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 
 const Settings = () => {
