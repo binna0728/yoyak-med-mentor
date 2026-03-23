@@ -6,12 +6,22 @@ import BottomNav from '@/components/BottomNav';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
+}
+
+interface MedInfo {
+  name: string;
+  dosage: string;
+  efcy: string | null;
+  se: string | null;
+  intrc: string | null;
+  use_method: string | null;
 }
 
 const AiChat = () => {
@@ -22,11 +32,25 @@ const AiChat = () => {
   ]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [meds, setMeds] = useState<MedInfo[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const quickQuestions = [
     t('aiChat.q1'), t('aiChat.q2'), t('aiChat.q3'), t('aiChat.q4'),
   ];
+
+  useEffect(() => {
+    const fetchMeds = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('medications')
+        .select('name, dosage, efcy, se, intrc, use_method')
+        .eq('user_id', user.id);
+      if (data) setMeds(data);
+    };
+    fetchMeds();
+  }, []);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -58,7 +82,7 @@ const AiChat = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: apiMessages }),
+        body: JSON.stringify({ messages: apiMessages, medications: meds }),
       });
 
       if (!resp.ok) {

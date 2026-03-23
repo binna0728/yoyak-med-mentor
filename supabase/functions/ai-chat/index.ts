@@ -9,9 +9,22 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { messages } = await req.json();
+    const { messages, medications } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    let medContext = "";
+    if (medications && Array.isArray(medications) && medications.length > 0) {
+      medContext = `\n\n현재 사용자가 복용 중인 약 목록:\n${medications.map((m: any, i: number) => {
+        const parts = [`${i + 1}. ${m.name}`];
+        if (m.dosage) parts.push(`용량: ${m.dosage}`);
+        if (m.efcy) parts.push(`효능: ${m.efcy}`);
+        if (m.se) parts.push(`부작용: ${m.se}`);
+        if (m.intrc) parts.push(`상호작용: ${m.intrc}`);
+        if (m.use_method) parts.push(`복용법: ${m.use_method}`);
+        return parts.join(' | ');
+      }).join('\n')}\n\n이 약 정보를 참고하여 사용자의 질문에 맞춤형 답변을 제공하세요. 특히 약물 간 상호작용에 주의하세요.`;
+    }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -33,7 +46,7 @@ serve(async (req) => {
 - 위험한 상호작용이 있으면 반드시 경고
 - 의사나 약사와 상담을 권고하는 면책 문구 포함
 - 답변은 간결하되 필요한 정보는 빠짐없이 제공
-- 이모지를 적절히 사용하여 가독성 향상`,
+- 이모지를 적절히 사용하여 가독성 향상${medContext}`,
           },
           ...messages,
         ],
