@@ -4,6 +4,7 @@
 
 /* Safe Area */
 :root {
+  color-scheme: light only;
   --sat: env(safe-area-inset-top);
   --sab: env(safe-area-inset-bottom);
   --sal: env(safe-area-inset-left);
