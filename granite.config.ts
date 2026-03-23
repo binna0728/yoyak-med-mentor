@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: '요약',
     primaryColor: '#7C9A7E',
-    icon: '', // TODO: 콘솔 등록 후 정식 아이콘 URL로 교체
+    icon: 'https://yoyak.site/app-icon.png',
   },
   web: {
     host: 'localhost',
