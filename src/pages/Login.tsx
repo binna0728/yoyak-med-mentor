@@ -1,13 +1,25 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isInTossApp } from '@/utils/toss';
 import { Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { Checkbox } from '@/components/ui/checkbox';
+
+interface Term {
+  id: string;
+  title: string;
+  content_url: string;
+  is_required: boolean;
+  term_type: string;
+}
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { loginWithToss, isAuthenticated } = useAuth();
+  const [terms, setTerms] = useState<Term[]>([]);
+  const [consents, setConsents] = useState<Record<string, boolean>>({});
+  const { loginWithToss, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const inToss = isInTossApp();
