@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
@@ -180,12 +181,14 @@ const AiChat = () => {
                     <span className="text-primary-foreground text-xs">AI</span>
                   </div>
                 )}
-                <div className={`max-w-[78%] px-4 py-3 leading-relaxed whitespace-pre-line ${
+                <div className={`max-w-[78%] px-4 py-3 leading-relaxed ${
                   msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md'
-                    : 'bg-card border border-border text-foreground rounded-2xl rounded-bl-md'
+                    ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md whitespace-pre-line'
+                    : 'bg-card border border-border text-foreground rounded-2xl rounded-bl-md prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-headings:my-2 prose-strong:text-foreground'
                 } ${sr ? 'text-base' : 'text-sm'}`}>
-                  {msg.content}
+                  {msg.role === 'user' ? msg.content : (
+                    <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  )}
                   {isTyping && msg.role === 'assistant' && idx === messages.length - 1 && msg.content && (
                     <span className="inline-block w-0.5 h-4 bg-primary ml-0.5 animate-pulse align-text-bottom" />
                   )}
