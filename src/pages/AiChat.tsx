@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
