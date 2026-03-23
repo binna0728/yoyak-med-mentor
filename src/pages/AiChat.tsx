@@ -1,30 +1,16 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
-}
-
-interface ChatSections {
-  summary: string;
-  dosage: string;
-  precautions: string;
-  tips: string;
-}
-
-interface StreamEvent {
-  type: 'content' | 'done' | 'error';
-  text?: string;
-  sections?: ChatSections;
-  disclaimer?: string;
-  message?: string;
 }
 
 const AiChat = () => {
@@ -45,104 +31,115 @@ const AiChat = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
   }, [messages, isTyping]);
 
-  const cleanMarkdown = (s: string): string =>
-    s.replace(/\*{1,2}(summary|dosage|precautions|tips|요약|복용|주의|팁|보관)\*{1,2}[:\s]*/gi, '')
-     .replace(/\*{1,2}/g, '')
-     .trim();
-
-  const formatSections = useCallback((sections: ChatSections, rawAnswer: string): string => {
-    const { summary, dosage, precautions, tips } = sections;
-    const isDefault = (s: string) =>
-      !s || s.includes('해당 정보가 제공되지 않았습니다') || s.includes('죄송합니다. 제공된 의약품 정보 내에서');
-
-    if (isDefault(summary) && isDefault(dosage) && isDefault(precautions) && isDefault(tips)) {
-      return cleanMarkdown(rawAnswer) || t('aiChat.defaultAnswer');
-    }
-
-    const parts: string[] = [];
-    if (!isDefault(summary)) parts.push(cleanMarkdown(summary));
-    if (!isDefault(dosage)) parts.push('📋 ' + cleanMarkdown(dosage));
-    if (!isDefault(precautions)) parts.push('⚠️ ' + cleanMarkdown(precautions));
-    if (!isDefault(tips)) parts.push('💡 ' + cleanMarkdown(tips));
-    return parts.join('\n\n') || cleanMarkdown(rawAnswer) || t('aiChat.defaultAnswer');
-  }, [t]);
-
   const handleSend = async (text?: string) => {
     const msg = text || input.trim();
     if (!msg || isTyping) return;
 
-    setMessages(prev => [...prev, { role: 'user', content: msg }]);
+    const userMsg: ChatMessage = { role: 'user', content: msg };
+    setMessages(prev => [...prev, userMsg]);
     setInput('');
     setIsTyping(true);
 
-    // Add empty assistant message that we'll stream into
+    // Add empty assistant message for streaming
     setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
 
+    let assistantSoFar = '';
+
     try {
-      const response = await fetch(`${API_BASE_URL}/chat/stream`, {
+      const apiMessages = [...messages.filter(m => m !== messages[0]), userMsg].map(m => ({
+        role: m.role,
+        content: m.content,
+      }));
+
+      const resp = await fetch(CHAT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: msg }),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: apiMessages }),
       });
 
-      if (!response.ok || !response.body) throw new Error('Stream failed');
+      if (!resp.ok) {
+        const errorData = await resp.json().catch(() => ({}));
+        if (resp.status === 429) {
+          toast.error('요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
+        } else if (resp.status === 402) {
+          toast.error('AI 크레딧이 부족합니다.');
+        }
+        throw new Error(errorData.error || 'Stream failed');
+      }
 
-      const reader = response.body.getReader();
+      if (!resp.body) throw new Error('No response body');
+
+      const reader = resp.body.getReader();
       const decoder = new TextDecoder();
-      let buffer = '';
-      let fullText = '';
+      let textBuffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
 
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf('\n')) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
 
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed.startsWith('data: ')) continue;
+          if (line.endsWith('\r')) line = line.slice(0, -1);
+          if (line.startsWith(':') || line.trim() === '') continue;
+          if (!line.startsWith('data: ')) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === '[DONE]') break;
 
           try {
-            const event: StreamEvent = JSON.parse(trimmed.slice(6));
-
-            if (event.type === 'content' && event.text) {
-              fullText += event.text;
-              const cleaned = cleanMarkdown(fullText);
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantSoFar += content;
+              const current = assistantSoFar;
               setMessages(prev => {
                 const updated = [...prev];
-                updated[updated.length - 1] = { role: 'assistant', content: cleaned };
-                return updated;
-              });
-            } else if (event.type === 'done') {
-              // If sections are available, reformat the final message
-              if (event.sections) {
-                const formatted = formatSections(event.sections, fullText);
-                setMessages(prev => {
-                  const updated = [...prev];
-                  updated[updated.length - 1] = { role: 'assistant', content: formatted };
-                  return updated;
-                });
-              }
-            } else if (event.type === 'error') {
-              setMessages(prev => {
-                const updated = [...prev];
-                updated[updated.length - 1] = {
-                  role: 'assistant',
-                  content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
-                };
+                updated[updated.length - 1] = { role: 'assistant', content: current };
                 return updated;
               });
             }
           } catch {
-            // skip malformed JSON
+            textBuffer = line + '\n' + textBuffer;
+            break;
           }
         }
       }
 
-      // If we got no content at all, show default
-      if (!fullText) {
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split('\n')) {
+          if (!raw) continue;
+          if (raw.endsWith('\r')) raw = raw.slice(0, -1);
+          if (raw.startsWith(':') || raw.trim() === '') continue;
+          if (!raw.startsWith('data: ')) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantSoFar += content;
+            }
+          } catch { /* ignore */ }
+        }
+        if (assistantSoFar) {
+          const final = assistantSoFar;
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1] = { role: 'assistant', content: final };
+            return updated;
+          });
+        }
+      }
+
+      if (!assistantSoFar) {
         setMessages(prev => {
           const updated = [...prev];
           updated[updated.length - 1] = { role: 'assistant', content: t('aiChat.defaultAnswer') };
@@ -150,14 +147,16 @@ const AiChat = () => {
         });
       }
     } catch {
-      setMessages(prev => {
-        const updated = [...prev];
-        updated[updated.length - 1] = {
-          role: 'assistant',
-          content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
-        };
-        return updated;
-      });
+      if (!assistantSoFar) {
+        setMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: '서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.',
+          };
+          return updated;
+        });
+      }
     } finally {
       setIsTyping(false);
     }
@@ -171,7 +170,6 @@ const AiChat = () => {
       <main ref={scrollRef} className="flex-1 px-4 py-4 overflow-y-auto pb-44">
         <div className="max-w-lg mx-auto space-y-4">
           {messages.map((msg, idx) => {
-            // 스트리밍 중 빈 메시지는 숨기고 타이핑 인디케이터로 대체
             const isStreamingEmpty = isTyping && msg.role === 'assistant' && idx === messages.length - 1 && !msg.content;
             if (isStreamingEmpty) return null;
 
