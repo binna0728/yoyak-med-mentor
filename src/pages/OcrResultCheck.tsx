@@ -7,6 +7,7 @@ import apiClient from '@/api/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 interface GuideInfo {
   summary: string;
@@ -185,12 +186,20 @@ const OcrResultCheck = () => {
       t('sampleMeds.ttsIntro', { name: item.name, dosage: item.dosage, frequency: item.frequency, schedule: item.schedule, duration: item.duration })
     ).join(' ');
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
     try {
-      const result = await medicineApi.getTTS('ocr-result', text);
-      const audio = new Audio(result.audio_url);
+      const res = await fetch(`${API_BASE_URL}/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
       audioRef.current = audio;
-      audio.onended = () => { setIsSpeaking(false); audioRef.current = null; };
-      audio.onerror = () => { setIsSpeaking(false); audioRef.current = null; };
+      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); audioRef.current = null; };
+      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(url); audioRef.current = null; };
       await audio.play();
       setIsSpeaking(true);
     } catch {
@@ -218,7 +227,7 @@ const OcrResultCheck = () => {
             <ArrowLeft className={`text-foreground ${sr ? 'w-7 h-7' : 'w-6 h-6'}`} />
           </button>
           <div className="flex-1" />
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 

@@ -104,13 +104,21 @@ const TTSPlayer = ({ guideId, textContent }: TTSPlayerProps) => {
     setIsLoading(true);
     setError(false);
 
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
     try {
-      const result = await medicineApi.getTTS(guideId);
-      const audio = new Audio(result.audio_url);
+      const res = await fetch(`${API_BASE_URL}/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: textContent }),
+      });
+      if (!res.ok) throw new Error('TTS failed');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
       audioRef.current = audio;
       audio.addEventListener('timeupdate', () => { if (audio.duration) setProgress((audio.currentTime / audio.duration) * 100); });
-      audio.addEventListener('ended', () => { setIsPlaying(false); setProgress(0); });
-      audio.addEventListener('error', () => { playWithSpeechAPI(); });
+      audio.addEventListener('ended', () => { setIsPlaying(false); setProgress(0); URL.revokeObjectURL(url); });
+      audio.addEventListener('error', () => { URL.revokeObjectURL(url); playWithSpeechAPI(); });
       await audio.play();
       setIsPlaying(true);
     } catch {
