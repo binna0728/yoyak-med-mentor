@@ -19,6 +19,21 @@ export default defineConfig(({ mode }) => ({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-popover', '@radix-ui/react-select', '@radix-ui/react-tabs', '@radix-ui/react-toast', '@radix-ui/react-tooltip'],
+          'vendor-supabase': ['@supabase/supabase-js'],
+          'vendor-i18n': ['react-i18next'],
+          'vendor-recharts': ['recharts'],
+          'vendor-markdown': ['react-markdown'],
+        },
+      },
+    },
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
