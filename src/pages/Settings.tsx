@@ -198,12 +198,13 @@ const Settings = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => { logout(); navigate('/'); }}
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                탈퇴하기
+                {isDeleting ? <><Loader2 className="w-4 h-4 animate-spin mr-1" />처리 중...</> : '탈퇴하기'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
