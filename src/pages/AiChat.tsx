@@ -28,6 +28,28 @@ interface StreamEvent {
   message?: string;
 }
 
+const getMedications = (): { name: string; dosage?: string; use_method?: string }[] => {
+  try {
+    const raw = localStorage.getItem('saved_schedules');
+    if (!raw) return [];
+    const items: { name: string; dosage?: string; schedule?: string }[] = JSON.parse(raw);
+    // 약 이름 기준 중복 제거 (같은 약이 시간대별로 여러 엔트리)
+    const seen = new Map<string, { name: string; dosage?: string; use_method?: string }>();
+    for (const item of items) {
+      if (!seen.has(item.name)) {
+        seen.set(item.name, {
+          name: item.name,
+          ...(item.dosage && { dosage: item.dosage }),
+          ...(item.schedule && item.schedule !== '상관없음' && { use_method: item.schedule }),
+        });
+      }
+    }
+    return Array.from(seen.values());
+  } catch {
+    return [];
+  }
+};
+
 const AiChat = () => {
   const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
@@ -84,7 +106,7 @@ const AiChat = () => {
       const response = await fetch(`${API_BASE_URL}/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: msg, medications: [] }),
+        body: JSON.stringify({ question: msg, medications: getMedications() }),
       });
 
       if (!response.ok || !response.body) throw new Error('Stream failed');
