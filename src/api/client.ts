@@ -7,7 +7,8 @@ export const apiClient = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // for httpOnly cookies (refresh_token)
+  // iOS 토스 미니앱에서 서드파티 쿠키 차단으로 인해
+  // withCredentials 대신 localStorage 기반 토큰 관리 사용
 });
 
 // Request interceptor - add access token
