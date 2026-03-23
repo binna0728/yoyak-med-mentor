@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Send } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
@@ -83,7 +84,7 @@ const AiChat = () => {
       const response = await fetch(`${API_BASE_URL}/chat/stream`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: msg }),
+        body: JSON.stringify({ question: msg, medications: [] }),
       });
 
       if (!response.ok || !response.body) throw new Error('Stream failed');
@@ -174,7 +175,7 @@ const AiChat = () => {
           <div className="flex-1 text-center">
             <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('aiChat.title')}</span>
           </div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 
