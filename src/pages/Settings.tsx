@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe, UserX } from 'lucide-react';
+import { ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe, UserX, Loader2 } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,6 +17,8 @@ import {
 import BottomNav from '@/components/BottomNav';
 import { useTranslation } from 'react-i18next';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from '@/hooks/use-toast';
 
 
 const Settings = () => {
@@ -24,11 +26,30 @@ const Settings = () => {
   const { user, logout } = useAuth();
   const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
   const [notificationOn, setNotificationOn] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
   const { t, i18n } = useTranslation();
 
   const sr = isSeniorMode;
 
   const handleLogout = () => { logout(); navigate('/login'); };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase.functions.invoke('toss-unlink', {
+        body: { user_id: user?.user_id },
+      });
+      if (error) throw error;
+      logout();
+      navigate('/');
+      toast({ title: '탈퇴 완료', description: '모든 데이터가 삭제되었습니다.' });
+    } catch (e) {
+      console.error('Delete account error:', e);
+      toast({ title: '탈퇴 실패', description: '잠시 후 다시 시도해 주세요.', variant: 'destructive' });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const toggleLanguage = () => {
     i18n.changeLanguage(i18n.language === 'ko' ? 'en' : 'ko');
@@ -177,12 +198,13 @@ const Settings = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>취소</AlertDialogCancel>
+              <AlertDialogCancel disabled={isDeleting}>취소</AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => { logout(); navigate('/'); }}
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               >
-                탈퇴하기
+                {isDeleting ? <><Loader2 className="w-4 h-4 animate-spin mr-1" />처리 중...</> : '탈퇴하기'}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
