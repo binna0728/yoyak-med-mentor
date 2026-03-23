@@ -34,6 +34,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await authApi.tossLogin(tossToken);
       localStorage.setItem('access_token', response.data.access_token);
+      if (response.data.refresh_token) {
+        localStorage.setItem('refresh_token', response.data.refresh_token);
+      }
       await refreshUser();
     } catch {
       // Demo mode fallback
