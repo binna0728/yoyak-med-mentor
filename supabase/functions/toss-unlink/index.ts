@@ -19,18 +19,18 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Basic Auth 검증
-    const authHeader = req.headers.get("Authorization");
+    // Auth: accept either Basic Auth (from Toss callback) or Bearer token (from client)
+    const authHeader = req.headers.get("Authorization") || "";
     const expectedToken = Deno.env.get("TOSS_UNLINK_AUTH_TOKEN");
 
-    if (expectedToken) {
-      const expected = `Basic ${btoa(expectedToken)}`;
-      if (authHeader !== expected) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
-          status: 401,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+    const isBasicAuth = expectedToken && authHeader === `Basic ${btoa(expectedToken)}`;
+    const isBearerAuth = authHeader.startsWith("Bearer ");
+
+    if (!isBasicAuth && !isBearerAuth) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const body = await req.json().catch(() => ({}));
