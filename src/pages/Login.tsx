@@ -47,7 +47,24 @@ const Login = () => {
     }
   }, [isAuthenticated]);
 
+  const requiredTermsAgreed = terms.filter(t => t.is_required).every(t => consents[t.id]);
+
+  const saveConsents = async (userId: string) => {
+    const rows = Object.entries(consents).map(([term_id, agreed]) => ({
+      user_id: userId,
+      term_id,
+      agreed,
+    }));
+    if (rows.length > 0) {
+      await supabase.from('user_term_consents').upsert(rows, { onConflict: 'user_id,term_id' });
+    }
+  };
+
   const handleLogin = async () => {
+    if (terms.length > 0 && !requiredTermsAgreed) {
+      setError('필수 약관에 모두 동의해주세요.');
+      return;
+    }
     setIsLoading(true);
     setError(null);
     try {
@@ -56,6 +73,11 @@ const Login = () => {
         await loginWithToss(tossToken);
       } else {
         await loginWithToss('demo_token');
+      }
+      // Save consents after login
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
+        await saveConsents(currentUser.id);
       }
       navigate(from, { replace: true });
     } catch {
