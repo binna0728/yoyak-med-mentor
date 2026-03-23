@@ -186,37 +186,19 @@ const OcrResultCheck = () => {
       t('sampleMeds.ttsIntro', { name: item.name, dosage: item.dosage, frequency: item.frequency, schedule: item.schedule, duration: item.duration })
     ).join(' ');
 
-    const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost/api/v1';
-    try {
-      const res = await fetch(`${API_BASE_URL}/tts/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) throw new Error('TTS failed');
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const audio = new Audio(url);
-      audioRef.current = audio;
-      audio.onended = () => { setIsSpeaking(false); URL.revokeObjectURL(url); audioRef.current = null; };
-      audio.onerror = () => { setIsSpeaking(false); URL.revokeObjectURL(url); audioRef.current = null; };
-      await audio.play();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'ko-KR';
+      utter.rate = 0.9;
+      utter.onend = () => setIsSpeaking(false);
+      utter.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utter);
       setIsSpeaking(true);
-    } catch {
-      if ('speechSynthesis' in window) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'ko-KR';
-        utter.rate = 0.9;
-        utter.onend = () => setIsSpeaking(false);
-        utter.onerror = () => setIsSpeaking(false);
-        window.speechSynthesis.speak(utter);
-        setIsSpeaking(true);
-      } else {
-        toast.error(t('ttsPlayer.notSupported'));
-      }
-    } finally {
-      setTtsLoading(false);
+    } else {
+      toast.error(t('ttsPlayer.notSupported'));
     }
+    setTtsLoading(false);
   };
 
   return (
