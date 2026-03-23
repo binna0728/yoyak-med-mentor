@@ -20,8 +20,6 @@ import Sounds from "./pages/Sounds";
 import Terms from "./pages/Terms";
 import TermsManage from "./pages/TermsManage";
 import NotFound from "./pages/NotFound";
-import GlobalMenu from "./components/GlobalMenu";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -38,7 +36,6 @@ const App = () => (
               paddingLeft: 'env(safe-area-inset-left)',
               paddingRight: 'env(safe-area-inset-right)',
             }}>
-              <GlobalMenu />
               <div className="flex-1 overflow-y-auto">
                 <Routes>
                   <Route path="/" element={<Onboarding />} />
