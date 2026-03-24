@@ -6,6 +6,7 @@ import { ArrowLeft, ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Glob
 import BottomNav from '@/components/BottomNav';
 import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 
 
 const Settings = () => {
@@ -122,7 +123,7 @@ const Settings = () => {
         <div>
           <p className={`text-muted-foreground font-medium mb-2 px-1 ${sr ? 'text-base' : 'text-xs'}`}>{t('settings.account')}</p>
           <div className="rounded-2xl border border-border overflow-hidden">
-            <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
+            <button onClick={() => toast.info(t('settings.accountInfo', '계정 정보: ') + (user?.email || ''))} className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
                 <User className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 <span className={`text-foreground font-medium ${sr ? 'text-lg' : 'text-base'}`}>{t('settings.accountMgmt')}</span>
@@ -132,7 +133,7 @@ const Settings = () => {
 
             <div className="h-px bg-border mx-6" />
 
-            <button className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
+            <button onClick={() => navigate('/privacy')} className={`flex items-center justify-between bg-card w-full ${sr ? 'py-5 px-5' : 'py-4 px-5'}`}>
               <div className="flex items-center gap-3">
                 <Shield className={`text-primary ${sr ? 'w-6 h-6' : 'w-5 h-5'}`} />
                 <span className={`text-foreground font-medium ${sr ? 'text-lg' : 'text-base'}`}>{t('settings.privacy')}</span>

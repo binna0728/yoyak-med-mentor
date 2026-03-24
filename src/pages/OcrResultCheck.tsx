@@ -73,8 +73,15 @@ const OcrResultCheck = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
+    const hadError = localStorage.getItem('ocr_error');
+    if (hadError) {
+      localStorage.removeItem('ocr_error');
+      toast.error(t('ocr.serverError', 'AI 서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.'));
+      navigate('/home', { replace: true });
+      return;
+    }
     const stored = localStorage.getItem('ocr_result');
-    if (!stored) return;
+    if (!stored) { navigate('/home', { replace: true }); return; }
     const parsed: OcrItem[] = JSON.parse(stored);
     setItems(parsed);
 

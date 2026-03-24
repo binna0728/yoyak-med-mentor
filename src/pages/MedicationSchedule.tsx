@@ -36,6 +36,14 @@ interface EditDraft {
 const MEAL_OPTIONS = ['식전', '식후', '상관없음'] as const;
 const toDateStr = (d: Date) => d.toISOString().split('T')[0];
 
+/** 날짜별 체크 기록: { "2026-03-24": ["item-id-1", "item-id-2"], ... } */
+const loadTakenDates = (): Record<string, string[]> => {
+  try { return JSON.parse(localStorage.getItem('taken_dates') || '{}'); } catch { return {}; }
+};
+const saveTakenDates = (data: Record<string, string[]>) => {
+  localStorage.setItem('taken_dates', JSON.stringify(data));
+};
+
 const MedicationSchedule = () => {
   const navigate = useNavigate();
   const { isSeniorMode: sr } = useSeniorMode();
@@ -59,51 +67,48 @@ const MedicationSchedule = () => {
     return () => { window.speechSynthesis.cancel(); };
   }, []);
 
+  const selectedDateStr = toDateStr(selectedDate);
+
+  /** saved_schedules 로드 + 선택 날짜의 taken 상태 반영 */
+  const loadItems = (dateStr: string) => {
+    const raw = localStorage.getItem('saved_schedules');
+    if (!raw) { setItems([]); return; }
+    try {
+      const saved = JSON.parse(raw);
+      const takenDates = loadTakenDates();
+      const takenIds = new Set(takenDates[dateStr] || []);
+      const filtered: ScheduleItem[] = saved
+        .filter((s: { id: string }) => !s.id.startsWith('sample-'))
+        .map((s: {
+          id: string; name: string; time: string; period: string;
+          date?: string; startDate?: string; endDate?: string; schedule?: string;
+        }) => ({
+          id: s.id, name: s.name, time: s.time,
+          period: s.period as ScheduleItem['period'],
+          taken: takenIds.has(s.id),
+          date: s.date, startDate: s.startDate, endDate: s.endDate, schedule: s.schedule,
+        }));
+      setItems(filtered);
+    } catch {
+      setItems([]);
+    }
+  };
+
+  // 초기 로드 + 날짜 변경 시 재로드
   useEffect(() => {
     // 더미/샘플 기록 1회 정리
     if (!localStorage.getItem('records_cleaned_v1')) {
       localStorage.removeItem('medication_records');
       localStorage.setItem('records_cleaned_v1', '1');
     }
+    loadItems(selectedDateStr);
 
-    let filtered: ScheduleItem[] = [];
-    const raw = localStorage.getItem('saved_schedules');
-    if (raw) {
-      try {
-        const saved = JSON.parse(raw);
-        filtered = saved
-          .filter((s: { id: string }) => !s.id.startsWith('sample-'))
-          .map((s: {
-            id: string; name: string; time: string; period: string;
-            taken?: boolean; date?: string; startDate?: string; endDate?: string; schedule?: string;
-          }) => ({
-            id: s.id, name: s.name, time: s.time,
-            period: s.period as ScheduleItem['period'],
-            taken: s.taken || false,
-            date: s.date, startDate: s.startDate, endDate: s.endDate, schedule: s.schedule,
-          }));
-        setItems(filtered);
-        if (saved.some((s: { id: string }) => s.id.startsWith('sample-'))) {
-          localStorage.setItem('saved_schedules', JSON.stringify(filtered));
-        }
-      } catch {
-        setItems([]);
-      }
-    }
-
-    // medication_records 로드 후 오늘 날짜 실제 taken 상태 반영
-    let records: Record<string, DayRecord> = {};
+    // medication_records 로드
     const recordsRaw = localStorage.getItem('medication_records');
-    if (recordsRaw) {
-      try { records = JSON.parse(recordsRaw); } catch { /* ignore */ }
-    }
-    if (filtered.length > 0) {
-      const takenToday = filtered.filter(i => i.taken).length;
-      records[todayStr] = { date: todayStr, total: filtered.length, taken: takenToday };
-      localStorage.setItem('medication_records', JSON.stringify(records));
-    }
+    let records: Record<string, DayRecord> = {};
+    if (recordsRaw) { try { records = JSON.parse(recordsRaw); } catch { /* ignore */ } }
     setMonthRecords(records);
-  }, [t]);
+  }, [selectedDateStr]);
 
   const getWeekDays = (base: Date) => {
     const start = new Date(base);
@@ -126,17 +131,17 @@ const MedicationSchedule = () => {
   const dayLabels = [t('schedule.dayMon'), t('schedule.dayTue'), t('schedule.dayWed'), t('schedule.dayThu'), t('schedule.dayFri'), t('schedule.daySat'), t('schedule.daySun')];
   const isSameDay = (a: Date, b: Date) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 
-  // items 변경 시 medication_records + monthRecords 동기화
+  // items 변경 시 medication_records + monthRecords 동기화 (선택 날짜 기준)
   useEffect(() => {
     if (items.length === 0) return;
     const takenCount = items.filter(i => i.taken).length;
     const recordsRaw = localStorage.getItem('medication_records');
     let records: Record<string, DayRecord> = {};
     if (recordsRaw) { try { records = JSON.parse(recordsRaw); } catch { /* ignore */ } }
-    records[todayStr] = { date: todayStr, total: items.length, taken: takenCount };
+    records[selectedDateStr] = { date: selectedDateStr, total: items.length, taken: takenCount };
     localStorage.setItem('medication_records', JSON.stringify(records));
     setMonthRecords({ ...records });
-  }, [items]);
+  }, [items, selectedDateStr]);
 
   const handleTTS = () => {
     if (isSpeaking) {
@@ -184,16 +189,22 @@ const MedicationSchedule = () => {
   };
 
   const toggleTaken = (id: string) => {
-    const raw = localStorage.getItem('saved_schedules');
-    if (raw) {
-      try {
-        const saved = JSON.parse(raw);
-        localStorage.setItem('saved_schedules', JSON.stringify(
-          saved.map((s: { id: string; taken?: boolean }) => s.id === id ? { ...s, taken: !s.taken } : s)
-        ));
-      } catch { /* ignore */ }
-    }
-    setItems(prev => prev.map(item => item.id === id ? { ...item, taken: !item.taken } : item));
+    const dateStr = selectedDateStr;
+    const takenDates = loadTakenDates();
+    const takenIds = new Set(takenDates[dateStr] || []);
+    if (takenIds.has(id)) { takenIds.delete(id); } else { takenIds.add(id); }
+    takenDates[dateStr] = Array.from(takenIds);
+    saveTakenDates(takenDates);
+
+    // medication_records 업데이트
+    const recordsRaw = localStorage.getItem('medication_records');
+    let records: Record<string, DayRecord> = {};
+    if (recordsRaw) { try { records = JSON.parse(recordsRaw); } catch { /* ignore */ } }
+    records[dateStr] = { date: dateStr, total: items.length, taken: takenIds.size };
+    localStorage.setItem('medication_records', JSON.stringify(records));
+    setMonthRecords({ ...records });
+
+    setItems(prev => prev.map(item => item.id === id ? { ...item, taken: takenIds.has(item.id) } : item));
   };
 
   const toggleSelectForDelete = (id: string) => {

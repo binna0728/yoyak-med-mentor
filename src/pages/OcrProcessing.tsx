@@ -55,16 +55,12 @@ const OcrProcessing = () => {
             }]));
           }
         } catch {
-          localStorage.setItem('ocr_result', JSON.stringify([
-            { name: t('sampleMeds.tylenol'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days5'), schedule: t('sampleMeds.afterMeal30') },
-            { name: t('sampleMeds.amoxicillin'), dosage: t('sampleMeds.dose1capsule'), frequency: t('sampleMeds.thrice'), duration: t('sampleMeds.days7'), schedule: t('sampleMeds.afterMeal') },
-          ]));
+          localStorage.setItem('ocr_error', 'true');
+          localStorage.removeItem('ocr_result');
         }
       } else {
-        localStorage.setItem('ocr_result', JSON.stringify([
-          { name: t('sampleMeds.amozaltan'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealMorning') },
-          { name: t('sampleMeds.rosuvastatin'), dosage: t('sampleMeds.dose1tablet'), frequency: t('sampleMeds.once'), duration: t('sampleMeds.days30'), schedule: t('sampleMeds.afterMealEvening') },
-        ]));
+        localStorage.setItem('ocr_error', 'true');
+        localStorage.removeItem('ocr_result');
       }
 
       // 최소 3초 화면 표시 후 이동
