@@ -21,6 +21,13 @@ const DEMO_USER: User = {
   created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
 };
 
+/** 로그인/회원가입 직후 이전 테스트 데이터 정리 (1회성) */
+const clearTestData = () => {
+  localStorage.removeItem('saved_schedules');
+  localStorage.removeItem('medication_records');
+  localStorage.removeItem('records_cleaned_v1');
+};
+
 /** 백엔드 /users/me 응답을 프론트엔드 User 타입으로 변환 */
 const mapBackendUser = (raw: Record<string, unknown>): User => {
   const genderMap: Record<string, string> = { MALE: 'M', FEMALE: 'F', M: 'M', F: 'F' };
@@ -49,7 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.getMe();
       // 백엔드가 { data: User } 래핑 또는 직접 User 객체 반환 둘 다 처리
       const raw = response.data ?? response;
-      setUser(mapBackendUser(raw as Record<string, unknown>));
+      setUser(mapBackendUser(raw as unknown as Record<string, unknown>));
     } catch {
       // Backend unavailable — keep current user (don't clear)
     }
@@ -79,9 +86,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authApi.login({ email, password });
       // 백엔드가 { data: { access_token } } 래핑 또는 { access_token } 직접 반환 둘 다 처리
       const tokenData = response.data ?? response;
-      const td = tokenData as Record<string, string>;
+      const td = tokenData as unknown as Record<string, string>;
       const token = td.access_token;
       if (!token) throw new Error('No access_token in response');
+      clearTestData();
       localStorage.setItem('access_token', token);
       if (td.refresh_token) localStorage.setItem('refresh_token', td.refresh_token);
       await refreshUser();
