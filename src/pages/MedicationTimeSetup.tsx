@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 type PeriodKey = 'morning' | 'afternoon' | 'evening' | 'bedtime';
 
@@ -101,7 +102,7 @@ const MedicationTimeSetup = () => {
           <div className="flex-1 text-center">
             <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('timeSetup.title')}</span>
           </div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, ChevronLeft, ChevronRight, Calendar, List, Trash2, Pencil, Check, X, Volume2, VolumeX } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import AlarmBanner from '@/components/AlarmBanner';
 import AlarmPermissionPrompt from '@/components/AlarmPermissionPrompt';
 import { useMedicationAlarm } from '@/hooks/useMedicationAlarm';
@@ -326,6 +327,7 @@ const MedicationSchedule = () => {
               </button>
             ) : (
               <>
+                <SeniorModeToggle />
                 <button
                   onClick={handleTTS}
                   className={`p-2 rounded-lg transition-colors ${isSpeaking ? 'text-primary' : 'text-muted-foreground'}`}

@@ -29,6 +29,7 @@ import TtsPlayer from "./pages/TtsPlayer";
 import Settings from "./pages/Settings";
 import AddSupplement from "./pages/AddSupplement";
 import Sounds from "./pages/Sounds";
+import Privacy from "./pages/Privacy";
 import NotFound from "./pages/NotFound";
 import GlobalMenu from "./components/GlobalMenu";
 
@@ -68,6 +69,7 @@ const App = () => (
                   <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
                   <Route path="/add/supplement" element={<PrivateRoute><AddSupplement /></PrivateRoute>} />
                   <Route path="/sounds" element={<PrivateRoute><Sounds /></PrivateRoute>} />
+                  <Route path="/privacy" element={<Privacy />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>

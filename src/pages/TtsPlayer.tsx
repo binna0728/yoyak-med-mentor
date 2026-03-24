@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import TTSPlayer from '@/components/TTSPlayer';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 const TtsPlayerPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ const TtsPlayerPage = () => {
           <div className="flex-1 text-center">
             <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>음성 안내</span>
           </div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
       <main className="p-4 max-w-lg mx-auto">

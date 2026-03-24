@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
-import { Camera, CalendarDays, Bot, BookOpen, AArrowUp, Volume2, VolumeX } from 'lucide-react';
+import { Camera, CalendarDays, Bot, BookOpen, Volume2, VolumeX } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
 
 interface SavedItem {
@@ -35,7 +36,7 @@ const PERIOD_LABEL: Record<string, string> = {
 
 const Home = () => {
   const { user } = useAuth();
-  const { isSeniorMode, toggleSeniorMode } = useSeniorMode();
+  const { isSeniorMode } = useSeniorMode();
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
 
@@ -150,15 +151,7 @@ const Home = () => {
             </h1>
             <p className={`text-muted-foreground ${sr ? 'text-base' : 'text-xs'} mt-0.5`}>{dateStr}</p>
           </div>
-          <button
-            onClick={toggleSeniorMode}
-            className={`flex items-center justify-center rounded-full transition-all ${
-              sr ? 'w-14 h-14 bg-primary text-primary-foreground' : 'w-10 h-10 bg-accent text-primary'
-            }`}
-            title={t('home.seniorMode')}
-          >
-            <AArrowUp className={sr ? 'w-7 h-7' : 'w-5 h-5'} />
-          </button>
+          <SeniorModeToggle />
         </div>
       </header>
 

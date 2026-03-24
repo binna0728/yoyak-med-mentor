@@ -4,6 +4,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 interface OcrItem {
   name: string;
@@ -73,7 +74,7 @@ const OcrResultEdit = () => {
         <div className="flex items-center h-14 px-4 border-b border-border">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2"><ArrowLeft className={`text-foreground ${sr ? 'w-7 h-7' : 'w-6 h-6'}`} /></button>
           <div className="flex-1 text-center"><span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('ocrEdit.title')}</span></div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 

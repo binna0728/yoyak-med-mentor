@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { ArrowLeft, ChevronRight, Bell, ZoomIn, User, LogOut, Info, Shield, Globe } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 import { useTranslation } from 'react-i18next';
 
 
@@ -43,7 +44,7 @@ const Settings = () => {
           <div className="flex-1 text-center">
             <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('settings.title')}</span>
           </div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 

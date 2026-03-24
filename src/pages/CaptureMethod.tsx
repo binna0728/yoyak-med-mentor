@@ -3,6 +3,7 @@ import { ArrowLeft, Camera, FileText, Upload, PlusCircle } from 'lucide-react';
 import { useSeniorMode } from '@/contexts/SeniorModeContext';
 import { useTranslation } from 'react-i18next';
 import BottomNav from '@/components/BottomNav';
+import SeniorModeToggle from '@/components/SeniorModeToggle';
 
 const CaptureMethod = () => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const CaptureMethod = () => {
           <div className="flex-1 text-center">
             <span className={`font-bold text-foreground ${sr ? 'text-xl' : 'text-lg'}`}>{t('capture.title')}</span>
           </div>
-          <div className="w-10" />
+          <SeniorModeToggle />
         </div>
       </header>
 
