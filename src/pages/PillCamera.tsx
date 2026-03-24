@@ -120,7 +120,7 @@ const PillCamera = () => {
         )}
       </div>
 
-      <div className="pb-10 pt-6 flex flex-col items-center gap-4 w-full px-6 z-10">
+      <div className="pb-24 pt-6 flex flex-col items-center gap-4 w-full px-6 z-10">
         <button onClick={capture} disabled={!cameraReady || processing}
           className={`rounded-full bg-primary-foreground flex items-center justify-center border-4 border-primary shadow-xl active:scale-90 transition-transform disabled:opacity-40 ${
             sr ? 'w-[72px] h-[72px]' : 'w-16 h-16'
