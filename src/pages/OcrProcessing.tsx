@@ -46,13 +46,18 @@ const OcrProcessing = () => {
             localStorage.setItem('ocr_result', JSON.stringify(result.items));
           } else {
             const result = await medicineApi.recognizePill(state.image);
-            localStorage.setItem('ocr_result', JSON.stringify([{
-              name: result.medicine_name,
-              dosage: t('sampleMeds.dose1tablet'),
-              frequency: t('sampleMeds.twice'),
-              duration: t('sampleMeds.days7'),
-              schedule: t('sampleMeds.afterMeal'),
-            }]));
+            const detections = result.detections || [];
+            const items = detections.flatMap((det: { candidates?: { drug_name: string; confidence: number }[] }) =>
+              (det.candidates || []).map((c) => ({
+                name: c.drug_name,
+                dosage: t('sampleMeds.dose1tablet'),
+                frequency: t('sampleMeds.twice'),
+                duration: t('sampleMeds.days7'),
+                schedule: t('sampleMeds.afterMeal'),
+              }))
+            );
+            if (items.length === 0) throw new Error('No pill detected');
+            localStorage.setItem('ocr_result', JSON.stringify(items));
           }
         } catch {
           localStorage.setItem('ocr_error', 'true');

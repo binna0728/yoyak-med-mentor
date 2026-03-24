@@ -23,8 +23,9 @@ const PillRecognizer = ({ onRecognized }: PillRecognizerProps) => {
     setShowOptions(false);
     try {
       const result = await medicineApi.recognizePill(file);
-      onRecognized(result.medicine_name);
-      toast.success(t('pill.recognized', { name: result.medicine_name }));
+      const drugName = result.detections?.[0]?.candidates?.[0]?.drug_name || '식별불가';
+      onRecognized(drugName);
+      toast.success(t('pill.recognized', { name: drugName }));
     } catch {
       toast.error(t('pill.recognizeFailed'));
     } finally {
