@@ -29,8 +29,8 @@ export const medicineApi = {
   /** 처방전 OCR 인식 */
   recognizePrescription: async (file: File) => {
     const formData = new FormData();
-    formData.append('file', file);
-    const { data } = await apiClient.post('/ocr/parse', formData, {
+    formData.append('image', file);
+    const { data } = await apiClient.post('/medicines/ocr/prescription', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
     return data.data ?? data;
