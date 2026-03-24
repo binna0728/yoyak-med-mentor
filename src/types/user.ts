@@ -19,12 +19,10 @@ export interface User {
 export interface SignupRequest {
   email: string;
   password: string;
-  nickname: string;
   name: string;
-  birthday: string;
-  gender: Gender;
-  email_token: string;
-  sms_token: string;
+  gender: 'MALE' | 'FEMALE';
+  birth_date: string;
+  phone_number: string;
 }
 
 export interface LoginRequest {

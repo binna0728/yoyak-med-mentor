@@ -14,8 +14,7 @@ const Signup = () => {
     nickname: '',
     gender: '' as Gender | '',
     birthday: '',
-    email_token: '',
-    sms_token: '',
+    phone_number: '',
   });
   const [agreed, setAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,28 +29,33 @@ const Signup = () => {
     if (!agreed) { toast({ title: t('auth.termsRequired'), description: t('auth.termsRequiredDesc'), variant: 'destructive' }); return; }
     setIsLoading(true);
     try {
+      const genderMap: Record<string, 'MALE' | 'FEMALE'> = { M: 'MALE', F: 'FEMALE' };
       await authApi.signup({
         email: formData.email,
         password: formData.password,
         name: formData.name,
-        nickname: formData.nickname,
-        gender: (formData.gender || 'M') as Gender,
-        birthday: formData.birthday,
-        email_token: formData.email_token,
-        sms_token: formData.sms_token,
+        gender: genderMap[formData.gender || 'M'] ?? 'MALE',
+        birth_date: formData.birthday,
+        phone_number: formData.phone_number || '01000000000',
       });
       toast({ title: t('auth.signupSuccess'), description: t('auth.signupSuccessDesc') });
       navigate('/login');
     } catch (error: any) {
       const errData = error.response?.data;
-      const fieldErrors = errData?.field_errors as Record<string, string> | undefined;
-      if (fieldErrors && Object.keys(fieldErrors).length > 0) {
-        const messages = Object.values(fieldErrors).join('\n');
-        toast({ title: t('auth.signupFailed'), description: messages, variant: 'destructive' });
-      } else {
-        const detail = errData?.error_detail || errData?.detail || t('auth.signupFailedDesc');
-        toast({ title: t('auth.signupFailed'), description: detail, variant: 'destructive' });
+      let message = t('auth.signupFailedDesc');
+      if (errData?.detail) {
+        if (Array.isArray(errData.detail)) {
+          // Pydantic validation errors: [{msg, loc, ...}, ...]
+          message = errData.detail.map((e: any) => String(e.msg || e)).join(', ');
+        } else if (typeof errData.detail === 'string') {
+          message = errData.detail;
+        } else {
+          message = JSON.stringify(errData.detail);
+        }
+      } else if (errData?.error_detail) {
+        message = String(errData.error_detail);
       }
+      toast({ title: t('auth.signupFailed'), description: message, variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -94,6 +98,10 @@ const Signup = () => {
                   {t('auth.female', '여성')}
                 </button>
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-muted-foreground">{t('auth.phone', '전화번호')}</label>
+              <input type="tel" placeholder="01012345678" value={formData.phone_number} onChange={e => handleChange('phone_number', e.target.value)} className="tds-textfield" required />
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-muted-foreground">{t('auth.email')}</label>
