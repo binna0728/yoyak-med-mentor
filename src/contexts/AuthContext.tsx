@@ -21,6 +21,25 @@ const DEMO_USER: User = {
   created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
 };
 
+/** 백엔드 /users/me 응답을 프론트엔드 User 타입으로 변환 */
+const mapBackendUser = (raw: Record<string, unknown>): User => {
+  const genderMap: Record<string, string> = { MALE: 'M', FEMALE: 'F', M: 'M', F: 'F' };
+  return {
+    user_id: String(raw.user_id ?? raw.id ?? ''),
+    email: String(raw.email ?? ''),
+    name: String(raw.name ?? ''),
+    nickname: String(raw.nickname ?? raw.name ?? ''),
+    gender: (genderMap[String(raw.gender ?? 'M')] ?? 'M') as 'M' | 'F',
+    birthday: String(raw.birthday ?? ''),
+    phone_number: String(raw.phone_number ?? ''),
+    is_active: raw.is_active !== false,
+    is_admin: raw.is_admin === true,
+    last_login: raw.last_login ? String(raw.last_login) : null,
+    created_at: String(raw.created_at ?? new Date().toISOString()),
+    updated_at: String(raw.updated_at ?? new Date().toISOString()),
+  };
+};
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +47,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshUser = useCallback(async () => {
     try {
       const response = await authApi.getMe();
-      setUser(response.data);
+      // 백엔드가 { data: User } 래핑 또는 직접 User 객체 반환 둘 다 처리
+      const raw = response.data ?? response;
+      setUser(mapBackendUser(raw as Record<string, unknown>));
     } catch {
       // Backend unavailable — keep current user (don't clear)
     }
@@ -56,7 +77,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       const response = await authApi.login({ email, password });
-      localStorage.setItem('access_token', response.data.access_token);
+      // 백엔드가 { data: { access_token } } 래핑 또는 { access_token } 직접 반환 둘 다 처리
+      const tokenData = response.data ?? response;
+      const td = tokenData as Record<string, string>;
+      const token = td.access_token;
+      if (!token) throw new Error('No access_token in response');
+      localStorage.setItem('access_token', token);
+      if (td.refresh_token) localStorage.setItem('refresh_token', td.refresh_token);
       await refreshUser();
     } catch {
       // Demo mode fallback when backend is unavailable

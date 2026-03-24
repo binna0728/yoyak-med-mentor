@@ -57,12 +57,14 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Call refresh endpoint (POST) - refresh_token is in httpOnly cookie
-        const response = await axios.post(`${API_BASE_URL}/accounts/token/refresh`, null, {
-          withCredentials: true,
-        });
+        const refreshToken = localStorage.getItem('refresh_token');
+        const response = await axios.post(`${API_BASE_URL}/auth/token/refresh`, {
+          refresh_token: refreshToken,
+        }, { withCredentials: true });
 
-        const { access_token } = response.data.data;
+        // 백엔드가 { access_token } 직접 반환 또는 { data: { access_token } } 래핑 둘 다 처리
+        const tokenData = response.data?.data ?? response.data;
+        const { access_token } = tokenData;
         localStorage.setItem('access_token', access_token);
 
         processQueue(null);
